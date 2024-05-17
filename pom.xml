@@ -32,16 +32,41 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--   Mysql    -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!--   netty    -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>4.1.76.Final</version>
         </dependency>
+        <!--   hutool    -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.18</version>
         </dependency>
+        <!--    jwt    -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <!--    mybatis-plus    -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -1,2 +1,14 @@
 server:
   port: 9200
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/linyu?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT
+    username: root
+    password: 123456
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 10
+      max-lifetime: 30000
+      connection-test-query: SELECT 1
