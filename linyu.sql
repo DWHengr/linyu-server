@@ -11,8 +11,8 @@ CREATE TABLE `user`
     `email`         varchar(200) default NULL COMMENT '邮箱',
     `last_opt_time` datetime     default NULL COMMENT '最后操作时间',
     `status`        varchar(500) COMMENT '用户状态',
-    `create_time`   datetime     NOT NULL 0 COMMENT '创建时间',
-    `update_time`   datetime     NOT NULL 0 COMMENT '更新时间',
+    `create_time`   datetime     NOT NULL COMMENT '创建时间',
+    `update_time`   datetime     NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表' row_format=dynamic;
 
@@ -26,7 +26,7 @@ CREATE TABLE `message`
     `type`        varchar(64) NOT NULL COMMENT '消息类型',
     `msg_content` text default NULL COMMENT '消息内容',
     `status`      varchar(500) COMMENT '消息状态',
-    `create_time` datetime    NOT NULL 0 COMMENT '创建时间',
-    `update_time` datetime    NOT NULL 0 COMMENT '更新时间',
+    `create_time` datetime    NOT NULL COMMENT '创建时间',
+    `update_time` datetime    NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息表' row_format=dynamic;

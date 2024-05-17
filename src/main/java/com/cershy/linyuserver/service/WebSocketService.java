@@ -2,6 +2,8 @@ package com.cershy.linyuserver.service;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.cershy.linyuserver.utils.JwtUtil;
+import io.jsonwebtoken.Claims;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.stereotype.Service;
@@ -15,8 +17,14 @@ public class WebSocketService {
     public static final ConcurrentHashMap<Channel, String> Online_Channel = new ConcurrentHashMap<>();
 
     public void online(Channel channel, String token) {
-        Online_User.put(token, channel);
-        Online_Channel.put(channel, token);
+        try {
+            Claims claims = JwtUtil.parseToken(token);
+            String userId = (String) claims.get("userId");
+            Online_User.put(userId, channel);
+            Online_Channel.put(channel, userId);
+        } catch (Exception e) {
+            sendMsg(channel, "连接错误");
+        }
     }
 
     public void offline(Channel channel) {
