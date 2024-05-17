@@ -1,7 +1,7 @@
 package com.cershy.linyuserver.websocket;
 
 import cn.hutool.extra.spring.SpringUtil;
-import com.cershy.linyuserver.servcie.WebSocketService;
+import com.cershy.linyuserver.service.WebSocketService;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

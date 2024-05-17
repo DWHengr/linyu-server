@@ -1,4 +1,4 @@
-package com.cershy.linyuserver.servcie;
+package com.cershy.linyuserver.service;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
