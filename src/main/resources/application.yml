@@ -12,3 +12,9 @@ spring:
       maximum-pool-size: 10
       max-lifetime: 30000
       connection-test-query: SELECT 1
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
