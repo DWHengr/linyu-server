@@ -2,6 +2,7 @@ package com.cershy.linyuserver.service;
 
 import com.cershy.linyuserver.entity.Message;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface MessageService extends IService<Message> {
 
+    boolean sendMessageToUser(String userId, SendMsgToUserVo sendMsgToUserVo);
 }

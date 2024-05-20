@@ -1,11 +1,12 @@
 package com.cershy.linyuserver.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.cershy.linyuserver.entity.ext.MsgContent;
@@ -25,7 +26,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("message")
+@TableName(value = "message", autoResultMap = true)
 public class Message implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -48,7 +49,7 @@ public class Message implements Serializable {
     /**
      * 消息类型
      */
-    @TableField("type")
+    @TableField("`type`")
     private String type;
 
     /**
@@ -56,6 +57,12 @@ public class Message implements Serializable {
      */
     @TableField(value = "msg_content", typeHandler = JacksonTypeHandler.class)
     private MsgContent msgContent;
+
+    /**
+     * 是否显示时间
+     */
+    @TableField("is_show_time")
+    private Boolean isShowTime;
 
     /**
      * 消息状态
@@ -66,16 +73,14 @@ public class Message implements Serializable {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField("create_time")
-    private LocalDateTime createTime;
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
 
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField("update_time")
-    private LocalDateTime updateTime;
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    private Date updateTime;
 
 
 }
