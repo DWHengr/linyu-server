@@ -1,7 +1,7 @@
 package com.cershy.linyuserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.cershy.linyuserver.dto.FriendList;
+import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.entity.Friend;
 import com.cershy.linyuserver.entity.Group;
 import com.cershy.linyuserver.mapper.FriendMapper;
@@ -33,27 +33,34 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
 
 
     @Override
-    public List<FriendList> getFriendList(String userId) {
-        List<FriendList> friendLists = new ArrayList<>();
+    public List<FriendListDto> getFriendList(String userId) {
+        List<FriendListDto> friendListDtos = new ArrayList<>();
         //将没有分组的好像添加到未分组中
         List<Friend> ungroupFriends = friendMapper.getFriendByUserIdAndGroupId(userId, "0");
         if (null != ungroupFriends && ungroupFriends.size() > 0) {
-            FriendList ungroupFriendList = new FriendList();
-            ungroupFriendList.setName("未分组");
-            ungroupFriendList.setFriends(ungroupFriends);
-            friendLists.add(ungroupFriendList);
+            FriendListDto ungroupFriendListDto = new FriendListDto();
+            ungroupFriendListDto.setName("未分组");
+            ungroupFriendListDto.setFriends(ungroupFriends);
+            friendListDtos.add(ungroupFriendListDto);
         }
         //查询用户当前分组
         List<Group> groups = groupService.getGroupByUserId(userId);
         //遍历分组，查询分组下的好友
         groups.forEach((group) -> {
             List<Friend> friends = friendMapper.getFriendByUserIdAndGroupId(userId, group.getId());
-            FriendList friendList = new FriendList();
-            friendList.setGroupId(group.getId());
-            friendList.setName(group.getName());
-            friendList.setFriends(friends);
-            friendLists.add(friendList);
+            FriendListDto friendListDto = new FriendListDto();
+            friendListDto.setGroupId(group.getId());
+            friendListDto.setName(group.getName());
+            friendListDto.setFriends(friends);
+            friendListDtos.add(friendListDto);
         });
-        return friendLists;
+        return friendListDtos;
+    }
+
+    @Override
+    public boolean isFriend(String userId, String friendId) {
+        LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Friend::getUserId, userId).eq(Friend::getFriendId, friendId);
+        return count(queryWrapper) > 0;
     }
 }

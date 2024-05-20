@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class FriendList {
+public class FriendListDto {
     //分组id
     private String groupId;
     //分组名称

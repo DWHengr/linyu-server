@@ -3,7 +3,7 @@ package com.cershy.linyuserver.controller;
 
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.Userid;
-import com.cershy.linyuserver.dto.FriendList;
+import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +32,8 @@ public class FriendController {
      */
     @GetMapping("/list")
     public JSONObject getFriendList(@Userid String userId) {
-        List<FriendList> friendList = friendService.getFriendList(userId);
-        return ResultUtil.Succeed(friendList);
+        List<FriendListDto> friendListDto = friendService.getFriendList(userId);
+        return ResultUtil.Succeed(friendListDto);
     }
 }
 
