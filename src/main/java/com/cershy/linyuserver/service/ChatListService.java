@@ -1,7 +1,9 @@
 package com.cershy.linyuserver.service;
 
+import com.cershy.linyuserver.dto.ChatListDto;
 import com.cershy.linyuserver.entity.ChatList;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cershy.linyuserver.entity.ext.MsgContent;
 
 /**
  * <p>
@@ -13,4 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ChatListService extends IService<ChatList> {
 
+    ChatListDto getChatList(String userId);
+
+    void updateChatList(String toUserId, String fromUserId, MsgContent msgContent);
 }

@@ -3,8 +3,8 @@ package com.cershy.linyuserver.controller;
 
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.Userid;
-import com.cershy.linyuserver.dto.FriendList;
-import com.cershy.linyuserver.service.FriendService;
+import com.cershy.linyuserver.dto.ChatListDto;
+import com.cershy.linyuserver.service.ChatListService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @author heath
@@ -22,7 +21,7 @@ import java.util.List;
 @RequestMapping("/v1/api/chat-list")
 public class ChatListController {
     @Resource
-    FriendService friendService;
+    ChatListService chatListService;
 
     /**
      * 获取聊天列表
@@ -31,8 +30,8 @@ public class ChatListController {
      */
     @GetMapping("/list")
     public JSONObject getChatList(@Userid String userId) {
-        List<FriendList> friendList = friendService.getFriendList(userId);
-        return ResultUtil.Succeed(friendList);
+        ChatListDto chatList = chatListService.getChatList(userId);
+        return ResultUtil.Succeed(chatList);
     }
 }
 
