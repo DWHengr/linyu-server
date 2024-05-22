@@ -51,7 +51,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
         //判断好友的聊天列表是否存在
         LambdaQueryWrapper<ChatList> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ChatList::getUserId, toUserId)
-                .eq(ChatList::getFromId, toUserId);
+                .eq(ChatList::getFromId, fromUserId);
         ChatList chatList = getOne(queryWrapper);
         if (null == chatList) {
             //新建
