@@ -20,14 +20,15 @@ CREATE TABLE `user`
 DROP TABLE if EXISTS `message`;
 CREATE TABLE `message`
 (
-    `id`          varchar(64) NOT NULL,
-    `from_id`     varchar(64) NOT NULL COMMENT '消息发送方id',
-    `to_id`       varchar(64) NOT NULL COMMENT '消息接受方id',
-    `type`        varchar(64) NOT NULL COMMENT '消息类型',
-    `msg_content` text default NULL COMMENT '消息内容',
-    `status`      varchar(500) COMMENT '消息状态',
-    `create_time` datetime    NOT NULL COMMENT '创建时间',
-    `update_time` datetime    NOT NULL COMMENT '更新时间',
+    `id`           varchar(64) NOT NULL,
+    `from_id`      varchar(64) NOT NULL COMMENT '消息发送方id',
+    `to_id`        varchar(64) NOT NULL COMMENT '消息接受方id',
+    `type`         varchar(64) default NULL COMMENT '消息类型',
+    `is_show_time` bit         default 0 COMMENT '是否显示时间',
+    `msg_content`  text        default NULL COMMENT '消息内容',
+    `status`       varchar(500) COMMENT '消息状态',
+    `create_time`  datetime    NOT NULL COMMENT '创建时间',
+    `update_time`  datetime    NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息表' row_format=dynamic;
 
@@ -62,13 +63,14 @@ CREATE TABLE `friend`
 DROP TABLE if EXISTS `chat_list`;
 CREATE TABLE `chat_list`
 (
-    `id`          varchar(64) NOT NULL,
-    `user_id`     varchar(64) NOT NULL COMMENT '用户id',
-    `from_id`     varchar(64) NOT NULL COMMENT '会话目标id',
-    `is_top`      bit default 0 NULL COMMENT '是否置顶',
-    `unread_num`  int default 0 COMMENT '未读消息数量',
-    `status`      varchar(500) COMMENT '状态',
-    `create_time` datetime    NOT NULL COMMENT '创建时间',
-    `update_time` datetime    NOT NULL COMMENT '更新时间',
+    `id`               varchar(64) NOT NULL,
+    `user_id`          varchar(64) NOT NULL COMMENT '用户id',
+    `from_id`          varchar(64) NOT NULL COMMENT '会话目标id',
+    `is_top`           bit  default 0 NULL COMMENT '是否置顶',
+    `unread_num`       int  default 0 COMMENT '未读消息数量',
+    `last_msg_content` text default null COMMENT '最后消息内容',
+    `status`           varchar(500) COMMENT '状态',
+    `create_time`      datetime    NOT NULL COMMENT '创建时间',
+    `update_time`      datetime    NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天列表' row_format=dynamic;
