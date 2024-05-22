@@ -36,11 +36,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     ChatListService chatListService;
 
     @Override
-    public boolean sendMessageToUser(String userId, SendMsgToUserVo sendMsgToUserVo) {
+    public Message sendMessageToUser(String userId, SendMsgToUserVo sendMsgToUserVo) {
         String toUserId = sendMsgToUserVo.getToUserId();
         //验证是否是好友
         boolean isFriend = friendService.isFriend(userId, toUserId);
-        if (isFriend) {
+        if (!isFriend) {
             throw new LinyuException("双方非好友");
         }
         //存入数据库
@@ -58,8 +58,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             webSocketService.sendToUser(message, toUserId);
             //更新聊天列表
             chatListService.updateChatList(toUserId, userId, msgContent);
-            return true;
+            return message;
         }
-        return false;
+        return null;
     }
 }

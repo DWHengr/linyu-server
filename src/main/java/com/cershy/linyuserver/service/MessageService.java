@@ -14,5 +14,5 @@ import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
  */
 public interface MessageService extends IService<Message> {
 
-    boolean sendMessageToUser(String userId, SendMsgToUserVo sendMsgToUserVo);
+    Message sendMessageToUser(String userId, SendMsgToUserVo sendMsgToUserVo);
 }

@@ -2,7 +2,9 @@ package com.cershy.linyuserver.controller;
 
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.Userid;
+import com.cershy.linyuserver.entity.Message;
 import com.cershy.linyuserver.service.MessageService;
+import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +32,8 @@ public class MessageController {
      */
     @PostMapping("/send/to/user")
     public JSONObject sendMessageToUser(@Userid String userId, @RequestBody SendMsgToUserVo sendMsgToUserVo) {
-        messageService.sendMessageToUser(userId, sendMsgToUserVo);
-        return null;
+        Message result = messageService.sendMessageToUser(userId, sendMsgToUserVo);
+        return ResultUtil.Succeed(result);
     }
 
 }
