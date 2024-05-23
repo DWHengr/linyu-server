@@ -63,6 +63,18 @@ public class User implements Serializable {
     private String sex;
 
     /**
+     * 生日
+     */
+    @TableField("birthday")
+    private Date birthday;
+
+    /**
+     * 签名
+     */
+    @TableField("signature")
+    private String signature;
+
+    /**
      * 手机号
      */
     @TableField("phone")
