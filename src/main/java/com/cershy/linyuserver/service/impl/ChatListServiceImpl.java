@@ -5,9 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cershy.linyuserver.dto.ChatListDto;
 import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.entity.ext.MsgContent;
+import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.ChatListMapper;
 import com.cershy.linyuserver.service.ChatListService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cershy.linyuserver.service.FriendService;
+import com.cershy.linyuserver.vo.chatlist.CreateChatListVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,6 +29,9 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
 
     @Resource
     ChatListMapper chatListMapper;
+
+    @Resource
+    FriendService friendService;
 
     private List<ChatList> getChatListByUserIdAndIsTop(String userId, boolean isTop) {
         LambdaQueryWrapper<ChatList> queryWrapper = new LambdaQueryWrapper<>();
@@ -69,5 +75,23 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
             chatList.setLastMsgContent(msgContent);
             updateById(chatList);
         }
+    }
+
+    @Override
+    public boolean createChatList(String userId, CreateChatListVo createChatListVo) {
+        boolean isFriend = friendService.isFriend(userId, createChatListVo.getUserId());
+        if (!isFriend) {
+            throw new LinyuException("双方非好友");
+        }
+        //查询是否有会话,没有则新建
+        LambdaQueryWrapper<ChatList> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ChatList::getUserId, userId).eq(ChatList::getFromId, createChatListVo.getUserId());
+        if (count(queryWrapper) > 0) return true;
+        ChatList chatList = new ChatList();
+        chatList.setId(IdUtil.randomUUID());
+        chatList.setUserId(userId);
+        chatList.setFromId(createChatListVo.getUserId());
+        chatList.setUnreadNum(0);
+        return save(chatList);
     }
 }
