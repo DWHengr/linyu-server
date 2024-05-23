@@ -10,10 +10,12 @@ import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.service.MessageService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.service.WebSocketService;
+import com.cershy.linyuserver.vo.message.MessageRecordVo;
 import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -34,6 +36,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
     @Resource
     ChatListService chatListService;
+
+    @Resource
+    MessageMapper messageMapper;
 
     @Override
     public Message sendMessageToUser(String userId, SendMsgToUserVo sendMsgToUserVo) {
@@ -61,5 +66,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             return message;
         }
         return null;
+    }
+
+    @Override
+    public List<Message> messageRecord(String userId, MessageRecordVo messageRecordVo) {
+        List<Message> messages = messageMapper.messageRecord(userId, messageRecordVo.getTargetId(),
+                messageRecordVo.getIndex(), messageRecordVo.getNum());
+        return messages;
     }
 }

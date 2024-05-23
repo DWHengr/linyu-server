@@ -5,6 +5,7 @@ import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.entity.Message;
 import com.cershy.linyuserver.service.MessageService;
 import com.cershy.linyuserver.utils.ResultUtil;
+import com.cershy.linyuserver.vo.message.MessageRecordVo;
 import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author: dwh
@@ -33,6 +35,17 @@ public class MessageController {
     @PostMapping("/send/to/user")
     public JSONObject sendMessageToUser(@Userid String userId, @RequestBody SendMsgToUserVo sendMsgToUserVo) {
         Message result = messageService.sendMessageToUser(userId, sendMsgToUserVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 聊天记录
+     *
+     * @return
+     */
+    @PostMapping("/record")
+    public JSONObject messageRecord(@Userid String userId, @RequestBody MessageRecordVo messageRecordVo) {
+        List<Message> result = messageService.messageRecord(userId, messageRecordVo);
         return ResultUtil.Succeed(result);
     }
 
