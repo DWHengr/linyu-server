@@ -1,9 +1,11 @@
 package com.cershy.linyuserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.entity.Friend;
 import com.cershy.linyuserver.entity.Group;
+import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.FriendMapper;
 import com.cershy.linyuserver.service.FriendService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -62,5 +64,15 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Friend::getUserId, userId).eq(Friend::getFriendId, friendId);
         return count(queryWrapper) > 0;
+    }
+
+    @Override
+    public FriendDetailsDto getFriendDetails(String userId, String friendId) {
+        boolean isFriend = isFriend(userId, friendId);
+        if (!isFriend) {
+            throw new LinyuException("双方非好友");
+        }
+        FriendDetailsDto friendDetailsDto = friendMapper.getFriendDetails(userId, friendId);
+        return friendDetailsDto;
     }
 }

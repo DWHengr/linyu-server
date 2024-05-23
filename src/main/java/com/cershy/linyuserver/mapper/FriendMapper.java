@@ -1,5 +1,6 @@
 package com.cershy.linyuserver.mapper;
 
+import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.entity.Friend;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,4 +22,12 @@ public interface FriendMapper extends BaseMapper<Friend> {
             "JOIN `user` AS u ON f.`friend_id` = u.`id` " +
             "WHERE f.`user_id` = #{userId} AND f.`group_id`= #{groupId}")
     List<Friend> getFriendByUserIdAndGroupId(@Param("userId") String userId, @Param("groupId") String groupId);
+
+    @Select("SELECT u.*, f.`remark`, g.`name` AS `group_name` " +
+            "FROM `friend` AS f " +
+            "         LEFT JOIN `user` AS u ON f.`friend_id` = u.`id` " +
+            "         LEFT JOIN `group` AS g ON f.`group_id` = g.`id` " +
+            "WHERE f.`user_id` = #{userId} " +
+            "  AND f.`friend_id` = #{friendId} ")
+    FriendDetailsDto getFriendDetails(@Param("userId") String userId, @Param("friendId") String friendId);
 }
