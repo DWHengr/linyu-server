@@ -4,6 +4,7 @@ package com.cershy.linyuserver.controller;
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.dto.ChatListDto;
+import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.service.ChatListService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.chatlist.CreateChatListVo;
@@ -35,14 +36,34 @@ public class ChatListController {
     /**
      * 创建聊天会话
      *
-     * @param userId
-     * @param createChatListVo
      * @return
      */
     @PostMapping("/create")
     public JSONObject createChatList(@Userid String userId, @RequestBody CreateChatListVo createChatListVo) {
-        boolean result = chatListService.createChatList(userId, createChatListVo);
+        ChatList result = chatListService.createChatList(userId, createChatListVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 消息已读
+     *
+     * @return
+     */
+    @GetMapping("/read/{targetId}")
+    public JSONObject messageRead(@Userid String userId, @PathVariable String targetId) {
+        boolean result = chatListService.messageRead(userId, targetId);
         return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     * 获取详细信息
+     *
+     * @return
+     */
+    @GetMapping("/detail/{targetId}")
+    public JSONObject detailChartList(@Userid String userId, @PathVariable String targetId) {
+        ChatList result = chatListService.detailChartList(userId, targetId);
+        return ResultUtil.Succeed(result);
     }
 }
 
