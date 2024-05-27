@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface ChatListMapper extends BaseMapper<ChatList> {
 
-    @Select("SELECT c.*, u.`name` AS `name`, f.`remark` " +
+    @Select("SELECT c.*, u.`name` AS `name`, f.`remark`, u.`portrait` AS portrait " +
             "FROM `chat_list` AS c " +
             "JOIN `user` AS u ON c.`from_id` = u.`id` " +
             "JOIN `friend` AS f ON c.`from_id` = f.`friend_id` AND c.`user_id` = f.`user_id` " +
@@ -28,7 +28,7 @@ public interface ChatListMapper extends BaseMapper<ChatList> {
     List<ChatList> getChatListByUserIdAndIsTop(@Param("userId") String userId, @Param("isTop") boolean isTop);
 
 
-    @Select("SELECT c.*, u.`name` AS `name`, f.`remark` " +
+    @Select("SELECT c.*, u.`name` AS `name`, u.`portrait` AS portrait, f.`remark` " +
             "FROM `chat_list` AS c " +
             "JOIN `user` AS u ON c.`from_id` = u.`id` " +
             "JOIN `friend` AS f ON c.`from_id` = f.`friend_id` AND c.`user_id` = f.`user_id` " +

@@ -14,4 +14,5 @@ public class FriendDetailsDto {
     private String signature;
     private String remark;
     private String groupName;
+    private String portrait;
 }

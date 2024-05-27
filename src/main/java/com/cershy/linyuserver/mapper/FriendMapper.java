@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface FriendMapper extends BaseMapper<Friend> {
 
-    @Select("SELECT f.*, u.`name` AS `name` FROM `friend` AS f " +
+    @Select("SELECT f.*, u.`name` AS `name`, u.`portrait` AS portrait FROM `friend` AS f " +
             "JOIN `user` AS u ON f.`friend_id` = u.`id` " +
             "WHERE f.`user_id` = #{userId} AND f.`group_id`= #{groupId}")
     List<Friend> getFriendByUserIdAndGroupId(@Param("userId") String userId, @Param("groupId") String groupId);
