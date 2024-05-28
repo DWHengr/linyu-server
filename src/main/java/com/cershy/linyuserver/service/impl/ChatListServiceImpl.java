@@ -13,6 +13,8 @@ import com.cershy.linyuserver.service.ChatListService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.vo.chatlist.CreateChatListVo;
+import com.cershy.linyuserver.vo.chatlist.DeleteChatListVo;
+import com.cershy.linyuserver.vo.chatlist.TopChatListVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -117,5 +119,22 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
     public ChatList detailChartList(String userId, String targetId) {
         ChatList chatList = chatListMapper.detailChartList(userId, targetId);
         return chatList;
+    }
+
+    @Override
+    public boolean deleteChatList(String userId, DeleteChatListVo deleteChatListVo) {
+        LambdaQueryWrapper<ChatList> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ChatList::getId, deleteChatListVo.getChatListId())
+                .eq(ChatList::getUserId, userId);
+        return remove(queryWrapper);
+    }
+
+    @Override
+    public boolean topChatList(String userId, TopChatListVo topChatListVo) {
+        LambdaUpdateWrapper<ChatList> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(ChatList::getIsTop, topChatListVo.isTop())
+                .eq(ChatList::getId, topChatListVo.getChatListId())
+                .eq(ChatList::getUserId, userId);
+        return update(new ChatList(), updateWrapper);
     }
 }

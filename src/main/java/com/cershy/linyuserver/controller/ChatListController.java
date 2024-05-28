@@ -8,6 +8,8 @@ import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.service.ChatListService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.chatlist.CreateChatListVo;
+import com.cershy.linyuserver.vo.chatlist.DeleteChatListVo;
+import com.cershy.linyuserver.vo.chatlist.TopChatListVo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -42,6 +44,29 @@ public class ChatListController {
     public JSONObject createChatList(@Userid String userId, @RequestBody CreateChatListVo createChatListVo) {
         ChatList result = chatListService.createChatList(userId, createChatListVo);
         return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 删除会话
+     *
+     * @return
+     */
+    @PostMapping("/delete")
+    public JSONObject deleteChatList(@Userid String userId, @RequestBody DeleteChatListVo deleteChatListVo) {
+        boolean result = chatListService.deleteChatList(userId, deleteChatListVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+
+    /**
+     * 设置置顶会话
+     *
+     * @return
+     */
+    @PostMapping("/top")
+    public JSONObject topChatList(@Userid String userId, @RequestBody TopChatListVo topChatListVo) {
+        boolean result = chatListService.topChatList(userId, topChatListVo);
+        return ResultUtil.ResultByFlag(result);
     }
 
     /**

@@ -5,6 +5,8 @@ import com.cershy.linyuserver.entity.ChatList;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.entity.ext.MsgContent;
 import com.cershy.linyuserver.vo.chatlist.CreateChatListVo;
+import com.cershy.linyuserver.vo.chatlist.DeleteChatListVo;
+import com.cershy.linyuserver.vo.chatlist.TopChatListVo;
 
 /**
  * <p>
@@ -25,4 +27,8 @@ public interface ChatListService extends IService<ChatList> {
     boolean messageRead(String userId, String targetId);
 
     ChatList detailChartList(String userId, String targetId);
+
+    boolean deleteChatList(String userId, DeleteChatListVo deleteChatListVo);
+
+    boolean topChatList(String userId, TopChatListVo topChatListVo);
 }
