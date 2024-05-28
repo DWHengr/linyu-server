@@ -7,10 +7,10 @@ import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.utils.ResultUtil;
+import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 /**
@@ -44,6 +44,17 @@ public class FriendController {
     public JSONObject getFriendDetails(@Userid String userId, @PathVariable String friendId) {
         FriendDetailsDto friendDetailsDto = friendService.getFriendDetails(userId, friendId);
         return ResultUtil.Succeed(friendDetailsDto);
+    }
+
+    /**
+     * 搜索好友
+     *
+     * @return
+     */
+    @PostMapping("/search")
+    public JSONObject searchFriends(@Userid String userId, @RequestBody SearchFriendsVo searchFriendsVo) {
+        List<FriendDetailsDto> result = friendService.searchFriends(userId, searchFriendsVo);
+        return ResultUtil.Succeed(result);
     }
 }
 

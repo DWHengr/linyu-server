@@ -4,6 +4,7 @@ import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.entity.Friend;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface FriendService extends IService<Friend> {
     boolean isFriend(String userId, String friendId);
 
     FriendDetailsDto getFriendDetails(String userId, String friendId);
+
+    List<FriendDetailsDto> searchFriends(String userId, SearchFriendsVo searchFriendsVo);
 }

@@ -10,6 +10,7 @@ import com.cershy.linyuserver.mapper.FriendMapper;
 import com.cershy.linyuserver.service.FriendService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.service.GroupService;
+import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -74,5 +75,11 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         }
         FriendDetailsDto friendDetailsDto = friendMapper.getFriendDetails(userId, friendId);
         return friendDetailsDto;
+    }
+
+    @Override
+    public List<FriendDetailsDto> searchFriends(String userId, SearchFriendsVo searchFriendsVo) {
+        List<FriendDetailsDto> friends = friendMapper.searchFriends(userId, "%" + searchFriendsVo.getFriendInfo() + "%");
+        return friends;
     }
 }
