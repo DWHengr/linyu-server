@@ -26,4 +26,12 @@ public interface MessageMapper extends BaseMapper<Message> {
             "ORDER BY `create_time` ASC")
     @ResultMap("mybatis-plus_Message")
     List<Message> messageRecord(@Param("userId") String userId, @Param("targetId") String targetId, @Param("index") int index, @Param("num") int num);
+
+    @Select("SELECT * " +
+            "FROM `message` " +
+            "WHERE (`from_id` = #{userId} AND `to_id` = #{targetId}) " +
+            "   OR (`from_id` = #{targetId} AND `to_id` = #{userId}) " +
+            "ORDER BY `create_time` DESC LIMIT 1")
+    @ResultMap("mybatis-plus_Message")
+    Message getPreviousShowTimeMsg(@Param("userId") String userId, @Param("targetId") String toUserId);
 }

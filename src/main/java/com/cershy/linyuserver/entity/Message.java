@@ -10,7 +10,6 @@ import java.util.Date;
 
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.cershy.linyuserver.entity.ext.MsgContent;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;

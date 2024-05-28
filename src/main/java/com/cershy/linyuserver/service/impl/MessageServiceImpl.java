@@ -1,5 +1,7 @@
 package com.cershy.linyuserver.service.impl;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import com.cershy.linyuserver.entity.Message;
 import com.cershy.linyuserver.entity.ext.MsgContent;
@@ -15,6 +17,7 @@ import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,12 +51,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         if (!isFriend) {
             throw new LinyuException("双方非好友");
         }
+        //获取上一条显示时间的消息
+        Message previousMessage = messageMapper.getPreviousShowTimeMsg(userId, toUserId);
         //存入数据库
         Message message = new Message();
         message.setId(IdUtil.randomUUID());
         message.setFromId(userId);
         message.setToId(toUserId);
-        message.setIsShowTime(sendMsgToUserVo.isShowTime());
+        message.setIsShowTime(DateUtil.between(new Date(), previousMessage.getUpdateTime(), DateUnit.MINUTE) > 5);
         MsgContent msgContent = sendMsgToUserVo.getMsgContent();
         msgContent.setFormUserId(userId);
         message.setMsgContent(msgContent);
