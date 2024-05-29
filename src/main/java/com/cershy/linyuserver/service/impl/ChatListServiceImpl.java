@@ -137,4 +137,10 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
                 .eq(ChatList::getUserId, userId);
         return update(new ChatList(), updateWrapper);
     }
+
+    @Override
+    public int unread(String userId) {
+        int num = chatListMapper.unreadByUserId(userId);
+        return num;
+    }
 }

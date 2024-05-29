@@ -34,4 +34,8 @@ public interface ChatListMapper extends BaseMapper<ChatList> {
             "JOIN `friend` AS f ON c.`from_id` = f.`friend_id` AND c.`user_id` = f.`user_id` " +
             "WHERE c.`user_id` = #{userId} AND c.`from_id` = #{targetId} ")
     ChatList detailChartList(String userId, String targetId);
+
+    @Select("SELECT SUM(`unread_num`) FROM `chat_list` " +
+            "WHERE `user_id` = #{userId}")
+    int unreadByUserId(String userId);
 }
