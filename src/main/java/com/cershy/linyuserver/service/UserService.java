@@ -4,6 +4,10 @@ import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.vo.login.LoginVo;
+import com.cershy.linyuserver.vo.user.SearchUserVo;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +19,8 @@ import com.cershy.linyuserver.vo.login.LoginVo;
  */
 public interface UserService extends IService<User> {
     JSONObject validateLogin(LoginVo loginVo);
+
+    List<User> searchUser(SearchUserVo searchUserVo);
+
+    HashMap<String, Integer> unreadInfo(String userId);
 }

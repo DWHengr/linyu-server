@@ -2,17 +2,25 @@ package com.cershy.linyuserver.service;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.cershy.linyuserver.constant.WsContentType;
 import com.cershy.linyuserver.utils.JwtUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import io.jsonwebtoken.Claims;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class WebSocketService {
+
+    @Data
+    public static class WsContent {
+        private String type;
+        private Object content;
+    }
 
     public static final ConcurrentHashMap<String, Channel> Online_User = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<Channel, String> Online_Channel = new ConcurrentHashMap<>();
@@ -24,7 +32,7 @@ public class WebSocketService {
             Online_User.put(userId, channel);
             Online_Channel.put(channel, userId);
         } catch (Exception e) {
-            sendMsg(channel, ResultUtil.Fail("连接错误"));
+            sendMsg(channel, ResultUtil.Fail("连接错误"), WsContentType.Msg);
             channel.close();
         }
     }
@@ -37,20 +45,36 @@ public class WebSocketService {
         }
     }
 
-    private void sendMsg(Channel channel, Object msg) {
-        channel.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(msg)));
+    private void sendMsg(Channel channel, Object msg, String type) {
+        WsContent wsContent = new WsContent();
+        wsContent.setType(type);
+        wsContent.setContent(msg);
+        channel.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(wsContent)));
     }
 
-    public void sendToUser(Object msg, String userId) {
+    public void sendMsgToUser(Object msg, String userId) {
         Channel channel = Online_User.get(userId);
         if (channel != null) {
-            sendMsg(channel, msg);
+            sendMsg(channel, msg, WsContentType.Msg);
         }
     }
 
-    public void sendAll(Object msg) {
+    public void sendMsgAll(Object msg) {
         Online_Channel.forEach((channel, ext) -> {
-            sendMsg(channel, msg);
+            sendMsg(channel, msg, WsContentType.Msg);
+        });
+    }
+
+    public void sendNotifyToUser(Object msg, String userId) {
+        Channel channel = Online_User.get(userId);
+        if (channel != null) {
+            sendMsg(channel, msg, WsContentType.Notify);
+        }
+    }
+
+    public void sendNotifyAll(Object msg) {
+        Online_Channel.forEach((channel, ext) -> {
+            sendMsg(channel, msg, WsContentType.Notify);
         });
     }
 
