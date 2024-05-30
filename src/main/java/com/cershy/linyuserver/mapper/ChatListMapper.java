@@ -37,5 +37,5 @@ public interface ChatListMapper extends BaseMapper<ChatList> {
 
     @Select("SELECT SUM(`unread_num`) FROM `chat_list` " +
             "WHERE `user_id` = #{userId}")
-    int unreadByUserId(String userId);
+    Integer unreadByUserId(String userId);
 }

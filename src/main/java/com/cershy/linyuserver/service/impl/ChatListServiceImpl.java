@@ -140,7 +140,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
 
     @Override
     public int unread(String userId) {
-        int num = chatListMapper.unreadByUserId(userId);
-        return num;
+        Integer num = chatListMapper.unreadByUserId(userId);
+        return num == null ? 0 : num;
     }
 }
