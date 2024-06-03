@@ -1,17 +1,25 @@
 package com.cershy.linyuserver.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cershy.linyuserver.constant.FriendApplyStatus;
+import com.cershy.linyuserver.constant.NotifyType;
 import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.entity.Friend;
 import com.cershy.linyuserver.entity.Group;
+import com.cershy.linyuserver.entity.Notify;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.FriendMapper;
 import com.cershy.linyuserver.service.FriendService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.service.GroupService;
+import com.cershy.linyuserver.service.NotifyService;
+import com.cershy.linyuserver.service.WebSocketService;
+import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
 import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -33,6 +41,12 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
 
     @Resource
     FriendMapper friendMapper;
+
+    @Resource
+    NotifyService notifyService;
+
+    @Resource
+    WebSocketService webSocketService;
 
 
     @Override
@@ -81,5 +95,49 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     public List<FriendDetailsDto> searchFriends(String userId, SearchFriendsVo searchFriendsVo) {
         List<FriendDetailsDto> friends = friendMapper.searchFriends(userId, "%" + searchFriendsVo.getFriendInfo() + "%");
         return friends;
+    }
+
+    /**
+     * 添加好友
+     *
+     * @return
+     */
+    public boolean addFriend(String userId, String targetId) {
+        //判断目标是否是自己好友
+        LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Friend::getUserId, userId)
+                .eq(Friend::getFriendId, targetId);
+        if (count(queryWrapper) <= 0) {
+            Friend friend = new Friend();
+            friend.setId(IdUtil.randomUUID());
+            friend.setUserId(userId);
+            friend.setFriendId(targetId);
+            return save(friend);
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public boolean agreeFriendApply(String userId, AgreeFriendApplyVo agreeFriendApplyVo) {
+        //判断申请是否是用户发起
+        Notify notify = notifyService.getById(agreeFriendApplyVo.getNotifyId());
+        if (null == notify
+                || !notify.getToId().equals(userId)
+                || !notify.getType().equals(NotifyType.Friend_Apply)
+                || !notify.getStatus().equals(FriendApplyStatus.Wait)
+        ) {
+            throw new LinyuException("没有添加好友申请");
+        }
+        //双方添加好友
+        addFriend(userId, notify.getFromId());
+        addFriend(notify.getFromId(), userId);
+        //更新通知
+        notify.setStatus(FriendApplyStatus.Agree);
+        notify.setUnreadId(notify.getFromId());
+        notifyService.updateById(notify);
+        //发送通知
+        webSocketService.sendNotifyToUser(notify, notify.getFromId());
+        return true;
     }
 }

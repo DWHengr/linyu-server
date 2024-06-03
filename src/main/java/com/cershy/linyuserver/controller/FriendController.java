@@ -7,6 +7,7 @@ import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.utils.ResultUtil;
+import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
 import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,6 +55,17 @@ public class FriendController {
     @PostMapping("/search")
     public JSONObject searchFriends(@Userid String userId, @RequestBody SearchFriendsVo searchFriendsVo) {
         List<FriendDetailsDto> result = friendService.searchFriends(userId, searchFriendsVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 同意好友请求
+     *
+     * @return
+     */
+    @PostMapping("/agree")
+    public JSONObject agreeFriendApply(@Userid String userId, @RequestBody AgreeFriendApplyVo agreeFriendApplyVo) {
+        boolean result = friendService.agreeFriendApply(userId, agreeFriendApplyVo);
         return ResultUtil.Succeed(result);
     }
 }
