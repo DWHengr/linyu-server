@@ -76,3 +76,18 @@ CREATE TABLE `chat_list`
     `update_time`      timestamp(3) NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天列表' row_format=dynamic;
+
+DROP TABLE if EXISTS `notify`;
+CREATE TABLE `notify`
+(
+    `id`          varchar(64)  NOT NULL,
+    `form_id`     varchar(64)  NOT NULL COMMENT '发送方',
+    `to_id`       varchar(64)  NOT NULL COMMENT '目标方',
+    `type`        varchar(64)  default NULL COMMENT '类型',
+    `status`      varchar(64) COMMENT '状态',
+    `content`     text         default NULL COMMENT '通知内容',
+    `unread_id`   varchar(128) default NULL COMMENT '未读方',
+    `create_time` timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知' row_format=dynamic;
