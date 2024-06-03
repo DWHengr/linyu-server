@@ -18,7 +18,7 @@ import java.util.List;
 public interface NotifyMapper extends BaseMapper<Notify> {
 
     @Select("select n.*, u.`name` as `from_name`, u.`portrait` as `from_portrait`, " +
-            "u2.`name` AS `to_name`,u2.`portrait` AS `to_portrait` "+
+            "u2.`name` AS `to_name`,u2.`portrait` AS `to_portrait` " +
             "from `notify` as n " +
             "         left join `user` as u on n.`from_id` = u.`id` " +
             "         left join `user` as u2 on n.`to_id` = u2.`id` " +
@@ -28,6 +28,6 @@ public interface NotifyMapper extends BaseMapper<Notify> {
     List<FriendNotifyDto> friendListNotify(String userId, String type);
 
     @Select("SELECT COUNT(*) FROM `notify`" +
-            "WHERE `to_id` = #{userId} AND `unread_id` = #{userId}")
-    int unreadByUserId(String userId);
+            "WHERE (`to_id` = #{userId} OR `from_id` = #{userId}) AND `unread_id` = #{userId}")
+    Integer unreadByUserId(String userId);
 }

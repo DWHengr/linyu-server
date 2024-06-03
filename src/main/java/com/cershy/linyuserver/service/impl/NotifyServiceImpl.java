@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.service.WebSocketService;
 import com.cershy.linyuserver.vo.notify.FriendApplyNotifyVo;
 import com.cershy.linyuserver.vo.notify.ReadNotifyVo;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -31,6 +32,7 @@ import java.util.List;
 @Service
 public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> implements NotifyService {
 
+    @Lazy
     @Resource
     FriendService friendService;
 
@@ -42,17 +44,17 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
 
     @Override
     public boolean friendApplyNotify(String userId, FriendApplyNotifyVo friendApplyNotifyVo) {
-//        boolean isFriend = friendService.isFriend(userId, friendApplyNotifyVo.getUserId());
-//        if (isFriend) {
-//            throw new LinyuException("ta已是您的好友");
-//        }
-//        LambdaQueryWrapper<Notify> queryWrapper = new LambdaQueryWrapper<>();
-//        queryWrapper.eq(Notify::getFromId, userId)
-//                .eq(Notify::getToId, friendApplyNotifyVo.getUserId())
-//                .eq(Notify::getType, NotifyType.Friend_Apply);
-//        if (count(queryWrapper) > 0) {
-//            throw new LinyuException("请勿重复申请");
-//        }
+        boolean isFriend = friendService.isFriend(userId, friendApplyNotifyVo.getUserId());
+        if (isFriend) {
+            throw new LinyuException("ta已是您的好友");
+        }
+        LambdaQueryWrapper<Notify> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Notify::getFromId, userId)
+                .eq(Notify::getToId, friendApplyNotifyVo.getUserId())
+                .eq(Notify::getType, NotifyType.Friend_Apply);
+        if (count(queryWrapper) > 0) {
+            throw new LinyuException("请勿重复申请");
+        }
         Notify notify = new Notify();
         notify.setId(IdUtil.randomUUID());
         notify.setFromId(userId);
@@ -73,8 +75,8 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
 
     @Override
     public int unread(String userId) {
-        int num = notifyMapper.unreadByUserId(userId);
-        return num;
+        Integer num = notifyMapper.unreadByUserId(userId);
+        return num == null ? 0 : num;
     }
 
     @Override
