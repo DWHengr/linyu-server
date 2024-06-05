@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/linyu?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT
+    url: jdbc:mysql://127.0.0.1:3306/linyu?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
     hikari:
@@ -13,7 +13,8 @@ spring:
       max-lifetime: 30000
       connection-test-query: SELECT 1
   jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
+    date-format: yyyy-MM-dd HH:mm:ss.SSS
+    time-zone: Asia/Shanghai
 
 mybatis-plus:
   configuration:
