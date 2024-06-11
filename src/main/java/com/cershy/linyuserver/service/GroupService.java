@@ -2,6 +2,9 @@ package com.cershy.linyuserver.service;
 
 import com.cershy.linyuserver.entity.Group;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cershy.linyuserver.vo.group.CreateGroupVo;
+import com.cershy.linyuserver.vo.group.DeleteGroupVo;
+import com.cershy.linyuserver.vo.group.UpdateGroupVo;
 
 import java.util.List;
 
@@ -16,4 +19,10 @@ import java.util.List;
 public interface GroupService extends IService<Group> {
 
     List<Group> getGroupByUserId(String userId);
+
+    boolean createGroup(String userId, CreateGroupVo createGroupVo);
+
+    boolean updateGroup(String userId, UpdateGroupVo updateGroupVo);
+
+    boolean deleteGroup(String userId, DeleteGroupVo deleteGroupVo);
 }
