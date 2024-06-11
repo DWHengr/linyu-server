@@ -19,6 +19,7 @@ import com.cershy.linyuserver.service.NotifyService;
 import com.cershy.linyuserver.service.WebSocketService;
 import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
 import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
+import com.cershy.linyuserver.vo.friend.SetRemarkVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -149,6 +150,15 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         LambdaUpdateWrapper<Friend> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(Friend::getGroupId, newGroupId)
                 .eq(Friend::getGroupId, oldGroupId)
+                .eq(Friend::getUserId, userId);
+        return update(updateWrapper);
+    }
+
+    @Override
+    public boolean setRemark(String userId, SetRemarkVo setRemarkVo) {
+        LambdaUpdateWrapper<Friend> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(Friend::getRemark, setRemarkVo.getRemark())
+                .eq(Friend::getFriendId, setRemarkVo.getFriendId())
                 .eq(Friend::getUserId, userId);
         return update(updateWrapper);
     }

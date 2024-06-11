@@ -9,6 +9,7 @@ import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
 import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
+import com.cershy.linyuserver.vo.friend.SetRemarkVo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -66,6 +67,17 @@ public class FriendController {
     @PostMapping("/agree")
     public JSONObject agreeFriendApply(@Userid String userId, @RequestBody AgreeFriendApplyVo agreeFriendApplyVo) {
         boolean result = friendService.agreeFriendApply(userId, agreeFriendApplyVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 设置好友备注
+     *
+     * @return
+     */
+    @PostMapping("/set/remark")
+    public JSONObject setRemark(@Userid String userId, @RequestBody SetRemarkVo setRemarkVo) {
+        boolean result = friendService.setRemark(userId, setRemarkVo);
         return ResultUtil.Succeed(result);
     }
 }
