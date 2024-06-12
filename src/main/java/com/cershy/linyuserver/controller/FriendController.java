@@ -9,6 +9,7 @@ import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
 import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
+import com.cershy.linyuserver.vo.friend.SetGroupVo;
 import com.cershy.linyuserver.vo.friend.SetRemarkVo;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,6 +79,17 @@ public class FriendController {
     @PostMapping("/set/remark")
     public JSONObject setRemark(@Userid String userId, @RequestBody SetRemarkVo setRemarkVo) {
         boolean result = friendService.setRemark(userId, setRemarkVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 设置好友分组
+     *
+     * @return
+     */
+    @PostMapping("/set/group")
+    public JSONObject setGroup(@Userid String userId, @RequestBody SetGroupVo setGroupVo) {
+        boolean result = friendService.setGroup(userId, setGroupVo);
         return ResultUtil.Succeed(result);
     }
 }

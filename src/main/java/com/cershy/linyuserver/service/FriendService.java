@@ -6,6 +6,7 @@ import com.cershy.linyuserver.entity.Friend;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
 import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
+import com.cershy.linyuserver.vo.friend.SetGroupVo;
 import com.cershy.linyuserver.vo.friend.SetRemarkVo;
 
 import java.util.List;
@@ -32,4 +33,6 @@ public interface FriendService extends IService<Friend> {
     boolean updateGroupId(String userId, String oldGroupId, String newGroupId);
 
     boolean setRemark(String userId, SetRemarkVo setRemarkVo);
+
+    boolean setGroup(String userId, SetGroupVo setGroupVo);
 }

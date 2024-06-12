@@ -19,6 +19,7 @@ import com.cershy.linyuserver.service.NotifyService;
 import com.cershy.linyuserver.service.WebSocketService;
 import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
 import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
+import com.cershy.linyuserver.vo.friend.SetGroupVo;
 import com.cershy.linyuserver.vo.friend.SetRemarkVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -159,6 +160,19 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         LambdaUpdateWrapper<Friend> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(Friend::getRemark, setRemarkVo.getRemark())
                 .eq(Friend::getFriendId, setRemarkVo.getFriendId())
+                .eq(Friend::getUserId, userId);
+        return update(updateWrapper);
+    }
+
+    @Override
+    public boolean setGroup(String userId, SetGroupVo setGroupVo) {
+        boolean isExist = groupService.IsExistGroupByUserId(userId, setGroupVo.getGroupId());
+        if (!isExist) {
+            throw new LinyuException("分组不存在");
+        }
+        LambdaUpdateWrapper<Friend> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(Friend::getGroupId, setGroupVo.getGroupId())
+                .eq(Friend::getFriendId, setGroupVo.getFriendId())
                 .eq(Friend::getUserId, userId);
         return update(updateWrapper);
     }
