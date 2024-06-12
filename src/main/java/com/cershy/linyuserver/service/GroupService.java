@@ -1,5 +1,6 @@
 package com.cershy.linyuserver.service;
 
+import com.cershy.linyuserver.dto.GroupListDto;
 import com.cershy.linyuserver.entity.Group;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.vo.group.CreateGroupVo;
@@ -25,4 +26,8 @@ public interface GroupService extends IService<Group> {
     boolean updateGroup(String userId, UpdateGroupVo updateGroupVo);
 
     boolean deleteGroup(String userId, DeleteGroupVo deleteGroupVo);
+
+    List<GroupListDto> getList(String userId);
+
+    boolean IsExistGroupByUserId(String userId, String GroupId);
 }

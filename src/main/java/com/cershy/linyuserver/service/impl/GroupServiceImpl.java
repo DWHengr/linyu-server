@@ -3,6 +3,7 @@ package com.cershy.linyuserver.service.impl;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.cershy.linyuserver.dto.GroupListDto;
 import com.cershy.linyuserver.entity.Group;
 import com.cershy.linyuserver.mapper.GroupMapper;
 import com.cershy.linyuserver.service.FriendService;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.security.auth.callback.Callback;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +34,9 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
     @Lazy
     @Resource
     FriendService friendService;
+
+    @Resource
+    GroupMapper groupMapper;
 
     @Override
     public List<Group> getGroupByUserId(String userId) {
@@ -69,5 +73,28 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
         queryWrapper.eq(Group::getId, deleteGroupVo.getGroupId())
                 .eq(Group::getUserId, userId);
         return remove(queryWrapper);
+    }
+
+    @Override
+    public List<GroupListDto> getList(String userId) {
+        List<GroupListDto> list = groupMapper.getList(userId);
+        if (list == null)
+            list = new ArrayList<>();
+        //未分组
+        GroupListDto groupListDto = new GroupListDto();
+        groupListDto.setLabel("未分组");
+        groupListDto.setValue("0");
+        list.add(groupListDto);
+        return list;
+    }
+
+    @Override
+    public boolean IsExistGroupByUserId(String userId, String GroupId) {
+        if ("0".equals(GroupId)) {
+            return true;
+        }
+        LambdaQueryWrapper<Group> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Group::getUserId, userId).eq(Group::getId, GroupId);
+        return count(queryWrapper) > 0;
     }
 }
