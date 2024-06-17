@@ -72,6 +72,13 @@ public class WebSocketService {
         }
     }
 
+    public void sendVideoToUser(Object msg, String userId) {
+        Channel channel = Online_User.get(userId);
+        if (channel != null) {
+            sendMsg(channel, msg, WsContentType.Video);
+        }
+    }
+
     public void sendNotifyAll(Object msg) {
         Online_Channel.forEach((channel, ext) -> {
             sendMsg(channel, msg, WsContentType.Notify);
