@@ -2,6 +2,7 @@ package com.cershy.linyuserver.service.impl;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.mapper.UserMapper;
 import com.cershy.linyuserver.service.ChatListService;
@@ -35,6 +36,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     NotifyService notifyService;
 
+    @Resource
+    UserMapper userMapper;
+
     @Override
     public JSONObject validateLogin(LoginVo loginVo) {
         // 获取用户
@@ -60,12 +64,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public List<User> searchUser(SearchUserVo searchUserVo) {
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getAccount, searchUserVo.getUserInfo())
-                .or().eq(User::getPhone, searchUserVo.getUserInfo())
-                .or().eq(User::getEmail, searchUserVo.getUserInfo());
-        return list(queryWrapper);
+    public List<UserDto> searchUser(SearchUserVo searchUserVo) {
+        List<UserDto> users = userMapper.findUserByInfo(searchUserVo.getUserInfo());
+        return users;
     }
 
     @Override
@@ -78,5 +79,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         unreadInfo.put("chat", msgNum);
         unreadInfo.put("notify", notifyNum);
         return unreadInfo;
+    }
+
+    @Override
+    public UserDto info(String userId) {
+        UserDto user = userMapper.info(userId);
+        return user;
     }
 }

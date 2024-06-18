@@ -2,6 +2,7 @@ package com.cershy.linyuserver.controller;
 
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.Userid;
+import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.service.UserService;
 import com.cershy.linyuserver.utils.ResultUtil;
@@ -31,7 +32,7 @@ public class UserController {
      */
     @PostMapping("/search")
     public JSONObject searchUser(@RequestBody SearchUserVo searchUserVo) {
-        List<User> result = userService.searchUser(searchUserVo);
+        List<UserDto> result = userService.searchUser(searchUserVo);
         return ResultUtil.Succeed(result);
     }
 
@@ -43,6 +44,17 @@ public class UserController {
     @GetMapping("/unread")
     public JSONObject unreadInfo(@Userid String userId) {
         HashMap result = userService.unreadInfo(userId);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 获取当前用户信息
+     *
+     * @return
+     */
+    @GetMapping("/info")
+    public JSONObject info(@Userid String userId) {
+        UserDto result = userService.info(userId);
         return ResultUtil.Succeed(result);
     }
 }
