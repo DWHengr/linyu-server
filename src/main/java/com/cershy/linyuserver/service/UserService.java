@@ -6,6 +6,7 @@ import com.cershy.linyuserver.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.vo.login.LoginVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
+import com.cershy.linyuserver.vo.user.UpdateVo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,4 +27,7 @@ public interface UserService extends IService<User> {
     HashMap<String, Integer> unreadInfo(String userId);
 
     UserDto info(String userId);
+
+    boolean updateUserInfo(String userId, UpdateVo updateVo);
+
 }

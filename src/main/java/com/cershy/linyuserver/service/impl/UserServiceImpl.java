@@ -2,6 +2,7 @@ package com.cershy.linyuserver.service.impl;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.mapper.UserMapper;
@@ -13,6 +14,7 @@ import com.cershy.linyuserver.utils.JwtUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.login.LoginVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
+import com.cershy.linyuserver.vo.user.UpdateVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -85,5 +87,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public UserDto info(String userId) {
         UserDto user = userMapper.info(userId);
         return user;
+    }
+
+    @Override
+    public boolean updateUserInfo(String userId, UpdateVo updateVo) {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getName, updateVo.getName())
+                .set(User::getPortrait, updateVo.getPortrait())
+                .set(User::getSex, updateVo.getSex())
+                .set(User::getBirthday, updateVo.getBirthday())
+                .set(User::getSignature, updateVo.getSignature())
+                .eq(User::getId, userId);
+        return update(updateWrapper);
     }
 }
