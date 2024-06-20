@@ -77,10 +77,14 @@ public class UserController {
 
     @PostMapping(value = "/upload/portrait")
     public JSONObject upload(HttpServletRequest request,
+                             @Userid String userId,
                              @RequestHeader("name") String name,
                              @RequestHeader("type") String type,
                              @RequestHeader("size") long size) throws IOException {
-        String url = minioUtil.upload(request.getInputStream(), name, type, size);
+        String fileName = userId + "-portrait" + name.substring(name.lastIndexOf("."));
+        String url = minioUtil.upload(request.getInputStream(), fileName, type, size);
+        url += "?t=" + System.currentTimeMillis();
+        userService.updateUserPortrait(userId, url);
         return ResultUtil.Succeed(url);
     }
 }

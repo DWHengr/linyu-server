@@ -100,4 +100,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getId, userId);
         return update(updateWrapper);
     }
+
+    @Override
+    public boolean updateUserPortrait(String userId, String portrait) {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getPortrait, portrait)
+                .eq(User::getId, userId);
+        return update(updateWrapper);
+    }
 }

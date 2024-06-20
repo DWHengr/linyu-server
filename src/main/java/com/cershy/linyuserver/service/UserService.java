@@ -30,4 +30,5 @@ public interface UserService extends IService<User> {
 
     boolean updateUserInfo(String userId, UpdateVo updateVo);
 
+    boolean updateUserPortrait(String userId, String portrait);
 }
