@@ -15,6 +15,7 @@ public class MinioConfig {
     private String accessKey;
     private String secretKey;
     private String bucketName;
+    private String fileBucketName;
 
     @Bean
     public MinioClient minioClient() {
