@@ -15,4 +15,5 @@ public class FriendDetailsDto {
     private String remark;
     private String groupName;
     private String portrait;
+    private boolean isConcern;
 }

@@ -4,10 +4,7 @@ import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.entity.Friend;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
-import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
-import com.cershy.linyuserver.vo.friend.SetGroupVo;
-import com.cershy.linyuserver.vo.friend.SetRemarkVo;
+import com.cershy.linyuserver.vo.friend.*;
 
 import java.util.List;
 
@@ -35,4 +32,10 @@ public interface FriendService extends IService<Friend> {
     boolean setRemark(String userId, SetRemarkVo setRemarkVo);
 
     boolean setGroup(String userId, SetGroupVo setGroupVo);
+
+    boolean deleteFriend(String userId, DeleteFriendVo deleteFriendVo);
+
+    boolean careForFriend(String userId, CareForFriendVo careForFriendVo);
+
+    boolean unCareForFriend(String userId, UnCareForFriendVo unCareForFriendVo);
 }

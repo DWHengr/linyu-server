@@ -7,10 +7,7 @@ import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.utils.ResultUtil;
-import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
-import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
-import com.cershy.linyuserver.vo.friend.SetGroupVo;
-import com.cershy.linyuserver.vo.friend.SetRemarkVo;
+import com.cershy.linyuserver.vo.friend.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -91,6 +88,39 @@ public class FriendController {
     public JSONObject setGroup(@Userid String userId, @RequestBody SetGroupVo setGroupVo) {
         boolean result = friendService.setGroup(userId, setGroupVo);
         return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 删除好友
+     *
+     * @return
+     */
+    @PostMapping("/delete")
+    public JSONObject deleteFriend(@Userid String userId, @RequestBody DeleteFriendVo deleteFriendVo) {
+        boolean result = friendService.deleteFriend(userId, deleteFriendVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     * 特别关心
+     *
+     * @return
+     */
+    @PostMapping("/carefor")
+    public JSONObject careForFriend(@Userid String userId, @RequestBody CareForFriendVo careForFriendVo) {
+        boolean result = friendService.careForFriend(userId, careForFriendVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     * 特别关心
+     *
+     * @return
+     */
+    @PostMapping("/uncarefor")
+    public JSONObject unCareForFriend(@Userid String userId, @RequestBody UnCareForFriendVo unCareForFriendVo) {
+        boolean result = friendService.unCareForFriend(userId, unCareForFriendVo);
+        return ResultUtil.ResultByFlag(result);
     }
 }
 

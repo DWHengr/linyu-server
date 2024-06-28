@@ -17,10 +17,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.service.GroupService;
 import com.cershy.linyuserver.service.NotifyService;
 import com.cershy.linyuserver.service.WebSocketService;
-import com.cershy.linyuserver.vo.friend.AgreeFriendApplyVo;
-import com.cershy.linyuserver.vo.friend.SearchFriendsVo;
-import com.cershy.linyuserver.vo.friend.SetGroupVo;
-import com.cershy.linyuserver.vo.friend.SetRemarkVo;
+import com.cershy.linyuserver.vo.friend.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,10 +48,18 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     @Resource
     WebSocketService webSocketService;
 
-
     @Override
     public List<FriendListDto> getFriendList(String userId) {
         List<FriendListDto> friendListDtos = new ArrayList<>();
+        //特别关心
+        List<Friend> concernFriends = friendMapper.getConcernFriendByUser(userId);
+        if (null != concernFriends && concernFriends.size() > 0) {
+            FriendListDto concernFriendListDto = new FriendListDto();
+            concernFriendListDto.setName("特别关心");
+            concernFriendListDto.setFriends(concernFriends);
+            concernFriendListDto.setCustom(false);
+            friendListDtos.add(concernFriendListDto);
+        }
         //将没有分组的好像添加到未分组中
         List<Friend> ungroupFriends = friendMapper.getFriendByUserIdAndGroupId(userId, "0");
         if (null != ungroupFriends && ungroupFriends.size() > 0) {
@@ -174,6 +179,35 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         updateWrapper.set(Friend::getGroupId, setGroupVo.getGroupId())
                 .eq(Friend::getFriendId, setGroupVo.getFriendId())
                 .eq(Friend::getUserId, userId);
+        return update(updateWrapper);
+    }
+
+    @Override
+    public boolean deleteFriend(String userId, DeleteFriendVo deleteFriendVo) {
+        LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.or((q) -> {
+            q.eq(Friend::getUserId, userId).eq(Friend::getFriendId, deleteFriendVo.getFriendId());
+        }).or((q) -> {
+            q.eq(Friend::getFriendId, userId).eq(Friend::getUserId, deleteFriendVo.getFriendId());
+        });
+        return remove(queryWrapper);
+    }
+
+    @Override
+    public boolean careForFriend(String userId, CareForFriendVo careForFriendVo) {
+        LambdaUpdateWrapper<Friend> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(Friend::getIsConcern, true)
+                .eq(Friend::getUserId, userId)
+                .eq(Friend::getFriendId, careForFriendVo.getFriendId());
+        return update(updateWrapper);
+    }
+
+    @Override
+    public boolean unCareForFriend(String userId, UnCareForFriendVo unCareForFriendVo) {
+        LambdaUpdateWrapper<Friend> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(Friend::getIsConcern, false)
+                .eq(Friend::getUserId, userId)
+                .eq(Friend::getFriendId, unCareForFriendVo.getFriendId());
         return update(updateWrapper);
     }
 }

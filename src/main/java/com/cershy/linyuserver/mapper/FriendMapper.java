@@ -23,7 +23,7 @@ public interface FriendMapper extends BaseMapper<Friend> {
             "WHERE f.`user_id` = #{userId} AND f.`group_id`= #{groupId}")
     List<Friend> getFriendByUserIdAndGroupId(@Param("userId") String userId, @Param("groupId") String groupId);
 
-    @Select("SELECT u.*, f.`remark`, g.`name` AS `group_name`, f.`friend_id` " +
+    @Select("SELECT u.*, f.`remark`, g.`name` AS `group_name`, f.`friend_id`, f.`is_concern` " +
             "FROM `friend` AS f " +
             "         LEFT JOIN `user` AS u ON f.`friend_id` = u.`id` " +
             "         LEFT JOIN `group` AS g ON f.`group_id` = g.`id` " +
@@ -31,7 +31,7 @@ public interface FriendMapper extends BaseMapper<Friend> {
             "  AND f.`friend_id` = #{friendId} ")
     FriendDetailsDto getFriendDetails(@Param("userId") String userId, @Param("friendId") String friendId);
 
-    @Select("SELECT u.*, f.`remark`, g.`name` AS `group_name`, f.`friend_id` " +
+    @Select("SELECT u.*, f.`remark`, g.`name` AS `group_name`, f.`friend_id`, f.`is_concern` " +
             "FROM `friend` AS f " +
             "         LEFT JOIN `user` AS u ON f.`friend_id` = u.`id` " +
             "         LEFT JOIN `group` AS g ON f.`group_id` = g.`id` " +
@@ -39,4 +39,8 @@ public interface FriendMapper extends BaseMapper<Friend> {
             "  AND (u.`account` LIKE #{searchInfo} OR u.`name` LIKE #{searchInfo} OR f.`remark` LIKE #{searchInfo})")
     List<FriendDetailsDto> searchFriends(@Param("userId") String userId, @Param("searchInfo") String searchInfo);
 
+    @Select("SELECT f.*, u.`name` AS `name`, u.`portrait` AS portrait FROM `friend` AS f " +
+            "JOIN `user` AS u ON f.`friend_id` = u.`id` " +
+            "WHERE f.`user_id` = #{userId} AND f.`is_concern`= 1")
+    List<Friend> getConcernFriendByUser(String userId);
 }
