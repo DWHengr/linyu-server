@@ -49,12 +49,12 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
             throw new LinyuException("ta已是您的好友");
         }
         LambdaQueryWrapper<Notify> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Notify::getFromId, userId)
-                .eq(Notify::getToId, friendApplyNotifyVo.getUserId())
-                .eq(Notify::getType, NotifyType.Friend_Apply);
-        if (count(queryWrapper) > 0) {
-            throw new LinyuException("请勿重复申请");
-        }
+//        queryWrapper.eq(Notify::getFromId, userId)
+//                .eq(Notify::getToId, friendApplyNotifyVo.getUserId())
+//                .eq(Notify::getType, NotifyType.Friend_Apply);
+//        if (count(queryWrapper) > 0) {
+//            throw new LinyuException("请勿重复申请");
+//        }
         Notify notify = new Notify();
         notify.setId(IdUtil.randomUUID());
         notify.setFromId(userId);
