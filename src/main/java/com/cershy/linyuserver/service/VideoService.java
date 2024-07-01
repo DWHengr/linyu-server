@@ -75,6 +75,7 @@ public class VideoService {
         JSONObject msg = new JSONObject();
         msg.set("type", "invite");
         msg.set("fromId", userId);
+        msg.set("isOnlyAudio", inviteVo.isOnlyAudio());
         webSocketService.sendVideoToUser(msg, inviteVo.getUserId());
         return true;
     }
