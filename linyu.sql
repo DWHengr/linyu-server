@@ -91,3 +91,55 @@ CREATE TABLE `notify`
     `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知' row_format=dynamic;
+
+DROP TABLE if EXISTS `talk`;
+CREATE TABLE `talk`
+(
+    `id`             varchar(64)  NOT NULL,
+    `user_id`        varchar(64)  NOT NULL COMMENT '用户id',
+    `content`        text default NULL COMMENT '说说内容',
+    `like_num`       int  default 0 COMMENT '点赞数量',
+    `comment_num`    int  default 0 COMMENT '评论数量',
+    `latest_comment` text default NULL COMMENT '最近的评论内容',
+    `status`         varchar(64) COMMENT '状态',
+    `create_time`    timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time`    timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='说说' row_format=dynamic;
+
+DROP TABLE if EXISTS `talk_like`;
+CREATE TABLE `talk_like`
+(
+    `id`          varchar(64)  NOT NULL,
+    `talk_id`     varchar(64)  NOT NULL COMMENT '说说id',
+    `user_id`     varchar(64)  NOT NULL COMMENT '用户id',
+    `status`      varchar(64) COMMENT '状态',
+    `create_time` timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='说说点赞' row_format=dynamic;
+
+DROP TABLE if EXISTS `talk_comment`;
+CREATE TABLE `talk_comment`
+(
+    `id`          varchar(64)  NOT NULL,
+    `talk_id`     varchar(64)  NOT NULL COMMENT '说说id',
+    `user_id`     varchar(64)  NOT NULL COMMENT '用户id',
+    `content`     text default NULL COMMENT '评论内容',
+    `status`      varchar(64) COMMENT '状态',
+    `create_time` timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='说说评论' row_format=dynamic;
+
+DROP TABLE if EXISTS `talk_permission`;
+CREATE TABLE `talk_permission`
+(
+    `id`          varchar(64)  NOT NULL,
+    `talk_id`     varchar(64)  NOT NULL COMMENT '说说id',
+    `permission`  varchar(64) default 'all' COMMENT '权限:用户id,all',
+    `status`      varchar(64) COMMENT '状态',
+    `create_time` timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='说说查看权限' row_format=dynamic;
