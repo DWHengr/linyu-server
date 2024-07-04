@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cershy.linyuserver.mapper.TalkMapper">
+
+    <resultMap id="TalkListDtoResultMap" type="com.cershy.linyuserver.dto.TalkListDto">
+        <result property="name" column="name"/>
+        <result property="portrait" column="portrait"/>
+        <result property="remark" column="remark"/>
+        <result property="talkId" column="talk_id"/>
+        <result property="time" column="time"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result property="latestComment" column="latest_comment"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result property="likeNum" column="like_num"/>
+        <result property="commentNum" column="comment_num"/>
+    </resultMap>
+
+</mapper>
