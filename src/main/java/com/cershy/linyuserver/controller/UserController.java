@@ -3,12 +3,18 @@ package com.cershy.linyuserver.controller;
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.dto.UserDto;
+import com.cershy.linyuserver.exception.LinyuException;
+import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.service.UserService;
 import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,6 +36,9 @@ public class UserController {
 
     @Resource
     MinioUtil minioUtil;
+
+    @Resource
+    FriendService friendService;
 
     /**
      * 用户查询
@@ -86,5 +95,25 @@ public class UserController {
         url += "?t=" + System.currentTimeMillis();
         userService.updateUserPortrait(userId, url);
         return ResultUtil.Succeed(url);
+    }
+
+    /**
+     * 获取图片内容
+     *
+     * @return
+     */
+    @GetMapping("/get/img")
+    public ResponseEntity<InputStreamResource> getFile(@Userid String userId,
+                                                       @RequestHeader("targetId") String targetId,
+                                                       @RequestHeader("fileName") String fileName) {
+        boolean isFriend = friendService.isFriend(userId, targetId);
+        if (!isFriend && !userId.equals(targetId)) {
+            throw new LinyuException("双方非好友");
+        }
+        InputStream inputStream = minioUtil.getObject(targetId + "/img/" + fileName);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(new InputStreamResource(inputStream));
     }
 }
