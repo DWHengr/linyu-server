@@ -43,4 +43,17 @@ public interface FriendMapper extends BaseMapper<Friend> {
             "JOIN `user` AS u ON f.`friend_id` = u.`id` " +
             "WHERE f.`user_id` = #{userId} AND f.`is_concern`= 1")
     List<Friend> getConcernFriendByUser(String userId);
+
+    @Select("<script>" +
+            "SELECT f.*, u.`name` AS `name`, u.`portrait` AS portrait " +
+            "FROM `friend` AS f " +
+            "JOIN `user` AS u ON f.`friend_id` = u.`id` " +
+            "WHERE f.`user_id` = #{userId} " +
+            "<if test='friendInfo != null and friendInfo != \"\"'>" +
+            "AND (u.`name` LIKE CONCAT('%', #{friendInfo}, '%') " +
+            "OR u.`account` LIKE CONCAT('%', #{friendInfo}, '%') " +
+            "OR f.`remark` LIKE CONCAT('%', #{friendInfo}, '%')) " +
+            "</if>" +
+            "</script>")
+    List<Friend> getFriendListFlat(String userId, String friendInfo);
 }

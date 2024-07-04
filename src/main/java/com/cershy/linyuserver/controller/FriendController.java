@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
+import com.cershy.linyuserver.entity.Friend;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.friend.*;
@@ -32,6 +33,17 @@ public class FriendController {
     @GetMapping("/list")
     public JSONObject getFriendList(@Userid String userId) {
         List<FriendListDto> friendListDto = friendService.getFriendList(userId);
+        return ResultUtil.Succeed(friendListDto);
+    }
+
+    /**
+     * 获取好友列表
+     *
+     * @return
+     */
+    @GetMapping("/list/flat")
+    public JSONObject getFriendListFlat(@Userid String userId, @RequestParam String friendInfo) {
+        List<Friend> friendListDto = friendService.getFriendListFlat(userId, friendInfo);
         return ResultUtil.Succeed(friendListDto);
     }
 

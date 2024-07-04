@@ -210,4 +210,10 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
                 .eq(Friend::getFriendId, unCareForFriendVo.getFriendId());
         return update(updateWrapper);
     }
+
+    @Override
+    public List<Friend> getFriendListFlat(String userId, String friendInfo) {
+        List<Friend> friends = friendMapper.getFriendListFlat(userId, friendInfo);
+        return friends;
+    }
 }
