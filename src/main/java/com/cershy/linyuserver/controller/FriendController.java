@@ -42,7 +42,7 @@ public class FriendController {
      * @return
      */
     @GetMapping("/list/flat")
-    public JSONObject getFriendListFlat(@Userid String userId, @RequestParam String friendInfo) {
+    public JSONObject getFriendListFlat(@Userid String userId, @RequestParam(defaultValue = "") String friendInfo) {
         List<Friend> friendListDto = friendService.getFriendListFlat(userId, friendInfo);
         return ResultUtil.Succeed(friendListDto);
     }
