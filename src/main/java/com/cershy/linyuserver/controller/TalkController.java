@@ -10,6 +10,7 @@ import com.cershy.linyuserver.service.TalkService;
 import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.talk.CreateTalkVo;
+import com.cershy.linyuserver.vo.talk.DeleteTalkVo;
 import com.cershy.linyuserver.vo.talk.TalkListVo;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,6 +62,12 @@ public class TalkController {
         minioUtil.uploadFile(request.getInputStream(), imgPath, size);
         Talk talk = talkService.updateTalkImg(userId, talkId, imgName);
         return ResultUtil.Succeed(talk);
+    }
+
+    @PostMapping("/delete")
+    public JSONObject deleteTalk(@Userid String userId, @RequestBody DeleteTalkVo deleteTalkVo) {
+        boolean result = talkService.deleteTalk(userId, deleteTalkVo);
+        return ResultUtil.ResultByFlag(result);
     }
 }
 

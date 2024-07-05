@@ -11,6 +11,7 @@ import com.cershy.linyuserver.service.TalkPermissionService;
 import com.cershy.linyuserver.service.TalkService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.vo.talk.CreateTalkVo;
+import com.cershy.linyuserver.vo.talk.DeleteTalkVo;
 import com.cershy.linyuserver.vo.talk.TalkListVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,5 +90,12 @@ public class TalkServiceImpl extends ServiceImpl<TalkMapper, Talk> implements Ta
         imgs.add(imgName);
         updateById(talk);
         return talk;
+    }
+
+    @Override
+    public boolean deleteTalk(String userId, DeleteTalkVo deleteTalkVo) {
+        LambdaQueryWrapper<Talk> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Talk::getId, deleteTalkVo.getTalkId()).eq(Talk::getUserId, userId);
+        return remove(queryWrapper);
     }
 }
