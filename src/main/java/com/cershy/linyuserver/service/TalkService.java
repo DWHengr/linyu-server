@@ -5,6 +5,7 @@ import com.cershy.linyuserver.entity.Talk;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.vo.talk.CreateTalkVo;
 import com.cershy.linyuserver.vo.talk.DeleteTalkVo;
+import com.cershy.linyuserver.vo.talk.DetailsTalkVo;
 import com.cershy.linyuserver.vo.talk.TalkListVo;
 
 import java.util.List;
@@ -26,4 +27,6 @@ public interface TalkService extends IService<Talk> {
     Talk updateTalkImg(String userId, String talkId, String imgName);
 
     boolean deleteTalk(String userId, DeleteTalkVo deleteTalkVo);
+
+    TalkListDto detailsTalk(String userId, DetailsTalkVo detailsTalkVo);
 }

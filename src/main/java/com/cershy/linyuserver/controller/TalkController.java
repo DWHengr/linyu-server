@@ -11,6 +11,7 @@ import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.talk.CreateTalkVo;
 import com.cershy.linyuserver.vo.talk.DeleteTalkVo;
+import com.cershy.linyuserver.vo.talk.DetailsTalkVo;
 import com.cershy.linyuserver.vo.talk.TalkListVo;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,12 @@ public class TalkController {
     @PostMapping("/list")
     public JSONObject talkList(@Userid String userId, @RequestBody TalkListVo talkListVo) {
         List<TalkListDto> result = talkService.talkList(userId, talkListVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    @PostMapping("/details")
+    public JSONObject detailsTalk(@Userid String userId, @RequestBody DetailsTalkVo detailsTalkVo) {
+        TalkListDto result = talkService.detailsTalk(userId, detailsTalkVo);
         return ResultUtil.Succeed(result);
     }
 
