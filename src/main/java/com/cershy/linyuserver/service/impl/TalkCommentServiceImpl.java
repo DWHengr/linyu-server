@@ -13,6 +13,7 @@ import com.cershy.linyuserver.vo.talkComment.CreateTalkCommentVo;
 import com.cershy.linyuserver.vo.talkComment.DeleteTalkCommentVo;
 import com.cershy.linyuserver.vo.talkComment.TalkCommentListVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -35,7 +36,9 @@ public class TalkCommentServiceImpl extends ServiceImpl<TalkCommentMapper, TalkC
     TalkService talkService;
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public boolean createTalkComment(String userId, CreateTalkCommentVo createTalkCommentVo) {
+
 
         Talk talk = talkService.getById(createTalkCommentVo.getTalkId());
         talk.setCommentNum(talk.getCommentNum() + 1);
@@ -46,6 +49,7 @@ public class TalkCommentServiceImpl extends ServiceImpl<TalkCommentMapper, TalkC
         talkComment.setTalkId(createTalkCommentVo.getTalkId());
         talkComment.setUserId(userId);
         talkComment.setContent(createTalkCommentVo.getComment());
+
 
         return save(talkComment);
     }

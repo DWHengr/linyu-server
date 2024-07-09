@@ -165,6 +165,7 @@ public class MinioUtil {
         return minioConfig.getEndpoint() + "/" + minioConfig.getFileBucketName() + "/" + fileName;
     }
 
+
     /**
      * 预览图片
      *
@@ -172,8 +173,28 @@ public class MinioUtil {
      * @return
      */
     public String preview(String fileName) {
+        int expiry = 60 * 60;
         // 查看文件地址
-        GetPresignedObjectUrlArgs build = new GetPresignedObjectUrlArgs().builder().bucket(minioConfig.getBucketName()).object(fileName).method(Method.GET).build();
+        GetPresignedObjectUrlArgs build = new GetPresignedObjectUrlArgs().builder().bucket(minioConfig.getBucketName()).object(fileName).expiry(expiry).method(Method.GET).build();
+        try {
+            String url = minioClient.getPresignedObjectUrl(build);
+            return url;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 预览图片
+     *
+     * @param fileName
+     * @return
+     */
+    public String previewFile(String fileName) {
+        int expiry = 60 * 60;
+        // 查看文件地址
+        GetPresignedObjectUrlArgs build = new GetPresignedObjectUrlArgs().builder().bucket(minioConfig.getFileBucketName()).object(fileName).expiry(expiry).method(Method.GET).build();
         try {
             String url = minioClient.getPresignedObjectUrl(build);
             return url;
