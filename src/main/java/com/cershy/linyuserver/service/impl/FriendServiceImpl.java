@@ -7,16 +7,14 @@ import com.cershy.linyuserver.constant.FriendApplyStatus;
 import com.cershy.linyuserver.constant.NotifyType;
 import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
+import com.cershy.linyuserver.dto.TalkContentDto;
 import com.cershy.linyuserver.entity.Friend;
 import com.cershy.linyuserver.entity.Group;
 import com.cershy.linyuserver.entity.Notify;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.FriendMapper;
-import com.cershy.linyuserver.service.FriendService;
+import com.cershy.linyuserver.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cershy.linyuserver.service.GroupService;
-import com.cershy.linyuserver.service.NotifyService;
-import com.cershy.linyuserver.service.WebSocketService;
 import com.cershy.linyuserver.vo.friend.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +45,9 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
 
     @Resource
     WebSocketService webSocketService;
+
+    @Resource
+    TalkService talkService;
 
     @Override
     public List<FriendListDto> getFriendList(String userId) {
@@ -98,6 +99,8 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
             throw new LinyuException("双方非好友");
         }
         FriendDetailsDto friendDetailsDto = friendMapper.getFriendDetails(userId, friendId);
+        TalkContentDto talkContentDto = talkService.getFriendLatestTalkContent(userId, friendId);
+        friendDetailsDto.setTalkContent(talkContentDto);
         return friendDetailsDto;
     }
 

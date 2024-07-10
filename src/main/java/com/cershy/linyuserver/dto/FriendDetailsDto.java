@@ -16,4 +16,5 @@ public class FriendDetailsDto {
     private String groupName;
     private String portrait;
     private boolean isConcern;
+    private TalkContentDto talkContent;
 }
