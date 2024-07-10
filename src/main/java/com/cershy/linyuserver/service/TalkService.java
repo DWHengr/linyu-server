@@ -1,5 +1,6 @@
 package com.cershy.linyuserver.service;
 
+import com.cershy.linyuserver.dto.TalkContentDto;
 import com.cershy.linyuserver.dto.TalkListDto;
 import com.cershy.linyuserver.entity.Talk;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -29,4 +30,6 @@ public interface TalkService extends IService<Talk> {
     boolean deleteTalk(String userId, DeleteTalkVo deleteTalkVo);
 
     TalkListDto detailsTalk(String userId, DetailsTalkVo detailsTalkVo);
+
+    TalkContentDto getFriendLatestTalkContent(String userId, String friendId);
 }

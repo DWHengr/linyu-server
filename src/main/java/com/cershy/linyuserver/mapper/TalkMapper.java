@@ -18,7 +18,8 @@ import java.util.List;
  */
 public interface TalkMapper extends BaseMapper<Talk> {
 
-    @Select("SELECT  " +
+    @Select("<script>" +
+            "SELECT  " +
             "    u.name, " +
             "    u.id, " +
             "    t.user_id, " +
@@ -42,13 +43,17 @@ public interface TalkMapper extends BaseMapper<Talk> {
             "LEFT JOIN  " +
             "    talk_permission AS tp ON t.id = tp.talk_id " +
             "WHERE  " +
-            "    t.user_id =  #{userId}  " +
-            "    OR (f.user_id =  #{userId} AND (tp.permission =  #{userId} OR tp.permission = 'all')) " +
+            "    (t.user_id =  #{userId}  " +
+            "    OR (f.user_id =  #{userId} AND (tp.permission =  #{userId} OR tp.permission = 'all'))) " +
+            "<if test='targetId != null and targetId != \"\"'>" +
+            "    AND t.user_id = #{targetId} " +
+            "</if>" +
             "ORDER BY  " +
             "    t.create_time DESC " +
-            "LIMIT #{index}, #{num} ")
+            "LIMIT #{index}, #{num} " +
+            "</script>")
     @ResultMap("TalkListDtoResultMap")
-    List<TalkListDto> talkList(String userId, int index, int num);
+    List<TalkListDto> talkList(String userId, int index, int num, String targetId);
 
 
     @Select("SELECT  " +
@@ -80,4 +85,17 @@ public interface TalkMapper extends BaseMapper<Talk> {
             "    OR (f.user_id =  #{userId} AND (tp.permission =  #{userId} OR tp.permission = 'all'))) ")
     @ResultMap("TalkListDtoResultMap")
     TalkListDto detailsTalk(String userId, String talkId);
+
+    @Select("SELECT  t.* " +
+            "FROM  " +
+            "    talk AS t " +
+            "LEFT JOIN  " +
+            "    talk_permission AS tp ON t.id = tp.talk_id " +
+            "WHERE  " +
+            "    t.user_id =  #{friendId} AND (tp.permission =  #{userId} OR tp.permission = 'all') " +
+            "ORDER BY  " +
+            "    t.create_time DESC " +
+            "LIMIT 1 ")
+    @ResultMap("mybatis-plus_Talk")
+    Talk getLatestTalkContent(String userId, String friendId);
 }

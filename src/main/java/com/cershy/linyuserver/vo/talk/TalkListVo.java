@@ -8,4 +8,5 @@ public class TalkListVo {
     private int index;
     //查询条数
     private int num;
+    private String targetId;
 }

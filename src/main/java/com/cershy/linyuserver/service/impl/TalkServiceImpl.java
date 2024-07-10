@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ public class TalkServiceImpl extends ServiceImpl<TalkMapper, Talk> implements Ta
 
     @Override
     public List<TalkListDto> talkList(String userId, TalkListVo talkListVo) {
-        return talkMapper.talkList(userId, talkListVo.getIndex(), talkListVo.getNum());
+        return talkMapper.talkList(userId, talkListVo.getIndex(), talkListVo.getNum(), talkListVo.getTargetId());
     }
 
     @Override
@@ -103,5 +104,11 @@ public class TalkServiceImpl extends ServiceImpl<TalkMapper, Talk> implements Ta
     @Override
     public TalkListDto detailsTalk(String userId, DetailsTalkVo detailsTalkVo) {
         return talkMapper.detailsTalk(userId, detailsTalkVo.getTalkId());
+    }
+
+    @Override
+    public TalkContentDto getFriendLatestTalkContent(String userId, String friendId) {
+        Talk talk = talkMapper.getLatestTalkContent(userId, friendId);
+        return Optional.ofNullable(talk).map(t -> t.getContent()).orElse(null);
     }
 }
