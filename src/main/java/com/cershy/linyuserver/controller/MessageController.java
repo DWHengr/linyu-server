@@ -22,10 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -83,6 +81,22 @@ public class MessageController {
     }
 
     /**
+     * 发送图片
+     *
+     * @return
+     */
+    @PostMapping(value = "/send/Img")
+    public JSONObject sendImg(HttpServletRequest request,
+                              @Userid String userId,
+                              @RequestHeader("msgId") String msgId) throws IOException {
+        MsgContent msgContent = messageService.getFileMsgContent(userId, msgId);
+        JSONObject fileInfo = JSONUtil.parseObj(msgContent.getContent());
+        String url = minioUtil.uploadFile(request.getInputStream(), fileInfo.get("fileName").toString(), fileInfo.getLong("size"));
+        return ResultUtil.Succeed(url);
+    }
+
+
+    /**
      * 获取文件
      *
      * @return
@@ -114,7 +128,7 @@ public class MessageController {
         String url = (String) redisUtils.get(fileName);
         if (StringUtils.isBlank(url)) {
             url = minioUtil.previewFile(fileName);
-            redisUtils.set(fileName, url, 30 * 60 * 1000);
+            redisUtils.set(fileName, url, 59);
         }
         return ResultUtil.Succeed(url);
     }

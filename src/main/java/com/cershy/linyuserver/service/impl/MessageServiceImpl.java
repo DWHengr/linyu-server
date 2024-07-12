@@ -69,7 +69,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         msgContent.setFormUserId(userId);
         if (MessageType.File.equals(msgContent.getType()) || MessageType.Img.equals(msgContent.getType())) {
             JSONObject content = JSONUtil.parseObj(msgContent.getContent());
-            String fileName = userId + "/" + toUserId + "/" + content.get("name");
+            String name = (String) content.get("name");
+            String type = name.substring(name.lastIndexOf(".") + 1);
+            String fileName = userId + "/" + toUserId + "/" + IdUtil.randomUUID() + "." + type;
             content.set("fileName", fileName);
             content.set("url", minioUtil.getUrl(fileName));
             msgContent.setContent(content.toJSONString(0));
