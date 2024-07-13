@@ -143,4 +143,12 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
         Integer num = chatListMapper.unreadByUserId(userId);
         return num == null ? 0 : num;
     }
+
+    @Override
+    public ChatList getChatListByUserIdAndFromId(String userId, String fromId) {
+        LambdaQueryWrapper<ChatList> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ChatList::getUserId, userId)
+                .eq(ChatList::getFromId, fromId);
+        return getOne(queryWrapper);
+    }
 }
