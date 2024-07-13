@@ -34,6 +34,17 @@ CREATE TABLE `message`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息表' row_format=dynamic;
 
+DROP TABLE if EXISTS `message_retraction`;
+CREATE TABLE `message_retraction`
+(
+    `id`          varchar(64)  NOT NULL,
+    `msg_id`      varchar(64)  NOT NULL COMMENT '消息id',
+    `msg_content` text default NULL COMMENT '消息内容',
+    `create_time` timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息撤回内容表' row_format=dynamic;
+
 DROP TABLE if EXISTS `group`;
 CREATE TABLE `group`
 (
