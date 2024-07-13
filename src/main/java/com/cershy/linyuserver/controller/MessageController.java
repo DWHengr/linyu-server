@@ -4,12 +4,15 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.entity.Message;
+import com.cershy.linyuserver.entity.MessageRetraction;
 import com.cershy.linyuserver.entity.ext.MsgContent;
 import com.cershy.linyuserver.service.MessageService;
 import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.RedisUtils;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.message.MessageRecordVo;
+import com.cershy.linyuserver.vo.message.ReeditMsgVo;
+import com.cershy.linyuserver.vo.message.RetractionMsgVo;
 import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +58,28 @@ public class MessageController {
     }
 
     /**
+     * 撤回消息
+     *
+     * @return
+     */
+    @PostMapping("/retraction")
+    public JSONObject retractionMsg(@Userid String userId, @RequestBody RetractionMsgVo retractionMsgVo) {
+        Message result = messageService.retractionMsg(userId, retractionMsgVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 重新编辑
+     *
+     * @return
+     */
+    @PostMapping("/reedit")
+    public JSONObject reeditMsg(@Userid String userId, @RequestBody ReeditMsgVo reeditMsgVo) {
+        MessageRetraction result = messageService.reeditMsg(userId, reeditMsgVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
      * 聊天记录
      *
      * @return
@@ -74,9 +99,7 @@ public class MessageController {
     public JSONObject sendFile(HttpServletRequest request,
                                @Userid String userId,
                                @RequestHeader("msgId") String msgId) throws IOException {
-        MsgContent msgContent = messageService.getFileMsgContent(userId, msgId);
-        JSONObject fileInfo = JSONUtil.parseObj(msgContent.getContent());
-        String url = minioUtil.uploadFile(request.getInputStream(), fileInfo.get("fileName").toString(), fileInfo.getLong("size"));
+        String url = messageService.sendFileOrImg(userId, msgId, request);
         return ResultUtil.Succeed(url);
     }
 
@@ -89,9 +112,7 @@ public class MessageController {
     public JSONObject sendImg(HttpServletRequest request,
                               @Userid String userId,
                               @RequestHeader("msgId") String msgId) throws IOException {
-        MsgContent msgContent = messageService.getFileMsgContent(userId, msgId);
-        JSONObject fileInfo = JSONUtil.parseObj(msgContent.getContent());
-        String url = minioUtil.uploadFile(request.getInputStream(), fileInfo.get("fileName").toString(), fileInfo.getLong("size"));
+        String url = messageService.sendFileOrImg(userId, msgId, request);
         return ResultUtil.Succeed(url);
     }
 

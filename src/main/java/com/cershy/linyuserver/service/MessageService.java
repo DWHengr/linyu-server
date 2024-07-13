@@ -3,10 +3,17 @@ package com.cershy.linyuserver.service;
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.entity.Message;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cershy.linyuserver.entity.MessageRetraction;
 import com.cershy.linyuserver.entity.ext.MsgContent;
 import com.cershy.linyuserver.vo.message.MessageRecordVo;
+import com.cershy.linyuserver.vo.message.ReeditMsgVo;
+import com.cershy.linyuserver.vo.message.RetractionMsgVo;
 import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
 
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -28,4 +35,10 @@ public interface MessageService extends IService<Message> {
     MsgContent getFileMsgContent(String userId, String msgId);
 
     boolean updateMsgContent(String msgId, MsgContent msgContent);
+
+    Message retractionMsg(String userId, RetractionMsgVo retractionMsgVo);
+
+    MessageRetraction reeditMsg(String userId, ReeditMsgVo reeditMsgVo);
+
+    String sendFileOrImg(String userId, String msgId, HttpServletRequest request) throws IOException;
 }
