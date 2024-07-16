@@ -154,3 +154,15 @@ CREATE TABLE `talk_permission`
     `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='说说查看权限' row_format=dynamic;
+
+
+DROP TABLE if EXISTS `user_set`;
+CREATE TABLE `user_set`
+(
+    `id`          varchar(64)  NOT NULL,
+    `user_id`     varchar(64)  NOT NULL COMMENT '用户id',
+    `sets`        text default NULL COMMENT '用户设置',
+    `create_time` timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户设置表' row_format=dynamic;
