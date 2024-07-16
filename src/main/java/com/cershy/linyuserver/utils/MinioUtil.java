@@ -173,7 +173,7 @@ public class MinioUtil {
      * @return
      */
     public String preview(String fileName) {
-        int expiry = 60 * 60;
+        int expiry = 24 * 60 * 60;
         // 查看文件地址
         GetPresignedObjectUrlArgs build = new GetPresignedObjectUrlArgs().builder().bucket(minioConfig.getBucketName()).object(fileName).expiry(expiry).method(Method.GET).build();
         try {
@@ -192,7 +192,7 @@ public class MinioUtil {
      * @return
      */
     public String previewFile(String fileName) {
-        int expiry = 60 * 60;
+        int expiry = 24 * 60 * 60;
         // 查看文件地址
         GetPresignedObjectUrlArgs build = new GetPresignedObjectUrlArgs().builder().bucket(minioConfig.getFileBucketName()).object(fileName).expiry(expiry).method(Method.GET).build();
         try {
