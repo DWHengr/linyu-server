@@ -137,12 +137,12 @@ public class MessageController {
     }
 
     /**
-     * 获取图片
+     * 获取媒体
      *
      * @return
      */
-    @GetMapping("/get/img")
-    public JSONObject getImg(@Userid String userId, @RequestParam("msgId") String msgId) {
+    @GetMapping("/get/media")
+    public JSONObject getMedia(@Userid String userId, @RequestParam("msgId") String msgId) {
         MsgContent msgContent = messageService.getFileMsgContent(userId, msgId);
         JSONObject fileInfo = JSONUtil.parseObj(msgContent.getContent());
         String fileName = fileInfo.get("fileName").toString();
