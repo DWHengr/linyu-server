@@ -16,12 +16,13 @@ public class SetsDto {
 
     public static SetsDto defaultSets() {
         SetsDto defaultSets = new SetsDto();
-        defaultSets.setSendMsgShortcut("Enter");
+        defaultSets.setSendMsgShortcut("enter");
         defaultSets.setBootstrap(false);
         defaultSets.setScreenshot("Alt + A");
         defaultSets.setOpenUnreadMsg("Alt + Z");
         defaultSets.setHideOrShowHome("Alt + Q");
         defaultSets.setCloseMsgWindow("Alt + W");
+        defaultSets.setFriendMsgNotify(true);
         defaultSets.setMsgTone(true);
         defaultSets.setAudioVideoTone(true);
         return defaultSets;
