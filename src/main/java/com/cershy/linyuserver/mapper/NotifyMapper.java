@@ -1,6 +1,7 @@
 package com.cershy.linyuserver.mapper;
 
 import com.cershy.linyuserver.dto.FriendNotifyDto;
+import com.cershy.linyuserver.dto.SystemNotifyDto;
 import com.cershy.linyuserver.entity.Notify;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
@@ -30,4 +31,9 @@ public interface NotifyMapper extends BaseMapper<Notify> {
     @Select("SELECT COUNT(*) FROM `notify`" +
             "WHERE (`to_id` = #{userId} OR `from_id` = #{userId}) AND `unread_id` = #{userId}")
     Integer unreadByUserId(String userId);
+
+    @Select("SELECT * FROM `notify`" +
+            "WHERE `type` = 'system' " +
+            "ORDER BY `create_time` DESC")
+    List<SystemNotifyDto> SystemListNotify();
 }

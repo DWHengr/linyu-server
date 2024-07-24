@@ -1,6 +1,7 @@
 package com.cershy.linyuserver.service;
 
 import com.cershy.linyuserver.dto.FriendNotifyDto;
+import com.cershy.linyuserver.dto.SystemNotifyDto;
 import com.cershy.linyuserver.entity.Notify;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.vo.notify.FriendApplyNotifyVo;
@@ -25,4 +26,6 @@ public interface NotifyService extends IService<Notify> {
     int unread(String userId);
 
     boolean readNotify(String userId, ReadNotifyVo readNotifyVo);
+
+    List<SystemNotifyDto> SystemListNotify(String userId);
 }

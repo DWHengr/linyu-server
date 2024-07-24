@@ -4,6 +4,7 @@ package com.cershy.linyuserver.controller;
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.dto.FriendNotifyDto;
+import com.cershy.linyuserver.dto.SystemNotifyDto;
 import com.cershy.linyuserver.service.NotifyService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.notify.FriendApplyNotifyVo;
@@ -56,6 +57,17 @@ public class NotifyController {
     @PostMapping("/read")
     public JSONObject readNotify(@Userid String userId, @RequestBody ReadNotifyVo readNotifyVo) {
         boolean result = notifyService.readNotify(userId, readNotifyVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 系统通知列表
+     *
+     * @return
+     */
+    @GetMapping("/system/list")
+    public JSONObject SystemListNotify(@Userid String userId) {
+        List<SystemNotifyDto> result = notifyService.SystemListNotify(userId);
         return ResultUtil.Succeed(result);
     }
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.cershy.linyuserver.constant.FriendApplyStatus;
 import com.cershy.linyuserver.constant.NotifyType;
 import com.cershy.linyuserver.dto.FriendNotifyDto;
+import com.cershy.linyuserver.dto.SystemNotifyDto;
 import com.cershy.linyuserver.entity.Notify;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.NotifyMapper;
@@ -86,5 +87,11 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
                 .eq(Notify::getUnreadId, userId)
                 .eq(Notify::getType, readNotifyVo.getNotifyType());
         return update(updateWrapper);
+    }
+
+    @Override
+    public List<SystemNotifyDto> SystemListNotify(String userId) {
+        List<SystemNotifyDto> result = notifyMapper.SystemListNotify();
+        return result;
     }
 }
