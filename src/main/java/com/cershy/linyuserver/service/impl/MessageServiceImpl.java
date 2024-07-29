@@ -74,7 +74,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         message.setId(IdUtil.randomUUID());
         message.setFromId(userId);
         message.setToId(toUserId);
-        message.setIsShowTime(DateUtil.between(new Date(), previousMessage.getUpdateTime(), DateUnit.MINUTE) > 5);
+        if (null == previousMessage) {
+            message.setIsShowTime(true);
+        } else {
+            message.setIsShowTime(DateUtil.between(new Date(), previousMessage.getUpdateTime(), DateUnit.MINUTE) > 5);
+        }
         //设置内容
         msgContent.setFormUserId(userId);
         if (!MessageContentType.Text.equals(msgContent.getType())) {

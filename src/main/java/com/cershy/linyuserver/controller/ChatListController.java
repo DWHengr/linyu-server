@@ -81,6 +81,17 @@ public class ChatListController {
     }
 
     /**
+     * 全部已读
+     *
+     * @return
+     */
+    @GetMapping("/read/all")
+    public JSONObject messageReadAll(@Userid String userId) {
+        boolean result = chatListService.messageReadAll(userId);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
      * 获取详细信息
      *
      * @return
