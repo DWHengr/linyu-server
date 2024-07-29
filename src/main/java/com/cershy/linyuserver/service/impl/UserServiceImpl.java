@@ -1,23 +1,29 @@
 package com.cershy.linyuserver.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.cershy.linyuserver.config.MinioConfig;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
+import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.UserMapper;
 import com.cershy.linyuserver.service.ChatListService;
 import com.cershy.linyuserver.service.NotifyService;
 import com.cershy.linyuserver.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.utils.JwtUtil;
+import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.login.LoginVo;
+import com.cershy.linyuserver.vo.user.RegisterVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,6 +46,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     UserMapper userMapper;
+
+    @Resource
+    MinioConfig minioConfig;
 
     @Override
     public JSONObject validateLogin(LoginVo loginVo) {
@@ -107,5 +116,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         updateWrapper.set(User::getPortrait, portrait)
                 .eq(User::getId, userId);
         return update(updateWrapper);
+    }
+
+    @Override
+    public boolean register(RegisterVo registerVo) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getAccount, registerVo.getAccount());
+        if (count(queryWrapper) > 0) {
+            throw new LinyuException("账号已存在~");
+        }
+        User user = new User();
+        user.setId(IdUtil.randomUUID());
+        user.setName(registerVo.getUsername());
+        user.setAccount(registerVo.getAccount());
+        user.setPassword(registerVo.getPassword());
+        user.setBirthday(new Date());
+        user.setSex("男");
+        user.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-portrait.jpg");
+        return save(user);
     }
 }

@@ -16,7 +16,7 @@ public class SetsDto {
 
     public static SetsDto defaultSets() {
         SetsDto defaultSets = new SetsDto();
-        defaultSets.setSendMsgShortcut("enter");
+        defaultSets.setSendMsgShortcut("Enter");
         defaultSets.setBootstrap(false);
         defaultSets.setScreenshot("Alt + A");
         defaultSets.setOpenUnreadMsg("Alt + Z");

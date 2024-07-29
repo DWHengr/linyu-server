@@ -1,6 +1,7 @@
 package com.cershy.linyuserver.controller;
 
 import cn.hutool.json.JSONObject;
+import com.cershy.linyuserver.annotation.UrlFree;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.exception.LinyuException;
@@ -9,6 +10,7 @@ import com.cershy.linyuserver.service.UserService;
 import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.RedisUtils;
 import com.cershy.linyuserver.utils.ResultUtil;
+import com.cershy.linyuserver.vo.user.RegisterVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +67,18 @@ public class UserController {
     public JSONObject unreadInfo(@Userid String userId) {
         HashMap result = userService.unreadInfo(userId);
         return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 用户注册
+     *
+     * @return
+     */
+    @UrlFree
+    @PostMapping("/register")
+    public JSONObject register(@RequestBody RegisterVo registerVo) {
+        boolean result = userService.register(registerVo);
+        return ResultUtil.ResultByFlag(result);
     }
 
     /**
