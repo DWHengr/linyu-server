@@ -6,4 +6,5 @@ public class MessageContentType {
     public static String File = "file";
     public static String Voice = "voice";
     public static String Retraction = "retraction";
+    public static String Call = "call";
 }
