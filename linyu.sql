@@ -92,7 +92,7 @@ DROP TABLE if EXISTS `notify`;
 CREATE TABLE `notify`
 (
     `id`          varchar(64)  NOT NULL,
-    `form_id`     varchar(64)  NOT NULL COMMENT '发送方',
+    `from_id`     varchar(64)  NOT NULL COMMENT '发送方',
     `to_id`       varchar(64)  NOT NULL COMMENT '目标方',
     `type`        varchar(64)  default NULL COMMENT '类型',
     `status`      varchar(64) COMMENT '状态',
