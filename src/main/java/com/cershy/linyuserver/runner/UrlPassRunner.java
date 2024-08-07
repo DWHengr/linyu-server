@@ -2,6 +2,8 @@ package com.cershy.linyuserver.runner;
 
 import com.cershy.linyuserver.annotation.UrlFree;
 import com.cershy.linyuserver.utils.UrlPermitUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,8 @@ import java.util.Set;
  **/
 @Component
 public class UrlPassRunner implements ApplicationRunner {
+
+    private static final Logger logger = LoggerFactory.getLogger(UrlPassRunner.class);
 
     @Resource
     private UrlPermitUtil urlPermitUtil;
@@ -48,6 +52,6 @@ public class UrlPassRunner implements ApplicationRunner {
             }
         }
         urlPermitUtil.addUrls(urlList);
-        System.out.println("-----not verify that the url is successfully loaded-----");
+        logger.info("-----not verify that the url is successfully loaded-----");
     }
 }
