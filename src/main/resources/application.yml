@@ -28,6 +28,10 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+voice:
+  model: "/model/faster-whisper-small/"
+  transitionApi: "http://123.207.210.163:8000/v1/audio/transcriptions"
+
 minio:
   endpoint: http://127.0.0.1:9000
   bucketName: linyu

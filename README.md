@@ -36,9 +36,25 @@ minio使用的版本为`RELEASE.2024-05-10T01-41-38Z`。需要再minio中新建`
 
 Redis使用的版本为`5.0.14.1`
 
+## faster-whisper-server安装
+
+#### 1.下载模型（whisper国内模型无法自动下载，需要手动下载）
+
+https://huggingface.co/Systran/faster-whisper-small
+
+#### 2.上传到服务（将模型上传到服务器，目录可以任意）
+
+#### 3.使用docker部署（挂在刚才上传的模型目录）
+
+docker run -d --publish 8000:8000 --volume /model:/model fedirz/faster-whisper-server:latest-cpu
+
+#### 4.api调用示例
+
+curl http://127.0.0.1:8000/v1/audio/transcriptions -F "file=@1.wav" -F"model=/model/faster-whisper-small/"
+
 ## 配置修改
 
-修改`application.yml`内，mysql、minio、redis相关地址。
+修改`application.yml`内，mysql、minio、redis、faster-whisper-server相关地址。
 
 # 项目截图
 

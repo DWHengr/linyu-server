@@ -7,6 +7,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.cershy.linyuserver.config.VoiceConfig;
 import com.cershy.linyuserver.constant.MessageContentType;
 import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.entity.Message;
@@ -16,13 +17,24 @@ import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.MessageMapper;
 import com.cershy.linyuserver.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cershy.linyuserver.utils.FileUtil;
 import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.vo.message.MessageRecordVo;
 import com.cershy.linyuserver.vo.message.ReeditMsgVo;
 import com.cershy.linyuserver.vo.message.RetractionMsgVo;
 import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
+import jdk.nashorn.internal.runtime.logging.Logger;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletInputStream;
@@ -41,6 +53,7 @@ import java.util.List;
  * @since 2024-05-17
  */
 @Service
+@Logger
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> implements MessageService {
 
     @Resource
@@ -57,6 +70,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
     @Resource
     MinioUtil minioUtil;
+
+    @Resource
+    RestTemplate restTemplate;
+
+    @Resource
+    VoiceConfig voiceConfig;
 
     @Resource
     MessageRetractionService messageRetractionService;
@@ -194,5 +213,51 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         JSONObject fileInfo = JSONUtil.parseObj(msgContent.getContent());
         String url = minioUtil.uploadFile(request.getInputStream(), fileInfo.get("fileName").toString(), fileInfo.getLong("size"));
         return url;
+    }
+
+    @Override
+    public Message voiceToText(String userId, String msgId) {
+        Message message = getById(msgId);
+        if (null == message || !MessageContentType.Voice.equals(message.getMsgContent().getType())) {
+            throw new LinyuException("这不是一条语音~");
+        }
+        if (!message.getToId().equals(userId) && !message.getFromId().equals(userId)) {
+            throw new LinyuException("不能查看其他~");
+        }
+        JSONObject voice = JSONUtil.parseObj(message.getMsgContent().getContent());
+        if (voice.containsKey("text")) {
+            return message;
+        }
+        //获取语音的路径
+        String fileName = voice.get("fileName").toString();
+        try {
+            // 从 MinIO 获取文件
+            InputStream inputStream = minioUtil.getObject(fileName);
+            byte[] content = IOUtils.toByteArray(inputStream);
+            ByteArrayResource fileResource = FileUtil.createByteArrayResource(content, fileName);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", fileResource);
+            body.add("model", voiceConfig.getModel());
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(voiceConfig.getTransitionApi(), requestEntity, String.class);
+
+            JSONObject result = JSONUtil.parseObj(response.getBody());
+            if (result.containsKey("text")) {
+                String text = result.get("text").toString();
+                voice.set("text", text);
+                message.getMsgContent().setContent(voice.toJSONString(0));
+                updateById(message);
+                return message;
+            } else {
+                throw new LinyuException("语音转换错误~");
+            }
+        } catch (Exception e) {
+            log.error("voiceToText:" + e.getMessage());
+            throw new LinyuException("语音转换错误~");
+        }
     }
 }

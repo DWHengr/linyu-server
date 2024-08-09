@@ -41,4 +41,6 @@ public interface MessageService extends IService<Message> {
     MessageRetraction reeditMsg(String userId, ReeditMsgVo reeditMsgVo);
 
     String sendFileOrImg(String userId, String msgId, HttpServletRequest request) throws IOException;
+
+    Message voiceToText(String userId, String msgId);
 }
