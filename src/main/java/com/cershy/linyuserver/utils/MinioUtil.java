@@ -30,6 +30,28 @@ public class MinioUtil {
     @Resource
     private MinioClient minioClient;
 
+
+    /**
+     * 创建存储bucket
+     *
+     * @return Boolean
+     */
+    public Boolean init() {
+        try {
+            if (!bucketExists(minioConfig.getBucketName())) {
+                makeBucket(minioConfig.getBucketName());
+            }
+            if (!bucketExists(minioConfig.getFileBucketName())) {
+                makeBucket(minioConfig.getFileBucketName());
+            }
+            setBucketPolicy(minioConfig.getBucketName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     /**
      * 查看存储bucket是否存在
      *
@@ -91,6 +113,30 @@ public class MinioUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    /**
+     * bucket权限-只读
+     */
+    public void setBucketPolicy(String bucketName) {
+        if (!bucketExists(bucketName)) return;
+        String policy = "{\n" +
+                "    \"Version\": \"2012-10-17\",\n" +
+                "    \"Statement\": [\n" +
+                "        {\n" +
+                "            \"Effect\": \"Allow\",\n" +
+                "            \"Principal\": {\"AWS\": [\"*\"]},\n" +
+                "            \"Action\": [\"s3:GetBucketLocation\", \"s3:ListBucket\", \"s3:GetObject\"],\n" +
+                "            \"Resource\": [\"arn:aws:s3:::" + bucketName + "\", \"arn:aws:s3:::" + bucketName + "/*\"]\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+        try {
+            minioClient.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(bucketName).config(policy).build());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

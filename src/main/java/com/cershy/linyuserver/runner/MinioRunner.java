@@ -32,6 +32,8 @@ public class MinioRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
+            //minio初始化 创建桶,设置桶策略
+            minioUtil.init();
             Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath*:minio/**");
             if (resources.length > 0) {
                 URI uri = resources[0].getURI();
