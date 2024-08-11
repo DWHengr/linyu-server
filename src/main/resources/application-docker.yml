@@ -1,0 +1,36 @@
+server:
+  port: 9200
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 10
+      max-lifetime: 30000
+      connection-test-query: SELECT 1
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss.SSS
+    time-zone: Asia/Shanghai
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  redis:
+    host: redis
+    port: 6379
+
+voice:
+  model: /model/faster-whisper-small/
+  transitionApi: http://whisper:8000/v1/audio/transcriptions
+
+minio:
+  endpoint: ${MINIO_ENDPOINT} #外部访问地址
+  bucketName: linyu
+  fileBucketName: file
+  accessKey: ${MINIO_ACCESS_KEY}
+  secretKey: ${MINIO_SECRET_KEY}
