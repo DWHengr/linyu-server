@@ -92,4 +92,10 @@ public class Friend implements Serializable {
 
     @TableField(exist = false)
     private String portrait;
+
+    @TableField(exist = false)
+    private String account;
+
+    @TableField(exist = false)
+    private String unreadNum;
 }

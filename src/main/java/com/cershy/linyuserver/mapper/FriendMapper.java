@@ -45,7 +45,7 @@ public interface FriendMapper extends BaseMapper<Friend> {
     List<Friend> getConcernFriendByUser(String userId);
 
     @Select("<script>" +
-            "SELECT f.*, u.`name` AS `name`, u.`portrait` AS portrait " +
+            "SELECT f.*, u.`name` AS `name`, u.`portrait` AS portrait, u.`account` AS account " +
             "FROM `friend` AS f " +
             "JOIN `user` AS u ON f.`friend_id` = u.`id` " +
             "WHERE f.`user_id` = #{userId} " +
@@ -56,4 +56,19 @@ public interface FriendMapper extends BaseMapper<Friend> {
             "</if>" +
             "</script>")
     List<Friend> getFriendListFlat(String userId, String friendInfo);
+
+    @Select("<script>" +
+            "SELECT f.*, u.`name` AS `name`, u.`portrait` AS portrait, u.`account` AS account, c.`unread_num`  " +
+            "FROM `friend` AS f " +
+            "LEFT JOIN `user` AS u ON f.`friend_id` = u.`id` " +
+            "LEFT JOIN `chat_list` c ON f.`friend_id` = c.`from_id` AND c.`user_id` = #{userId} " +
+            "WHERE f.`user_id` = #{userId} " +
+            "<if test='friendInfo != null and friendInfo != \"\"'>" +
+            "AND (u.`name` LIKE CONCAT('%', #{friendInfo}, '%') " +
+            "OR u.`account` LIKE CONCAT('%', #{friendInfo}, '%') " +
+            "OR f.`remark` LIKE CONCAT('%', #{friendInfo}, '%')) " +
+            "</if>" +
+            "ORDER BY c.`unread_num` desc " +
+            "</script>")
+    List<Friend> getFriendListFlatUnread(String userId, String friendInfo);
 }

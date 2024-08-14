@@ -48,6 +48,17 @@ public class FriendController {
     }
 
     /**
+     * 获取好友列表(未读消息数)
+     *
+     * @return
+     */
+    @GetMapping("/list/flat/unread")
+    public JSONObject getFriendListFlatUnread(@Userid String userId, @RequestParam(defaultValue = "") String friendInfo) {
+        List<Friend> friendListDto = friendService.getFriendListFlatUnread(userId, friendInfo);
+        return ResultUtil.Succeed(friendListDto);
+    }
+
+    /**
      * 获取好友详情
      *
      * @return

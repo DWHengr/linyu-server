@@ -219,4 +219,10 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         List<Friend> friends = friendMapper.getFriendListFlat(userId, friendInfo);
         return friends;
     }
+
+    @Override
+    public List<Friend> getFriendListFlatUnread(String userId, String friendInfo) {
+        List<Friend> friends = friendMapper.getFriendListFlatUnread(userId, friendInfo);
+        return friends;
+    }
 }
