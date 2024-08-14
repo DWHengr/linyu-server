@@ -30,6 +30,8 @@ public interface MessageService extends IService<Message> {
 
     List<Message> messageRecord(String userId, MessageRecordVo messageRecordVo);
 
+    List<Message> messageRecordDesc(String userId, MessageRecordVo messageRecordVo);
+
     Message sendFileMessageToUser(String userId, String toUserId, JSONObject fileInfo);
 
     MsgContent getFileMsgContent(String userId, String msgId);

@@ -28,6 +28,16 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<Message> messageRecord(@Param("userId") String userId, @Param("targetId") String targetId, @Param("index") int index, @Param("num") int num);
 
     @Select("SELECT * " +
+            "FROM (SELECT * " +
+            "      FROM `message` " +
+            "      WHERE (`from_id` = #{userId} AND `to_id` = #{targetId}) " +
+            "         OR (`from_id` = #{targetId} AND `to_id` = #{userId}) " +
+            "      ORDER BY `create_time` DESC LIMIT #{index}, #{num}) AS subquery ")
+    @ResultMap("mybatis-plus_Message")
+    List<Message> messageRecordDesc(@Param("userId") String userId, @Param("targetId") String targetId, @Param("index") int index, @Param("num") int num);
+
+
+    @Select("SELECT * " +
             "FROM `message` " +
             "WHERE (`from_id` = #{userId} AND `to_id` = #{targetId}) " +
             "   OR (`from_id` = #{targetId} AND `to_id` = #{userId}) " +
