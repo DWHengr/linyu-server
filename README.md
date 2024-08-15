@@ -78,6 +78,23 @@ curl http://127.0.0.1:8000/v1/audio/transcriptions -F "file=@1.wav" -F"model=/mo
 
 ![6](https://github.com/user-attachments/assets/aa132533-9b0c-4710-b646-e2a911b7eb25)
 
+# Docker部署
+
+## 服务部署
+
+基于`docker-compose`进行部署。将项目下的`/deploy/compose`目录，拷贝到目标服务器上，注意修改目录下`.env`
+内的配置。修改完成后运行`docker-compose up -d`命令。
+
+## 数据库初始化
+
+连接数据库上面部署的数据库，执行初始化sql语句`linyu.sql`（位于项目目录下）。
+
+## whisper模型上传
+
+语音转文字基于`faster-whisper`
+实现，需要上传whisper模型，将faster-whisper-small（下载地址 `https://huggingface.co/Systran/faster-whisper-small`
+）模型上传到目标服务器`/linyu/whisper/model/`目录下。
+
 # 结语
 
 ![admire](https://github.com/user-attachments/assets/7e77ac87-a913-4f87-8783-a1d313297a05)
