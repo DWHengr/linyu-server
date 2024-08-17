@@ -10,6 +10,7 @@ import com.cershy.linyuserver.service.UserService;
 import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.RedisUtils;
 import com.cershy.linyuserver.utils.ResultUtil;
+import com.cershy.linyuserver.utils.SecurityUtil;
 import com.cershy.linyuserver.vo.user.RegisterVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
@@ -77,6 +78,8 @@ public class UserController {
     @UrlFree
     @PostMapping("/register")
     public JSONObject register(@RequestBody RegisterVo registerVo) {
+        String decryptedPassword = SecurityUtil.decryptPassword(registerVo.getPassword());
+        registerVo.setPassword(decryptedPassword);
         boolean result = userService.register(registerVo);
         return ResultUtil.ResultByFlag(result);
     }

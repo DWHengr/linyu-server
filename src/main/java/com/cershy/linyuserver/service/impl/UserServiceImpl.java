@@ -14,8 +14,8 @@ import com.cershy.linyuserver.service.NotifyService;
 import com.cershy.linyuserver.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.utils.JwtUtil;
-import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
+import com.cershy.linyuserver.utils.SecurityUtil;
 import com.cershy.linyuserver.vo.login.LoginVo;
 import com.cershy.linyuserver.vo.user.RegisterVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
@@ -59,7 +59,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (null == user) {
             return ResultUtil.Fail("用户名或密码错误");
         }
-        if (!user.getPassword().equals(loginVo.getPassword())) {
+        if (!SecurityUtil.verifyPassword(loginVo.getPassword(), user.getPassword())) {
             return ResultUtil.Fail("用户名或密码错误");
         }
         JSONObject userinfo = new JSONObject();
@@ -129,7 +129,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setId(IdUtil.randomUUID());
         user.setName(registerVo.getUsername());
         user.setAccount(registerVo.getAccount());
-        user.setPassword(registerVo.getPassword());
+        String passwordHash = SecurityUtil.hashPassword(registerVo.getPassword());
+        user.setPassword(passwordHash);
         user.setBirthday(new Date());
         user.setSex("男");
         user.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-portrait.jpg");
