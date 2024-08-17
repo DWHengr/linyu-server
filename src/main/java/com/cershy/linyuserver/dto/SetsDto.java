@@ -13,6 +13,7 @@ public class SetsDto {
     private boolean friendMsgNotify; //好有消息
     private boolean msgTone; //消息提示音
     private boolean audioVideoTone; //音视频提示音
+    private String command; //命令模式
 
     public static SetsDto defaultSets() {
         SetsDto defaultSets = new SetsDto();
@@ -22,6 +23,7 @@ public class SetsDto {
         defaultSets.setOpenUnreadMsg("Alt + Z");
         defaultSets.setHideOrShowHome("Alt + Q");
         defaultSets.setCloseMsgWindow("Alt + W");
+        defaultSets.setCommand("Alt + Space");
         defaultSets.setFriendMsgNotify(true);
         defaultSets.setMsgTone(true);
         defaultSets.setAudioVideoTone(true);
