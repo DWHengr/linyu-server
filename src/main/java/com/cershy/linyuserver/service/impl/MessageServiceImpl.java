@@ -80,6 +80,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Resource
     MessageRetractionService messageRetractionService;
 
+    @Resource
+    MQProducerService mqProducerService;
+
     public Message sendMessage(String userId, String toUserId, MsgContent msgContent) {
         //验证是否是好友
         boolean isFriend = friendService.isFriend(userId, toUserId);
@@ -115,8 +118,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         message.setMsgContent(msgContent);
         boolean isSave = save(message);
         if (isSave) {
-            //发送消息
-            webSocketService.sendMsgToUser(message, toUserId);
+            try {
+                mqProducerService.sendMsg(message);
+            } catch (Exception e) {
+                //发送消息
+                webSocketService.sendMsgToUser(message, toUserId);
+            }
             //更新聊天列表
             chatListService.updateChatList(toUserId, userId, msgContent);
             return message;

@@ -32,6 +32,15 @@ voice:
   model: "/model/faster-whisper-small/"
   transitionApi: "http://123.207.210.163:8000/v1/audio/transcriptions"
 
+rocketmq:
+  enabled: false
+  name-server: 127.0.0.1:9876
+  producer:
+    group: linyu_group
+    send-message-timeout: 5000
+    retry-times-when-send-failed: 3
+    retry-times-when-send-async-failed: 3
+
 minio:
   endpoint: http://127.0.0.1:9000
   bucketName: linyu
