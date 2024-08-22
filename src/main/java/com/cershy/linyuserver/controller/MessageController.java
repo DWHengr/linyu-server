@@ -13,7 +13,7 @@ import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.message.MessageRecordVo;
 import com.cershy.linyuserver.vo.message.ReeditMsgVo;
 import com.cershy.linyuserver.vo.message.RetractionMsgVo;
-import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
+import com.cershy.linyuserver.vo.message.SendMsgVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
@@ -51,9 +51,9 @@ public class MessageController {
      *
      * @return
      */
-    @PostMapping("/send/to/user")
-    public JSONObject sendMessageToUser(@Userid String userId, @RequestBody SendMsgToUserVo sendMsgToUserVo) {
-        Message result = messageService.sendMessageToUser(userId, sendMsgToUserVo);
+    @PostMapping("/send")
+    public JSONObject sendMessage(@Userid String userId, @RequestBody SendMsgVo sendMsgVo) {
+        Message result = messageService.sendMessage(userId, sendMsgVo);
         return ResultUtil.Succeed(result);
     }
 

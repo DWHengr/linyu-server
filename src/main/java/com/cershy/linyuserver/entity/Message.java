@@ -70,6 +70,12 @@ public class Message implements Serializable {
     private String status;
 
     /**
+     * 消息源
+     */
+    @TableField("source")
+    private String source;
+
+    /**
      * 创建时间
      */
     @TableField(value = "create_time", fill = FieldFill.INSERT)

@@ -11,8 +11,8 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Service
-@RocketMQMessageListener(topic = "linyu", selectorExpression = "msg", consumerGroup = "linyu_group")
-public class MessageConsumer implements RocketMQListener<Message> {
+@RocketMQMessageListener(topic = "linyu", selectorExpression = "user", consumerGroup = "linyu_user")
+public class UserMessageConsumer implements RocketMQListener<Message> {
 
     @Resource
     WebSocketService webSocketService;

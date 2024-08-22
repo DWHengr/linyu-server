@@ -49,6 +49,9 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     @Resource
     TalkService talkService;
 
+    @Resource
+    ChatListService chatListService;
+
     @Override
     public List<FriendListDto> getFriendList(String userId) {
         List<FriendListDto> friendListDtos = new ArrayList<>();
@@ -193,6 +196,7 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         }).or((q) -> {
             q.eq(Friend::getFriendId, userId).eq(Friend::getUserId, deleteFriendVo.getFriendId());
         });
+        chatListService.removeByUserId(userId, deleteFriendVo.getFriendId());
         return remove(queryWrapper);
     }
 

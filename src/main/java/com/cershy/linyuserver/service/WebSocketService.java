@@ -3,6 +3,10 @@ package com.cershy.linyuserver.service;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.cershy.linyuserver.constant.WsContentType;
+import com.cershy.linyuserver.entity.ChatGroup;
+import com.cershy.linyuserver.entity.ChatGroupMember;
+import com.cershy.linyuserver.entity.Message;
+import com.cershy.linyuserver.mapper.ChatGroupMapper;
 import com.cershy.linyuserver.utils.JwtUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import io.jsonwebtoken.Claims;
@@ -11,6 +15,8 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -21,6 +27,9 @@ public class WebSocketService {
         private String type;
         private Object content;
     }
+
+    @Resource
+    ChatGroupMemberService chatGroupMemberService;
 
     public static final ConcurrentHashMap<String, Channel> Online_User = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<Channel, String> Online_Channel = new ConcurrentHashMap<>();
@@ -56,6 +65,15 @@ public class WebSocketService {
         Channel channel = Online_User.get(userId);
         if (channel != null) {
             sendMsg(channel, msg, WsContentType.Msg);
+        }
+    }
+
+    public void sendMsgToGroup(Message message, String groupId) {
+        List<ChatGroupMember> list = chatGroupMemberService.getGroupMember(groupId);
+        for (ChatGroupMember member : list) {
+            if (!message.getFromId().equals(member.getUserId())) {
+                sendMsgToUser(message, member.getUserId());
+            }
         }
     }
 

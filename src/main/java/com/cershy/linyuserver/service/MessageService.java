@@ -8,12 +8,10 @@ import com.cershy.linyuserver.entity.ext.MsgContent;
 import com.cershy.linyuserver.vo.message.MessageRecordVo;
 import com.cershy.linyuserver.vo.message.ReeditMsgVo;
 import com.cershy.linyuserver.vo.message.RetractionMsgVo;
-import com.cershy.linyuserver.vo.message.SendMsgToUserVo;
+import com.cershy.linyuserver.vo.message.SendMsgVo;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -26,7 +24,7 @@ import java.util.List;
  */
 public interface MessageService extends IService<Message> {
 
-    Message sendMessageToUser(String userId, SendMsgToUserVo sendMsgToUserVo);
+    Message sendMessage(String userId, SendMsgVo sendMsgVo);
 
     List<Message> messageRecord(String userId, MessageRecordVo messageRecordVo);
 
