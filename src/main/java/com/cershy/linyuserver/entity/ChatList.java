@@ -73,6 +73,12 @@ public class ChatList implements Serializable {
     private String status;
 
     /**
+     * 类型
+     */
+    @TableField("`type`")
+    private String type;
+
+    /**
      * 创建时间
      */
     @TableField(value = "create_time", fill = FieldFill.INSERT)

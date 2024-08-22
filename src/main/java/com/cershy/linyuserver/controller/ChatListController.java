@@ -9,6 +9,7 @@ import com.cershy.linyuserver.service.ChatListService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.chatlist.CreateChatListVo;
 import com.cershy.linyuserver.vo.chatlist.DeleteChatListVo;
+import com.cershy.linyuserver.vo.chatlist.DetailChatListVo;
 import com.cershy.linyuserver.vo.chatlist.TopChatListVo;
 import org.springframework.web.bind.annotation.*;
 
@@ -96,9 +97,9 @@ public class ChatListController {
      *
      * @return
      */
-    @GetMapping("/detail/{targetId}")
-    public JSONObject detailChartList(@Userid String userId, @PathVariable String targetId) {
-        ChatList result = chatListService.detailChartList(userId, targetId);
+    @PostMapping("/detail")
+    public JSONObject detailChatList(@Userid String userId, @RequestBody DetailChatListVo detailChatListVo) {
+        ChatList result = chatListService.detailChartList(userId, detailChatListVo);
         return ResultUtil.Succeed(result);
     }
 }
