@@ -29,6 +29,7 @@ CREATE TABLE `message`
     `is_show_time` bit         default 0 COMMENT '是否显示时间',
     `msg_content`  text        default NULL COMMENT '消息内容',
     `status`       varchar(500) COMMENT '消息状态',
+    `source`       varchar(64)  NOT NULL '消息源',
     `create_time`  timestamp(3) NOT NULL COMMENT '创建时间',
     `update_time`  timestamp(3) NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
@@ -44,6 +45,34 @@ CREATE TABLE `message_retraction`
     `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息撤回内容表' row_format=dynamic;
+
+DROP TABLE if EXISTS `chat_group`;
+CREATE TABLE `chat_group`
+(
+    `id`            varchar(64)  NOT NULL,
+    `user_id`       varchar(64)  NOT NULL COMMENT '创建用户id',
+    `owner_user_id` varchar(64)  NOT NULL COMMENT '群主id',
+    `portrait`      text        default NULL COMMENT '群头像',
+    `name`          varchar(64) default NULL COMMENT '群名名称',
+    `notice`        text        default NULL COMMENT '群公告',
+    `member_num`    int         default 0 COMMENT '成员数',
+    `create_time`   timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time`   timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天群表' row_format=dynamic;
+
+DROP TABLE if EXISTS `chat_group_member`;
+CREATE TABLE `chat_group_member`
+(
+    `id`            varchar(64)  NOT NULL,
+    `chat_group_id` varchar(64)  NOT NULL COMMENT '聊天群id',
+    `user_id`       varchar(64)  NOT NULL COMMENT '成员id',
+    `group_remark`  varchar(64) default NULL COMMENT '群备注',
+    `group_name`    varchar(64) default NULL COMMENT '群昵称',
+    `create_time`   timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time`   timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天群成员表' row_format=dynamic;
 
 DROP TABLE if EXISTS `group`;
 CREATE TABLE `group`
@@ -79,9 +108,10 @@ CREATE TABLE `chat_list`
     `id`               varchar(64)  NOT NULL,
     `user_id`          varchar(64)  NOT NULL COMMENT '用户id',
     `from_id`          varchar(64)  NOT NULL COMMENT '会话目标id',
-    `is_top`           bit  default 0 NULL COMMENT '是否置顶',
-    `unread_num`       int  default 0 COMMENT '未读消息数量',
-    `last_msg_content` text default null COMMENT '最后消息内容',
+    `is_top`           bit         default 0 NULL COMMENT '是否置顶',
+    `unread_num`       int         default 0 COMMENT '未读消息数量',
+    `last_msg_content` text        default null COMMENT '最后消息内容',
+    `type`             varchar(64) default NULL COMMENT '类型',
     `status`           varchar(500) COMMENT '状态',
     `create_time`      timestamp(3) NOT NULL COMMENT '创建时间',
     `update_time`      timestamp(3) NOT NULL COMMENT '更新时间',
