@@ -109,6 +109,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
             chatList.setId(IdUtil.randomUUID());
             chatList.setIsTop(false);
             chatList.setUserId(toUserId);
+            chatList.setType(type);
             chatList.setFromId(fromUserId);
             if (toUserId.equals(msgContent.getFormUserId())) {
                 chatList.setUnreadNum(0);
@@ -148,6 +149,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
         chatList = new ChatList();
         chatList.setId(IdUtil.randomUUID());
         chatList.setUserId(userId);
+        chatList.setType(createChatListVo.getType());
         chatList.setFromId(createChatListVo.getUserId());
         chatList.setUnreadNum(0);
         save(chatList);
