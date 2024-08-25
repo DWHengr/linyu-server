@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -41,13 +42,19 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         chatGroup.setId(IdUtil.randomUUID());
         chatGroup.setName(createChatGroupVo.getName());
         chatGroup.setNotice(createChatGroupVo.getNotice());
-        chatGroup.setMemberNum(createChatGroupVo.getUsers().size());
+        chatGroup.setMemberNum(Optional.ofNullable(createChatGroupVo.getUsers()).map(v -> v.size()).orElse(0));
         chatGroup.setUserId(userId);
         chatGroup.setOwnerUserId(userId);
         boolean isSava = save(chatGroup);
-        if (isSava) {
+        //添加自己
+        ChatGroupMember chatGroupMember = new ChatGroupMember();
+        chatGroupMember.setId(IdUtil.randomUUID());
+        chatGroupMember.setChatGroupId(chatGroup.getId());
+        chatGroupMember.setUserId(userId);
+        chatGroupMemberService.save(chatGroupMember);
+        if (isSava && null != createChatGroupVo.getUsers()) {
             for (CreateChatGroupVo.User user : createChatGroupVo.getUsers()) {
-                ChatGroupMember chatGroupMember = new ChatGroupMember();
+                chatGroupMember = new ChatGroupMember();
                 chatGroupMember.setId(IdUtil.randomUUID());
                 chatGroupMember.setChatGroupId(chatGroup.getId());
                 chatGroupMember.setUserId(user.getUserId());
