@@ -21,4 +21,6 @@ public interface ChatGroupMemberService extends IService<ChatGroupMember> {
     List<ChatGroupMember> getGroupMember(String groupId);
 
     Map<String, MemberListDto> memberList(String userId, MemberListVo memberListVo);
+
+    List<MemberListDto> memberListPage(String userId, MemberListVo memberListVo);
 }

@@ -2,6 +2,7 @@ package com.cershy.linyuserver.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cershy.linyuserver.config.MinioConfig;
 import com.cershy.linyuserver.dto.ChatGroupDetailsDto;
 import com.cershy.linyuserver.entity.ChatGroup;
 import com.cershy.linyuserver.entity.ChatGroupMember;
@@ -35,6 +36,9 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     @Resource
     ChatGroupMapper chatGroupMapper;
 
+    @Resource
+    MinioConfig minioConfig;
+
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public boolean createChatGroup(String userId, CreateChatGroupVo createChatGroupVo) {
@@ -42,9 +46,10 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         chatGroup.setId(IdUtil.randomUUID());
         chatGroup.setName(createChatGroupVo.getName());
         chatGroup.setNotice(createChatGroupVo.getNotice());
-        chatGroup.setMemberNum(Optional.ofNullable(createChatGroupVo.getUsers()).map(v -> v.size()).orElse(0));
+        chatGroup.setMemberNum(Optional.ofNullable(createChatGroupVo.getUsers()).map(v -> v.size()).orElse(0) + 1);
         chatGroup.setUserId(userId);
         chatGroup.setOwnerUserId(userId);
+        chatGroup.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-group-portrait.png");
         boolean isSava = save(chatGroup);
         //添加自己
         ChatGroupMember chatGroupMember = new ChatGroupMember();

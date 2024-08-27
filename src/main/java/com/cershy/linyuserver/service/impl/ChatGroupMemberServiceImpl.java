@@ -40,4 +40,10 @@ public class ChatGroupMemberServiceImpl extends ServiceImpl<ChatGroupMemberMappe
         List<MemberListDto> result = chatGroupMemberMapper.memberList(userId, memberListVo.getChatGroupId());
         return result.stream().collect(Collectors.toMap(MemberListDto::getUserId, user -> user));
     }
+
+    @Override
+    public List<MemberListDto> memberListPage(String userId, MemberListVo memberListVo) {
+        List<MemberListDto> result = chatGroupMemberMapper.memberListPage(userId, memberListVo);
+        return result;
+    }
 }

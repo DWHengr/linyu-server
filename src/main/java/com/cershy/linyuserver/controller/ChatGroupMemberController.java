@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,6 +26,12 @@ public class ChatGroupMemberController {
     @PostMapping("/list")
     public JSONObject memberList(@Userid String userId, @RequestBody MemberListVo memberListVo) {
         Map<String, MemberListDto> result = chatGroupMemberService.memberList(userId, memberListVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    @PostMapping("/list/page")
+    public JSONObject memberListPage(@Userid String userId, @RequestBody MemberListVo memberListVo) {
+        List<MemberListDto> result = chatGroupMemberService.memberListPage(userId, memberListVo);
         return ResultUtil.Succeed(result);
     }
 }
