@@ -5,13 +5,16 @@ import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.dto.ChatGroupDetailsDto;
 import com.cershy.linyuserver.entity.ChatGroup;
+import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.service.ChatGroupService;
+import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
-import com.cershy.linyuserver.vo.chatGroup.CreateChatGroupVo;
-import com.cershy.linyuserver.vo.chatGroup.DetailsChatGroupVo;
+import com.cershy.linyuserver.vo.chatGroup.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,6 +23,9 @@ public class ChatGroupController {
 
     @Resource
     ChatGroupService chatGroupService;
+
+    @Resource
+    MinioUtil minioUtil;
 
     /**
      * 聊天群列表
@@ -40,11 +46,67 @@ public class ChatGroupController {
     }
 
     /**
+     * 更新群信息
+     */
+    @PostMapping("/update")
+    public JSONObject updateChatGroup(@Userid String userId, @RequestBody UpdateChatGroupVo updateChatGroupVo) {
+        boolean result = chatGroupService.updateChatGroup(userId, updateChatGroupVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     * 更新群信息(群名称)
+     */
+    @PostMapping("/update/name")
+    public JSONObject updateChatGroupName(@Userid String userId, @RequestBody UpdateChatGroupNameVo updateChatGroupNameVo) {
+        boolean result = chatGroupService.updateChatGroupName(userId, updateChatGroupNameVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     * 成员邀请
+     */
+    @PostMapping("/invite")
+    public JSONObject inviteMember(@Userid String userId, @RequestBody InviteMemberVo inviteMemberVo) {
+        boolean result = chatGroupService.inviteMember(userId, inviteMemberVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     * 退出群聊
+     */
+    @PostMapping("/quit")
+    public JSONObject quitChatGroup(@Userid String userId, @RequestBody QuitChatGroupVo quitChatGroupVo) {
+        boolean result = chatGroupService.quitChatGroup(userId, quitChatGroupVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
      * 群详情
      */
     @PostMapping("/details")
     public JSONObject detailsChatGroup(@Userid String userId, @RequestBody DetailsChatGroupVo detailsChatGroupVo) {
         ChatGroupDetailsDto result = chatGroupService.detailsChatGroup(userId, detailsChatGroupVo);
         return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 更新群头像
+     */
+    @PostMapping(value = "/upload/portrait")
+    public JSONObject upload(HttpServletRequest request,
+                             @Userid String userId,
+                             @RequestHeader("groupId") String groupId,
+                             @RequestHeader("name") String name,
+                             @RequestHeader("type") String type,
+                             @RequestHeader("size") long size) throws IOException {
+        boolean isOwner = chatGroupService.isOwner(groupId, userId);
+        if (!isOwner)
+            throw new LinyuException("您不是群主~");
+        String fileName = groupId + "-portrait" + name.substring(name.lastIndexOf("."));
+        String url = minioUtil.upload(request.getInputStream(), fileName, type, size);
+        url += "?t=" + System.currentTimeMillis();
+        chatGroupService.updateGroupPortrait(groupId, url);
+        return ResultUtil.Succeed(url);
     }
 }

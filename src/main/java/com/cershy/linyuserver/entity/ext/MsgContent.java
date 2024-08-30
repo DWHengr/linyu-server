@@ -20,6 +20,10 @@ public class MsgContent implements Serializable {
     private static final long serialVersionUID = 1L;
     //发送方用户id
     private String formUserId;
+    //发送方用户名称
+    private String formUserName;
+    //发送方用户头像
+    private String formUserPortrait;
     //消息内容类型
     private String type;
     //消息内容

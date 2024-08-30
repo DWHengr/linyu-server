@@ -13,6 +13,7 @@ import com.cershy.linyuserver.constant.MsgSource;
 import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.entity.Message;
 import com.cershy.linyuserver.entity.MessageRetraction;
+import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.entity.ext.MsgContent;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.MessageMapper;
@@ -83,6 +84,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Resource
     MQProducerService mqProducerService;
 
+    @Resource
+    UserService userService;
+
     public Message sendMessage(String userId, String toUserId, MsgContent msgContent, String source) {
         //获取上一条显示时间的消息
         Message previousMessage = messageMapper.getPreviousShowTimeMsg(userId, toUserId);
@@ -141,7 +145,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     }
 
     public Message sendMessageToGroup(String userId, SendMsgVo sendMsgVo) {
-        Message message = sendMessage(userId, sendMsgVo.getToUserId(), sendMsgVo.getMsgContent(), MsgSource.Group);
+        //获取发送方用户信息
+        User user = userService.getById(userId);
+        MsgContent msgContent = sendMsgVo.getMsgContent();
+        msgContent.setFormUserName(user.getName());
+        msgContent.setFormUserPortrait(user.getPortrait());
+        Message message = sendMessage(userId, sendMsgVo.getToUserId(), msgContent, MsgSource.Group);
         //更新聊天列表
         chatListService.updateChatListGroup(message.getToId(), message.getMsgContent());
         if (null != message) {

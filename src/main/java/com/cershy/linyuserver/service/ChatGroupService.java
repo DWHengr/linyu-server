@@ -3,9 +3,7 @@ package com.cershy.linyuserver.service;
 import com.cershy.linyuserver.dto.ChatGroupDetailsDto;
 import com.cershy.linyuserver.entity.ChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cershy.linyuserver.entity.ChatGroupMember;
-import com.cershy.linyuserver.vo.chatGroup.CreateChatGroupVo;
-import com.cershy.linyuserver.vo.chatGroup.DetailsChatGroupVo;
+import com.cershy.linyuserver.vo.chatGroup.*;
 
 import java.util.List;
 
@@ -24,4 +22,16 @@ public interface ChatGroupService extends IService<ChatGroup> {
     List<ChatGroup> chatGroupList(String userId);
 
     ChatGroupDetailsDto detailsChatGroup(String userId, DetailsChatGroupVo detailsChatGroupVo);
+
+    boolean isOwner(String groupId, String userId);
+
+    boolean updateGroupPortrait(String groupId, String url);
+
+    boolean updateChatGroupName(String userId, UpdateChatGroupNameVo updateChatGroupNameVo);
+
+    boolean updateChatGroup(String userId, UpdateChatGroupVo updateChatGroupVo);
+
+    boolean inviteMember(String userId, InviteMemberVo inviteMemberVo);
+
+    boolean quitChatGroup(String userId, QuitChatGroupVo quitChatGroupVo);
 }
