@@ -27,21 +27,21 @@ services:
     networks:
       - rocketmq
     command: sh mqbroker -c /home/rocketmq/broker.conf
-  proxy:
-    image: apache/rocketmq:5.3.0
-    container_name: rmqproxy
-    networks:
-      - rocketmq
-    depends_on:
-      - broker
-      - namesrv
-    ports:
-      - 8080:8080
-      - 8081:8081
-    restart: on-failure
-    environment:
-      - NAMESRV_ADDR=rmqnamesrv:9876
-    command: sh mqproxy
+#  proxy:
+#    image: apache/rocketmq:5.3.0
+#    container_name: rmqproxy
+#    networks:
+#      - rocketmq
+#    depends_on:
+#      - broker
+#      - namesrv
+#    ports:
+#      - 8080:8080
+#      - 8081:8081
+#    restart: on-failure
+#    environment:
+#      - NAMESRV_ADDR=rmqnamesrv:9876
+#    command: sh mqproxy
 networks:
   rocketmq:
     driver: bridge

@@ -1,5 +1,7 @@
 version: '3.8'
-
+networks:
+  rocketmq:
+    driver: bridge
 services:
   mysql:
     image: mysql:8.0
@@ -43,14 +45,44 @@ services:
       - /linyu/minio:/data
     command: server /data --console-address ":9001"
 
+  namesrv:
+    image: apache/rocketmq:5.3.0
+    container_name: rmqnamesrv
+    ports:
+      - 9876:9876
+    networks:
+      - rocketmq
+    command: sh mqnamesrv
+    environment:
+      - JAVA_OPT_EXT=-server -Xms128m -Xmx128m
+  broker:
+    image: apache/rocketmq:5.3.0
+    container_name: rmqbroker
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    environment:
+      - NAMESRV_ADDR=rmqnamesrv:9876
+      - JAVA_OPT_EXT=-server -Xms128m -Xmx128m
+    depends_on:
+      - namesrv
+    volumes:
+      - ./broker.conf:/home/rocketmq/broker.conf
+    networks:
+      - rocketmq
+    command: sh mqbroker -c /home/rocketmq/broker.conf
+
   linyu:
-    image: henam/linyu:0.1
+    image: henam/linyu:latest
     container_name: linyu
     depends_on:
       - mysql
       - redis
       - minio
       - whisper
+      - namesrv
+      - broker
     ports:
       - "9100:9100"
       - "9200:9200"
@@ -61,3 +93,4 @@ services:
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      ROCKET_NAME_SERVER: ${ROCKET_NAME_SERVER}

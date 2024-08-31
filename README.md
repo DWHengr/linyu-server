@@ -32,6 +32,10 @@ minio使用的版本为`RELEASE.2024-05-10T01-41-38Z`。
 
 Redis使用的版本为`5.0.14.1`
 
+## RocketMQ安装
+
+RocketMQ使用的版本为`5.3.0`
+
 ## faster-whisper-server安装
 
 #### 1.下载模型（whisper国内模型无法自动下载，需要手动下载）
@@ -83,7 +87,7 @@ curl http://127.0.0.1:8000/v1/audio/transcriptions -F "file=@1.wav" -F"model=/mo
 ## 服务部署
 
 基于`docker-compose`进行部署。将项目下的`/deploy/compose`目录，拷贝到目标服务器上，注意修改目录下`.env`
-内的配置。修改完成后运行`docker-compose up -d`命令。
+和`broker.conf`内的配置。修改完成后运行`docker-compose up -d`命令。
 
 ## 数据库初始化
 
