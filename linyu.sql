@@ -29,7 +29,7 @@ CREATE TABLE `message`
     `is_show_time` bit         default 0 COMMENT '是否显示时间',
     `msg_content`  text        default NULL COMMENT '消息内容',
     `status`       varchar(500) COMMENT '消息状态',
-    `source`       varchar(64)  NOT NULL '消息源',
+    `source`       varchar(64)  NOT NULL COMMENT '消息源',
     `create_time`  timestamp(3) NOT NULL COMMENT '创建时间',
     `update_time`  timestamp(3) NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
