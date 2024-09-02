@@ -74,6 +74,18 @@ CREATE TABLE `chat_group_member`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天群成员表' row_format=dynamic;
 
+DROP TABLE if EXISTS `chat_group_notice`;
+CREATE TABLE `chat_group_notice`
+(
+    `id`             varchar(64)  NOT NULL,
+    `chat_group_id`  varchar(64)  NOT NULL COMMENT '聊天群id',
+    `user_id`        varchar(64)  NOT NULL COMMENT '成员id',
+    `notice_content` text default NULL COMMENT '公告内容',
+    `create_time`    timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time`    timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天群公告表' row_format=dynamic;
+
 DROP TABLE if EXISTS `group`;
 CREATE TABLE `group`
 (
