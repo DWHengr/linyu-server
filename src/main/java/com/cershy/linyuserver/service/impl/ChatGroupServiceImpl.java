@@ -53,7 +53,6 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         ChatGroup chatGroup = new ChatGroup();
         chatGroup.setId(IdUtil.randomUUID());
         chatGroup.setName(createChatGroupVo.getName());
-        chatGroup.setNotice(createChatGroupVo.getNotice());
         chatGroup.setMemberNum(Optional.ofNullable(createChatGroupVo.getUsers()).map(v -> v.size()).orElse(0) + 1);
         chatGroup.setUserId(userId);
         chatGroup.setOwnerUserId(userId);

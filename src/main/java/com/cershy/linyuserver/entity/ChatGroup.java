@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,7 +25,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("chat_group")
+@TableName(value = "chat_group", autoResultMap = true)
 public class ChatGroup implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -59,8 +60,8 @@ public class ChatGroup implements Serializable {
     /**
      * 群公告
      */
-    @TableField("notice")
-    private String notice;
+    @TableField(value = "notice", typeHandler = JacksonTypeHandler.class)
+    private ChatGroupNotice notice;
 
     /**
      * 成员数
