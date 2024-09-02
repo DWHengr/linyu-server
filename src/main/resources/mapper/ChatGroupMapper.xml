@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cershy.linyuserver.mapper.ChatGroupMapper">
-
+    <resultMap id="ChatGroupDetailsDtoResultMap" type="com.cershy.linyuserver.dto.ChatGroupDetailsDto">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="ownerUserId" column="owner_user_id"/>
+        <result property="portrait" column="portrait"/>
+        <result property="name" column="name"/>
+        <result property="notice" column="notice"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result property="memberNum" column="member_num"/>
+        <result property="groupName" column="group_name"/>
+        <result property="groupRemark" column="group_remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
 </mapper>

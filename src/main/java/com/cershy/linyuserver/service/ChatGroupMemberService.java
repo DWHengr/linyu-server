@@ -23,4 +23,6 @@ public interface ChatGroupMemberService extends IService<ChatGroupMember> {
     Map<String, MemberListDto> memberList(String userId, MemberListVo memberListVo);
 
     List<MemberListDto> memberListPage(String userId, MemberListVo memberListVo);
+
+    boolean isMemberExists(String groupId, String userId);
 }
