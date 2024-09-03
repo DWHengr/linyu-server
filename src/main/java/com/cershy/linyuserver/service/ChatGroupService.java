@@ -34,4 +34,10 @@ public interface ChatGroupService extends IService<ChatGroup> {
     boolean inviteMember(String userId, InviteMemberVo inviteMemberVo);
 
     boolean quitChatGroup(String userId, QuitChatGroupVo quitChatGroupVo);
+
+    boolean kickChatGroup(String userId, KickChatGroupVo kickChatGroupVo);
+
+    boolean dissolveChatGroup(String userId, DissolveChatGroupVo dissolveChatGroupVo);
+
+    boolean transferChatGroup(String userId, TransferChatGroupVo transferChatGroupVo);
 }

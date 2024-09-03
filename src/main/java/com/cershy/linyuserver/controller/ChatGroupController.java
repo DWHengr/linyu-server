@@ -81,6 +81,34 @@ public class ChatGroupController {
         return ResultUtil.ResultByFlag(result);
     }
 
+
+    /**
+     * 踢出群聊
+     */
+    @PostMapping("/kick")
+    public JSONObject kickChatGroup(@Userid String userId, @RequestBody KickChatGroupVo kickChatGroupVo) {
+        boolean result = chatGroupService.kickChatGroup(userId, kickChatGroupVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     * 解散群聊
+     */
+    @PostMapping("/dissolve")
+    public JSONObject dissolveChatGroup(@Userid String userId, @RequestBody DissolveChatGroupVo dissolveChatGroupVo) {
+        boolean result = chatGroupService.dissolveChatGroup(userId, dissolveChatGroupVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     * 转让群聊
+     */
+    @PostMapping("/transfer")
+    public JSONObject transferChatGroup(@Userid String userId, @RequestBody TransferChatGroupVo transferChatGroupVo) {
+        boolean result = chatGroupService.transferChatGroup(userId, transferChatGroupVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
     /**
      * 群详情
      */

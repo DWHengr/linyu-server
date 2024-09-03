@@ -1,21 +1,23 @@
 package com.cershy.linyuserver.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.cershy.linyuserver.config.MinioConfig;
+import com.cershy.linyuserver.constant.MessageContentType;
+import com.cershy.linyuserver.constant.MsgSource;
+import com.cershy.linyuserver.constant.MsgType;
 import com.cershy.linyuserver.dto.ChatGroupDetailsDto;
-import com.cershy.linyuserver.entity.ChatGroup;
-import com.cershy.linyuserver.entity.ChatGroupMember;
-import com.cershy.linyuserver.entity.ChatList;
+import com.cershy.linyuserver.entity.*;
+import com.cershy.linyuserver.entity.ext.MsgContent;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.ChatGroupMapper;
-import com.cershy.linyuserver.service.ChatGroupMemberService;
-import com.cershy.linyuserver.service.ChatGroupService;
+import com.cershy.linyuserver.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cershy.linyuserver.service.ChatListService;
 import com.cershy.linyuserver.vo.chatGroup.*;
+import com.cershy.linyuserver.vo.message.SendMsgVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,12 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
 
     @Resource
     ChatListService chatListService;
+
+    @Resource
+    MessageService messageService;
+
+    @Resource
+    UserService userService;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
@@ -158,6 +166,67 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
 
         ChatGroup chatGroup = getById(quitChatGroupVo.getGroupId());
         chatGroup.setMemberNum(chatGroup.getMemberNum() - 1);
+        return updateById(chatGroup);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public boolean kickChatGroup(String userId, KickChatGroupVo kickChatGroupVo) {
+        if (!isOwner(kickChatGroupVo.getGroupId(), userId))
+            throw new LinyuException("您不是群主~");
+        LambdaQueryWrapper<ChatGroupMember> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ChatGroupMember::getChatGroupId, kickChatGroupVo.getGroupId())
+                .eq(ChatGroupMember::getUserId, kickChatGroupVo.getUserId());
+        chatGroupMemberService.remove(queryWrapper);
+
+        //发送群消息
+        SendMsgVo sendMsgVo = new SendMsgVo();
+        sendMsgVo.setSource(MsgSource.Group);
+        sendMsgVo.setToUserId(kickChatGroupVo.getGroupId());
+        MsgContent msgContent = new MsgContent();
+        msgContent.setType(MessageContentType.Quit);
+        User user = userService.getById(kickChatGroupVo.getUserId());
+        msgContent.setContent(user.getName());
+        msgContent.setFormUserId(userId);
+        msgContent.setExt(kickChatGroupVo.getUserId());
+        sendMsgVo.setMsgContent(msgContent);
+        messageService.sendMessage(userId, sendMsgVo, MsgType.System);
+
+        ChatGroup chatGroup = getById(kickChatGroupVo.getGroupId());
+        chatGroup.setMemberNum(chatGroup.getMemberNum() - 1);
+        return updateById(chatGroup);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public boolean dissolveChatGroup(String userId, DissolveChatGroupVo dissolveChatGroupVo) {
+        if (!isOwner(dissolveChatGroupVo.getGroupId(), userId))
+            throw new LinyuException("您不是群主~");
+
+        LambdaQueryWrapper<ChatGroupMember> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ChatGroupMember::getChatGroupId, dissolveChatGroupVo.getGroupId());
+        chatGroupMemberService.remove(queryWrapper);
+
+        //发送群消息
+        SendMsgVo sendMsgVo = new SendMsgVo();
+        sendMsgVo.setSource(MsgSource.Group);
+        sendMsgVo.setToUserId(dissolveChatGroupVo.getGroupId());
+        MsgContent msgContent = new MsgContent();
+        msgContent.setType(MessageContentType.Quit);
+        msgContent.setFormUserId(userId);
+        msgContent.setExt("all");
+        sendMsgVo.setMsgContent(msgContent);
+        messageService.sendMessage(userId, sendMsgVo, MsgType.System);
+
+        return removeById(dissolveChatGroupVo.getGroupId());
+    }
+
+    @Override
+    public boolean transferChatGroup(String userId, TransferChatGroupVo transferChatGroupVo) {
+        if (!isOwner(transferChatGroupVo.getGroupId(), userId))
+            throw new LinyuException("您不是群主~");
+        ChatGroup chatGroup = getById(transferChatGroupVo.getGroupId());
+        chatGroup.setOwnerUserId(transferChatGroupVo.getUserId());
         return updateById(chatGroup);
     }
 }

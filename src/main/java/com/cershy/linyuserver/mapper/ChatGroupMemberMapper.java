@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface ChatGroupMemberMapper extends BaseMapper<ChatGroupMember> {
 
-    @Select("SELECT cgm.*,u.`name`,f.`remark`,u.`portrait` FROM `chat_group_member` AS cgm " +
+    @Select("SELECT cgm.*,u.`name`,f.`remark`,f.`id` as friend_id,u.`portrait` FROM `chat_group_member` AS cgm " +
             "LEFT JOIN `friend` as f on f.`friend_id` = cgm.`user_id` and f.`user_id` = #{userId} " +
             "LEFT JOIN `user` as u on u.`id` = cgm.`user_id`" +
             "WHERE cgm.`chat_group_id` = #{chatGroupId} " +
