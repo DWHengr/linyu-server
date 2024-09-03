@@ -7,4 +7,5 @@ public class MessageContentType {
     public static String Voice = "voice";
     public static String Retraction = "retraction";
     public static String Call = "call";
+    public static String Quit = "quit";
 }

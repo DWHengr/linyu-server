@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.cershy.linyuserver.config.VoiceConfig;
 import com.cershy.linyuserver.constant.MessageContentType;
 import com.cershy.linyuserver.constant.MsgSource;
+import com.cershy.linyuserver.constant.MsgType;
 import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.entity.Message;
 import com.cershy.linyuserver.entity.MessageRetraction;
@@ -87,7 +88,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Resource
     UserService userService;
 
-    public Message sendMessage(String userId, String toUserId, MsgContent msgContent, String source) {
+    @Resource
+    ChatGroupMemberService chatGroupMemberService;
+
+    public Message sendMessage(String userId, String toUserId, MsgContent msgContent, String source, String type) {
         //获取上一条显示时间的消息
         Message previousMessage = messageMapper.getPreviousShowTimeMsg(userId, toUserId);
         //存入数据库
@@ -96,6 +100,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         message.setFromId(userId);
         message.setSource(source);
         message.setToId(toUserId);
+        message.setType(type);
         if (null == previousMessage) {
             message.setIsShowTime(true);
         } else {
@@ -108,11 +113,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
                 MessageContentType.Voice.equals(msgContent.getType())) {
             JSONObject content = JSONUtil.parseObj(msgContent.getContent());
             String name = (String) content.get("name");
-            String type = name.substring(name.lastIndexOf(".") + 1);
-            String fileName = userId + "/" + toUserId + "/" + IdUtil.randomUUID() + "." + type;
+            String fileType = name.substring(name.lastIndexOf(".") + 1);
+            String fileName = userId + "/" + toUserId + "/" + IdUtil.randomUUID() + "." + fileType;
             content.set("fileName", fileName);
             content.set("url", minioUtil.getUrl(fileName));
-            content.set("type", type);
+            content.set("type", fileType);
             msgContent.setContent(content.toJSONString(0));
         }
         message.setMsgContent(msgContent);
@@ -123,13 +128,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         return null;
     }
 
-    public Message sendMessageToUser(String userId, SendMsgVo sendMsgVo) {
+    public Message sendMessageToUser(String userId, SendMsgVo sendMsgVo, String type) {
         //验证是否是好友
         boolean isFriend = friendService.isFriend(userId, sendMsgVo.getToUserId());
         if (!isFriend) {
             throw new LinyuException("双方非好友");
         }
-        Message message = sendMessage(userId, sendMsgVo.getToUserId(), sendMsgVo.getMsgContent(), MsgSource.User);
+        Message message = sendMessage(userId, sendMsgVo.getToUserId(), sendMsgVo.getMsgContent(), MsgSource.User, type);
         //更新聊天列表
         chatListService.updateChatList(message.getToId(), userId, message.getMsgContent(), MsgSource.User);
         if (null != message) {
@@ -144,13 +149,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
     }
 
-    public Message sendMessageToGroup(String userId, SendMsgVo sendMsgVo) {
+    public Message sendMessageToGroup(String userId, SendMsgVo sendMsgVo, String type) {
         //获取发送方用户信息
         User user = userService.getById(userId);
         MsgContent msgContent = sendMsgVo.getMsgContent();
         msgContent.setFormUserName(user.getName());
         msgContent.setFormUserPortrait(user.getPortrait());
-        Message message = sendMessage(userId, sendMsgVo.getToUserId(), msgContent, MsgSource.Group);
+        Message message = sendMessage(userId, sendMsgVo.getToUserId(), msgContent, MsgSource.Group, type);
         //更新聊天列表
         chatListService.updateChatListGroup(message.getToId(), message.getMsgContent());
         if (null != message) {
@@ -165,11 +170,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     }
 
     @Override
-    public Message sendMessage(String userId, SendMsgVo sendMsgVo) {
+    public Message sendMessage(String userId, SendMsgVo sendMsgVo, String type) {
         if (MsgSource.Group.equals(sendMsgVo.getSource())) {
-            return sendMessageToGroup(userId, sendMsgVo);
+            return sendMessageToGroup(userId, sendMsgVo, type);
         } else {
-            return sendMessageToUser(userId, sendMsgVo);
+            return sendMessageToUser(userId, sendMsgVo, type);
         }
     }
 
@@ -192,7 +197,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         MsgContent msgContent = new MsgContent();
         msgContent.setContent(fileInfo.toJSONString(0));
         msgContent.setType(MessageContentType.File);
-        return sendMessage(userId, toUserId, msgContent, MsgSource.User);
+        return sendMessage(userId, toUserId, msgContent, MsgSource.User, MsgType.User);
     }
 
     @Override
@@ -201,7 +206,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         if (msg == null) {
             throw new LinyuException("消息为空");
         }
-        if (msg.getFromId().equals(userId) || msg.getToId().equals(userId)) {
+        if (msg.getFromId().equals(userId) || msg.getToId().equals(userId)
+                || chatGroupMemberService.isMemberExists(msg.getToId(), userId)) {
             return msg.getMsgContent();
         } else {
             throw new LinyuException("消息为空");
@@ -223,8 +229,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         if (null == message)
             throw new LinyuException("消息不存在");
         MsgContent msgContent = message.getMsgContent();
-        //设置type为撤销前的类型
-        message.setType(msgContent.getType());
+        msgContent.setExt(msgContent.getType());
         //只有文本才保存，之前的消息内容
         if (MessageContentType.Text.equals(msgContent.getType())) {
             MessageRetraction messageRetraction = new MessageRetraction();
@@ -232,9 +237,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             messageRetraction.setMsgId(message.getId());
             messageRetraction.setMsgContent(msgContent);
             messageRetractionService.save(messageRetraction);
-
         }
-
         msgContent.setType(MessageContentType.Retraction);
         msgContent.setContent("");
         updateById(message);
@@ -242,8 +245,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         ChatList userIdchatList = chatListService.getChatListByUserIdAndFromId(userId, message.getToId());
         userIdchatList.setLastMsgContent(msgContent);
         chatListService.updateById(userIdchatList);
-
-        ChatList toIdchatList = chatListService.getChatListByUserIdAndFromId(message.getToId(), userId);
+        ChatList toIdchatList = null;
+        if (MsgSource.User.equals(message.getSource())) {
+            toIdchatList = chatListService.getChatListByUserIdAndFromId(message.getToId(), userId);
+        } else {
+            toIdchatList = chatListService.getChatListByUserIdAndFromId(message.getFromId(), message.getToId());
+        }
         toIdchatList.setLastMsgContent(msgContent);
         chatListService.updateById(toIdchatList);
 

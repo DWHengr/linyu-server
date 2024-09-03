@@ -24,7 +24,7 @@ import java.util.List;
  */
 public interface MessageService extends IService<Message> {
 
-    Message sendMessage(String userId, SendMsgVo sendMsgVo);
+    Message sendMessage(String userId, SendMsgVo sendMsgVo, String type);
 
     List<Message> messageRecord(String userId, MessageRecordVo messageRecordVo);
 

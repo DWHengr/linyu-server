@@ -2,6 +2,7 @@ package com.cershy.linyuserver.service;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.cershy.linyuserver.constant.MsgType;
 import com.cershy.linyuserver.constant.WsContentType;
 import com.cershy.linyuserver.entity.ChatGroup;
 import com.cershy.linyuserver.entity.ChatGroupMember;
@@ -71,7 +72,7 @@ public class WebSocketService {
     public void sendMsgToGroup(Message message, String groupId) {
         List<ChatGroupMember> list = chatGroupMemberService.getGroupMember(groupId);
         for (ChatGroupMember member : list) {
-            if (!message.getFromId().equals(member.getUserId())) {
+            if (!message.getFromId().equals(member.getUserId()) || MsgType.System.equals(message.getType())) {
                 sendMsgToUser(message, member.getUserId());
             }
         }
@@ -87,6 +88,15 @@ public class WebSocketService {
         Channel channel = Online_User.get(userId);
         if (channel != null) {
             sendMsg(channel, msg, WsContentType.Notify);
+        }
+    }
+
+    public void sendNoticeToGroup(Message message, String groupId) {
+        List<ChatGroupMember> list = chatGroupMemberService.getGroupMember(groupId);
+        for (ChatGroupMember member : list) {
+            if (!message.getFromId().equals(member.getUserId()) || MsgType.System.equals(message.getType())) {
+                sendNotifyToUser(message, member.getUserId());
+            }
         }
     }
 

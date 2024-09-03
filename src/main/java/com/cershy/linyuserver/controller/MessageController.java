@@ -3,6 +3,7 @@ package com.cershy.linyuserver.controller;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.cershy.linyuserver.annotation.Userid;
+import com.cershy.linyuserver.constant.MsgType;
 import com.cershy.linyuserver.entity.Message;
 import com.cershy.linyuserver.entity.MessageRetraction;
 import com.cershy.linyuserver.entity.ext.MsgContent;
@@ -53,7 +54,7 @@ public class MessageController {
      */
     @PostMapping("/send")
     public JSONObject sendMessage(@Userid String userId, @RequestBody SendMsgVo sendMsgVo) {
-        Message result = messageService.sendMessage(userId, sendMsgVo);
+        Message result = messageService.sendMessage(userId, sendMsgVo, MsgType.User);
         return ResultUtil.Succeed(result);
     }
 
