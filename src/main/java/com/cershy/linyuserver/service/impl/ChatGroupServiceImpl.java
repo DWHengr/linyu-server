@@ -1,7 +1,7 @@
 package com.cershy.linyuserver.service.impl;
 
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -10,6 +10,7 @@ import com.cershy.linyuserver.constant.MessageContentType;
 import com.cershy.linyuserver.constant.MsgSource;
 import com.cershy.linyuserver.constant.MsgType;
 import com.cershy.linyuserver.dto.ChatGroupDetailsDto;
+import com.cershy.linyuserver.dto.SystemMsgDto;
 import com.cershy.linyuserver.entity.*;
 import com.cershy.linyuserver.entity.ext.MsgContent;
 import com.cershy.linyuserver.exception.LinyuException;
@@ -133,14 +134,39 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public boolean inviteMember(String userId, InviteMemberVo inviteMemberVo) {
         List<ChatGroupMember> members = new ArrayList<>();
-        for (String userid : inviteMemberVo.getUserIds()) {
+        for (String inviteUserid : inviteMemberVo.getUserIds()) {
+            if (chatGroupMemberService.isMemberExists(inviteMemberVo.getGroupId(), inviteUserid)) {
+                continue;
+            }
             ChatGroupMember member = new ChatGroupMember();
             member.setId(IdUtil.randomUUID());
-            member.setUserId(userid);
+            member.setUserId(inviteUserid);
             member.setChatGroupId(inviteMemberVo.getGroupId());
             members.add(member);
+
+            //发送群消息系统消息
+            SendMsgVo sendMsgVo = new SendMsgVo();
+            sendMsgVo.setSource(MsgSource.Group);
+            sendMsgVo.setToUserId(inviteMemberVo.getGroupId());
+            MsgContent msgContent = new MsgContent();
+            msgContent.setType(MessageContentType.System);
+            User user = userService.getById(userId);
+            User inviteUser = userService.getById(inviteUserid);
+            //设置系统消息
+            SystemMsgDto systemMsgDto = new SystemMsgDto();
+            systemMsgDto.addEmphasizeContent(user.getName())
+                    .addContent("邀请了")
+                    .addEmphasizeContent(inviteUser.getName())
+                    .addContent("加入了该群");
+            msgContent.setContent(JSONUtil.toJsonStr(systemMsgDto.getContents()));
+            msgContent.setFormUserId(userId);
+            msgContent.setExt(userId);
+            sendMsgVo.setMsgContent(msgContent);
+            messageService.sendMessage(userId, sendMsgVo, MsgType.System);
+
         }
         if (members.size() > 0) {
             ChatGroup chatGroup = getById(inviteMemberVo.getGroupId());
@@ -164,6 +190,23 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
                 .eq(ChatList::getFromId, quitChatGroupVo.getGroupId());
         chatListService.remove(chatListLambdaQueryWrapper);
 
+        //发送群消息系统消息
+        SendMsgVo sendMsgVo = new SendMsgVo();
+        sendMsgVo.setSource(MsgSource.Group);
+        sendMsgVo.setToUserId(quitChatGroupVo.getGroupId());
+        MsgContent msgContent = new MsgContent();
+        msgContent.setType(MessageContentType.Quit);
+        User user = userService.getById(userId);
+        //设置系统消息
+        SystemMsgDto systemMsgDto = new SystemMsgDto();
+        systemMsgDto.addEmphasizeContent(user.getName())
+                .addContent("已退出该群");
+        msgContent.setContent(JSONUtil.toJsonStr(systemMsgDto.getContents()));
+        msgContent.setFormUserId(userId);
+        msgContent.setExt(userId);
+        sendMsgVo.setMsgContent(msgContent);
+        messageService.sendMessage(userId, sendMsgVo, MsgType.System);
+
         ChatGroup chatGroup = getById(quitChatGroupVo.getGroupId());
         chatGroup.setMemberNum(chatGroup.getMemberNum() - 1);
         return updateById(chatGroup);
@@ -179,14 +222,18 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
                 .eq(ChatGroupMember::getUserId, kickChatGroupVo.getUserId());
         chatGroupMemberService.remove(queryWrapper);
 
-        //发送群消息
+        //发送群消息系统消息
         SendMsgVo sendMsgVo = new SendMsgVo();
         sendMsgVo.setSource(MsgSource.Group);
         sendMsgVo.setToUserId(kickChatGroupVo.getGroupId());
         MsgContent msgContent = new MsgContent();
         msgContent.setType(MessageContentType.Quit);
         User user = userService.getById(kickChatGroupVo.getUserId());
-        msgContent.setContent(user.getName());
+        //设置系统消息
+        SystemMsgDto systemMsgDto = new SystemMsgDto();
+        systemMsgDto.addEmphasizeContent(user.getName())
+                .addContent("已被踢出该群");
+        msgContent.setContent(JSONUtil.toJsonStr(systemMsgDto.getContents()));
         msgContent.setFormUserId(userId);
         msgContent.setExt(kickChatGroupVo.getUserId());
         sendMsgVo.setMsgContent(msgContent);
