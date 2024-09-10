@@ -4,6 +4,7 @@ import com.cershy.linyuserver.utils.JwtUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.utils.UrlPermitUtil;
 import io.jsonwebtoken.Claims;
+import jdk.nashorn.internal.runtime.logging.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,6 +22,7 @@ import java.util.Map;
  * @author: dwh
  **/
 @Component
+@Logger
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final String TokenName = "x-token";
@@ -43,19 +45,33 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             try {
                 claims = JwtUtil.parseToken(token);
             } catch (Exception e) {
-                httpServletResponse.setContentType("application/json;charset=UTF-8");
-                httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                PrintWriter out = httpServletResponse.getWriter();
-                out.write(ResultUtil.TokenInvalid().toJSONString(0));
-                out.flush();
-                out.close();
+                tokenInvalid(httpServletResponse);
                 return;
             }
             // 设置用户信息
             Map<String, Object> map = new HashMap<>();
             claims.entrySet().stream().forEach(e -> map.put(e.getKey(), e.getValue()));
+            //验证角色是否有权限
+            String role = (String) map.get("role");
+            if (!urlPermitUtil.isRoleUrl(role, url)) {
+                tokenInvalid(httpServletResponse);
+                return;
+            }
             httpServletRequest.setAttribute("userinfo", map);
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
+
+    public void tokenInvalid(HttpServletResponse httpServletResponse) {
+        try {
+            httpServletResponse.setContentType("application/json;charset=UTF-8");
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            PrintWriter out = httpServletResponse.getWriter();
+            out.write(ResultUtil.TokenInvalid().toJSONString(0));
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 }

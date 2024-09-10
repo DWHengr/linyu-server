@@ -1,6 +1,7 @@
 package com.cershy.linyuserver.runner;
 
 import com.cershy.linyuserver.annotation.UrlFree;
+import com.cershy.linyuserver.annotation.UrlResource;
 import com.cershy.linyuserver.utils.UrlPermitUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,16 @@ public class UrlPassRunner implements ApplicationRunner {
                     Set<String> directPaths = requestMappingInfo.getPatternValues();
                     for (String url : directPaths) {
                         urlList.add(url.replaceAll("\\{[^\\}]+\\}", "**"));
+                    }
+                }
+                // 免验证url
+                if (annotation.annotationType().equals(UrlResource.class)) {
+                    UrlResource urlResource = (UrlResource) annotation;
+                    String value = urlResource.value();
+                    //获取请求路径
+                    Set<String> directPaths = requestMappingInfo.getPatternValues();
+                    for (String url : directPaths) {
+                        urlPermitUtil.addRoleUrl(value, url);
                     }
                 }
             }

@@ -32,7 +32,7 @@ public class JwtUtil implements Serializable {
         Instant now = Instant.now();
         Instant expireTime = now.plus(days, ChronoUnit.DAYS);
         return Jwts.builder()
-                .setIssuer("joker")
+                .setIssuer("cershy")
                 .addClaims(claims)
                 .setExpiration(Date.from(expireTime))
                 .signWith(SignatureAlgorithm.HS256, secret).compact();
