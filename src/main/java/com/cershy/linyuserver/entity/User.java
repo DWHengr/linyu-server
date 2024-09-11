@@ -98,6 +98,13 @@ public class User implements Serializable {
     private String status;
 
     /**
+     * 用户角色
+     */
+    @TableField("role")
+    private String role;
+
+
+    /**
      * 创建时间
      */
     @TableField(value = "create_time", fill = FieldFill.INSERT)

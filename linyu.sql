@@ -12,6 +12,7 @@ CREATE TABLE `user`
     `phone`         varchar(64)  default NULL COMMENT '手机号',
     `email`         varchar(200) default NULL COMMENT '邮箱',
     `last_opt_time` timestamp(3) default NULL COMMENT '最后操作时间',
+    `role`          varchar(64)  default NULL COMMENT '用户角色',
     `status`        varchar(500) COMMENT '用户状态',
     `create_time`   timestamp(3) NOT NULL COMMENT '创建时间',
     `update_time`   timestamp(3) NOT NULL COMMENT '更新时间',
@@ -212,5 +213,5 @@ CREATE TABLE `user_set`
 
 insert into `notify` (`id`, `from_id`, `to_id`, `type`, `status`, `content`, `unread_id`, `create_time`, `update_time`)
 values ('1', '0', '0', 'system', NULL,
-        '{\"img\":\"http://139.196.241.208:9000/linyu/notify/1.png\",\"text\":\"欢迎使用林语~\"}', NULL,
+        '{\"img\":\"http://139.196.241.208:9000/linyu/notify/welcome.png\",\"text\":\"欢迎使用林语~\"}', NULL,
         '2024-07-24 11:33:05.000', '2024-07-24 11:33:05.000');

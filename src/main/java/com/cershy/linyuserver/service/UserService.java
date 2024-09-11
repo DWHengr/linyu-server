@@ -21,7 +21,7 @@ import java.util.List;
  * @since 2024-05-17
  */
 public interface UserService extends IService<User> {
-    JSONObject validateLogin(LoginVo loginVo);
+    JSONObject validateLogin(LoginVo loginVo, boolean isAdmin);
 
     List<UserDto> searchUser(SearchUserVo searchUserVo);
 

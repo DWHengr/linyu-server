@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.cershy.linyuserver.config.MinioConfig;
+import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.exception.LinyuException;
@@ -51,21 +52,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     MinioConfig minioConfig;
 
     @Override
-    public JSONObject validateLogin(LoginVo loginVo) {
+    public JSONObject validateLogin(LoginVo loginVo, boolean isAdmin) {
         // 获取用户
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(User::getAccount, loginVo.getAccount());
         User user = getOne(queryWrapper);
+        if (isAdmin && !UserRole.Admin.equals(user.getRole())) {
+            return ResultUtil.Fail("您非管理员~");
+        }
         if (null == user) {
-            return ResultUtil.Fail("用户名或密码错误");
+            return ResultUtil.Fail("用户名或密码错误~");
         }
         if (!SecurityUtil.verifyPassword(loginVo.getPassword(), user.getPassword())) {
-            return ResultUtil.Fail("用户名或密码错误");
+            return ResultUtil.Fail("用户名或密码错误~");
         }
         JSONObject userinfo = new JSONObject();
         userinfo.put("userId", user.getId());
         userinfo.put("account", user.getAccount());
         userinfo.put("username", user.getName());
+        userinfo.put("role", user.getRole());
         userinfo.put("portrait", user.getPortrait());
         userinfo.put("phone", user.getPhone());
         userinfo.put("email", user.getEmail());
