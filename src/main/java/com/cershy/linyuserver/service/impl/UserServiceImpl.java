@@ -135,10 +135,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setName(registerVo.getUsername());
         user.setAccount(registerVo.getAccount());
         String passwordHash = SecurityUtil.hashPassword(registerVo.getPassword());
+        user.setStatus(UserStatus.Normal);
         user.setPassword(passwordHash);
         user.setBirthday(new Date());
         user.setSex("男");
         user.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-portrait.jpg");
         return save(user);
+    }
+
+    @Override
+    public void offline(String userId) {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getIsOnline, false)
+                .eq(User::getId, userId);
+        update(updateWrapper);
+    }
+
+    @Override
+    public void online(String userId) {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getIsOnline, true)
+                .eq(User::getId, userId);
+        update(updateWrapper);
     }
 }

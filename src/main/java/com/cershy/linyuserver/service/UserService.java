@@ -1,6 +1,8 @@
 package com.cershy.linyuserver.service;
 
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cershy.linyuserver.admin.vo.user.UserListVo;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -34,4 +36,10 @@ public interface UserService extends IService<User> {
     boolean updateUserPortrait(String userId, String portrait);
 
     boolean register(RegisterVo registerVo);
+
+    Page<User> userList(UserListVo userListVo);
+
+    void offline(String userId);
+
+    void online(String userId);
 }

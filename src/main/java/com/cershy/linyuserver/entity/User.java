@@ -98,6 +98,12 @@ public class User implements Serializable {
     private String status;
 
     /**
+     * 是否在线
+     */
+    @TableField("is_online")
+    private Boolean isOnline;
+
+    /**
      * 用户角色
      */
     @TableField("role")

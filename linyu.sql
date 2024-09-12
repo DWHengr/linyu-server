@@ -14,6 +14,7 @@ CREATE TABLE `user`
     `last_opt_time` timestamp(3) default NULL COMMENT '最后操作时间',
     `role`          varchar(64)  default NULL COMMENT '用户角色',
     `status`        varchar(500) COMMENT '用户状态',
+    `is_online`     bit          default 0 COMMENT '是否在线',
     `create_time`   timestamp(3) NOT NULL COMMENT '创建时间',
     `update_time`   timestamp(3) NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
