@@ -4,8 +4,11 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cershy.linyuserver.admin.vo.user.UserListVo;
 import com.cershy.linyuserver.config.MinioConfig;
 import com.cershy.linyuserver.constant.UserRole;
+import com.cershy.linyuserver.constant.UserStatus;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.exception.LinyuException;
@@ -21,6 +24,7 @@ import com.cershy.linyuserver.vo.login.LoginVo;
 import com.cershy.linyuserver.vo.user.RegisterVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -57,14 +61,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(User::getAccount, loginVo.getAccount());
         User user = getOne(queryWrapper);
-        if (isAdmin && !UserRole.Admin.equals(user.getRole())) {
-            return ResultUtil.Fail("您非管理员~");
-        }
         if (null == user) {
             return ResultUtil.Fail("用户名或密码错误~");
         }
         if (!SecurityUtil.verifyPassword(loginVo.getPassword(), user.getPassword())) {
             return ResultUtil.Fail("用户名或密码错误~");
+        }
+        if (isAdmin && !UserRole.Admin.equals(user.getRole())) {
+            return ResultUtil.Fail("您非管理员~");
         }
         JSONObject userinfo = new JSONObject();
         userinfo.put("userId", user.getId());
@@ -122,6 +126,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getId, userId);
         return update(updateWrapper);
     }
+
+
+    @Override
+    public Page<User> userList(UserListVo userListVo) {
+        Page<User> page = new Page<>(userListVo.getCurrentPage(), userListVo.getPageSize());
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.isNotBlank(userListVo.getKeyword())) {
+            queryWrapper.and(query -> {
+                query.like(User::getName, userListVo.getKeyword())
+                        .or()
+                        .like(User::getAccount, userListVo.getKeyword())
+                        .or()
+                        .like(User::getEmail, userListVo.getKeyword())
+                        .or()
+                        .like(User::getPhone, userListVo.getKeyword());
+            });
+        }
+        if (StringUtils.isNotBlank(userListVo.getOnlineStatus())) {
+            if (userListVo.getOnlineStatus().equals("online")) {
+                queryWrapper.eq(User::getIsOnline, true);
+            }
+            if (userListVo.getOnlineStatus().equals("offline")) {
+                queryWrapper.eq(User::getIsOnline, false);
+            }
+        }
+        queryWrapper.orderByDesc(User::getCreateTime);
+        return this.page(page, queryWrapper);
+    }
+
 
     @Override
     public boolean register(RegisterVo registerVo) {
