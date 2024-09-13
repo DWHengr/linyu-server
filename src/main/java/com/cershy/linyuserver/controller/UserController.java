@@ -7,15 +7,18 @@ import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.service.UserService;
+import com.cershy.linyuserver.service.VerificationCodeService;
 import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.RedisUtils;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.utils.SecurityUtil;
+import com.cershy.linyuserver.vo.user.EmailVerifyVo;
 import com.cershy.linyuserver.vo.user.RegisterVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -48,6 +51,9 @@ public class UserController {
     @Resource
     RedisUtils redisUtils;
 
+    @Resource
+    VerificationCodeService verificationCodeService;
+
     /**
      * 用户查询
      *
@@ -68,6 +74,18 @@ public class UserController {
     public JSONObject unreadInfo(@Userid String userId) {
         HashMap result = userService.unreadInfo(userId);
         return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 邮箱验证码
+     *
+     * @return
+     */
+    @PostMapping("/email/verify")
+    @UrlFree
+    public JSONObject emailVerify(@RequestBody EmailVerifyVo emailVerifyVo) {
+        verificationCodeService.emailVerificationCode(emailVerifyVo.getEmail());
+        return ResultUtil.Succeed();
     }
 
     /**

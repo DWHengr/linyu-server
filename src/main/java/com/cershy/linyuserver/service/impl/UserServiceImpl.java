@@ -18,6 +18,7 @@ import com.cershy.linyuserver.service.NotifyService;
 import com.cershy.linyuserver.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.utils.JwtUtil;
+import com.cershy.linyuserver.utils.RedisUtils;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.utils.SecurityUtil;
 import com.cershy.linyuserver.vo.login.LoginVo;
@@ -54,6 +55,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     MinioConfig minioConfig;
+
+    @Resource
+    RedisUtils redisUtils;
 
     @Override
     public JSONObject validateLogin(LoginVo loginVo, boolean isAdmin) {
@@ -158,6 +162,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public boolean register(RegisterVo registerVo) {
+        //验证码校验
+        String code = (String) redisUtils.get(registerVo.getEmail());
+        if (code == null || !code.equals(registerVo.getCode())) {
+            throw new LinyuException("验证码错误或者已失效~");
+        }
+        redisUtils.del(registerVo.getEmail());
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getAccount, registerVo.getAccount());
         if (count(queryWrapper) > 0) {
@@ -172,6 +182,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(passwordHash);
         user.setBirthday(new Date());
         user.setSex("男");
+        user.setEmail(registerVo.getEmail());
         user.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-portrait.jpg");
         return save(user);
     }

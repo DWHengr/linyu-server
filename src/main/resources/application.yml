@@ -23,6 +23,20 @@ spring:
   redis:
     host: localhost
     port: 6379
+  mail:
+    host: smtp.163.com
+    protocol: smtp
+    default-encoding: UTF-8
+    username: xxxx@163.com
+    password: xxxxxx
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
 mybatis-plus:
   configuration:

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>验证码</title>
+    <style>
+        body {
+            font-family: 'helvetica neue', PingFangSC-Light, arial, 'hiragino sans gb', 'microsoft yahei ui', 'microsoft yahei', simsun, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            min-width: 320px;
+            max-width: 660px;
+            border: 1px solid #f6f6f6;
+            background-color: #4C9BFF;
+            margin: auto;
+            padding: 20px 0 30px;
+        }
+
+        .logo {
+            width: 92px;
+            height: 25px;
+        }
+
+        .content {
+            border-top: #9ccbff 5px solid;
+            border-bottom: #0071ff 5px solid;
+            background-color: #fff;
+            padding: 23px 0 20px;
+            text-align: left;
+            position: relative;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 20px;
+            line-height: 36px;
+            margin: 0 0 16px;
+        }
+
+        .message {
+            font-size: 14px;
+            color: rgb(51, 51, 51);
+            line-height: 24px;
+            margin: 6px 0;
+            word-break: break-all;
+        }
+
+        .verification-code {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .digit {
+            width: 40px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #4C9BFF;
+            border-radius: 5px;
+            color: #4C9BFF;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info {
+            font-size: 14px;
+            color: rgb(51, 51, 51);
+            line-height: 18px;
+            margin: 0 0 8px;
+            padding: 0;
+        }
+
+        .footer {
+            font-size: 14px;
+            position: absolute;
+            right: 15px;
+            bottom: 0;
+        }
+
+        .spacer {
+            margin: 20px 0;
+            border-top: 1px solid rgb(234, 237, 240);
+        }
+
+        .table {
+            width: 100%;
+            margin-bottom: 10px;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .td-left, .td-right {
+            width: 3.2%;
+            max-width: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div>
+        <table class="table">
+            <tbody>
+            <tr>
+                <td class="td-left"></td>
+                <td>
+                    <div class="logo">
+                        <p style="font-size: 20px; color: white">Linyu</p>
+                    </div>
+                    <p class="divider"></p>
+                    <div class="content">
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td class="td-left"></td>
+                                <td>
+                                    <h1 class="title">验证码</h1>
+                                    <p class="message">
+                                        您的验证码于 <span style="border-bottom: 1px dashed #ccc" t="5"
+                                                           times="11:11">
+                                        <strong th:text="${nowDate}"></strong></span>
+                                        生成，验证码为：
+                                    </p>
+                                    <div class="verification-code">
+                                        <!--                                        <span class="digit">1</span>-->
+                                        <!--                                        <span class="digit">2</span>-->
+                                        <!--                                        <span class="digit">3</span>-->
+                                        <!--                                        <span class="digit">4</span>-->
+                                        <!--                                        <span class="digit">5</span>-->
+                                        <!--                                        <span class="digit">6</span>-->
+                                        <span th:each="digit : ${code}" th:text="${digit}" class="digit"></span>
+
+                                    </div>
+                                    <p class="spacer"></p>
+                                    <dl>
+                                        <dt class="info">验证码将在10分钟后失效，请及时使用。</dt>
+                                    </dl>
+                                    <dl>
+                                        <p class="footer"><strong>Linyu</strong></p>
+                                    </dl>
+                                </td>
+                                <td class="td-right"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                <td class="td-left"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
