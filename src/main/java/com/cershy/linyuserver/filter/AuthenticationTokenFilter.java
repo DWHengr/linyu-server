@@ -67,7 +67,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             httpServletResponse.setContentType("application/json;charset=UTF-8");
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             PrintWriter out = httpServletResponse.getWriter();
-            out.write(ResultUtil.TokenInvalid().toJSONString(0));
+            out.write(ResultUtil.Forbidden().toJSONString(0));
             out.flush();
             out.close();
         } catch (Exception e) {
