@@ -1,10 +1,13 @@
 package com.cershy.linyuserver.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cershy.linyuserver.admin.vo.user.CreateUserVo;
 import com.cershy.linyuserver.admin.vo.user.UserListVo;
 import com.cershy.linyuserver.config.MinioConfig;
 import com.cershy.linyuserver.constant.UserRole;
@@ -14,6 +17,7 @@ import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.UserMapper;
 import com.cershy.linyuserver.service.ChatListService;
+import com.cershy.linyuserver.service.EmailService;
 import com.cershy.linyuserver.service.NotifyService;
 import com.cershy.linyuserver.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,6 +31,7 @@ import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -58,6 +63,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     RedisUtils redisUtils;
+
+    @Resource
+    EmailService emailService;
 
     @Override
     public JSONObject validateLogin(LoginVo loginVo, boolean isAdmin) {
@@ -201,5 +209,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         updateWrapper.set(User::getIsOnline, true)
                 .eq(User::getId, userId);
         update(updateWrapper);
+    }
+
+    @Override
+    public boolean createUser(CreateUserVo createUserVo) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getAccount, createUserVo.getAccount());
+        if (count(queryWrapper) > 0) {
+            throw new LinyuException("账号已存在~");
+        }
+        User user = new User();
+        user.setId(IdUtil.randomUUID());
+        user.setName(createUserVo.getUsername());
+        user.setAccount(createUserVo.getAccount());
+        String password = RandomUtil.randomString(8);
+        String passwordHash = SecurityUtil.hashPassword(password);
+        user.setStatus(UserStatus.Normal);
+        user.setPassword(passwordHash);
+        user.setBirthday(new Date());
+        user.setSex("男");
+        user.setEmail(createUserVo.getEmail());
+        user.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-portrait.jpg");
+
+        //密码发送邮件
+        if (save(user)) {
+            Context context = new Context();
+            context.setVariable("username", createUserVo.getUsername());
+            context.setVariable("account", createUserVo.getAccount());
+            context.setVariable("password", password);
+            emailService.sendHtmlMessage(createUserVo.getEmail(), "Linyu用户密码", "email_password_template.html", context);
+        }
+
+        return true;
     }
 }

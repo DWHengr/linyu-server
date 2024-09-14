@@ -30,10 +30,6 @@ public class VerificationCodeService {
         code = RandomUtil.randomNumbers(6);
         redisUtils.set(email, code, 10);
         context.setVariable("code", code.toCharArray());
-        try {
-            emailService.sendHtmlMessage(email, "Linyu验证码", "email_template.html", context);
-        } catch (MessagingException e) {
-            log.error(e.getMessage());
-        }
+        emailService.sendHtmlMessage(email, "Linyu验证码", "email_template.html", context);
     }
 }

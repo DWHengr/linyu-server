@@ -2,6 +2,7 @@ package com.cershy.linyuserver.admin.controller;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cershy.linyuserver.admin.vo.user.CreateUserVo;
 import com.cershy.linyuserver.admin.vo.user.UserListVo;
 import com.cershy.linyuserver.annotation.UrlResource;
 import com.cershy.linyuserver.entity.User;
@@ -30,4 +31,10 @@ public class UserController {
         return ResultUtil.Succeed(result);
     }
 
+    @PostMapping("/create")
+    @UrlResource("admin")
+    public JSONObject createUser(@RequestBody CreateUserVo createUserVo) {
+        boolean result = userService.createUser(createUserVo);
+        return ResultUtil.ResultByFlag(result);
+    }
 }

@@ -2,6 +2,7 @@ package com.cershy.linyuserver.service;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cershy.linyuserver.admin.vo.user.CreateUserVo;
 import com.cershy.linyuserver.admin.vo.user.UserListVo;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
@@ -42,4 +43,6 @@ public interface UserService extends IService<User> {
     void offline(String userId);
 
     void online(String userId);
+
+    boolean createUser(CreateUserVo createUserVo);
 }
