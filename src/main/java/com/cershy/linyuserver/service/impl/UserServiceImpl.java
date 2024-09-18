@@ -7,8 +7,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cershy.linyuserver.admin.vo.user.CreateUserVo;
-import com.cershy.linyuserver.admin.vo.user.UserListVo;
+import com.cershy.linyuserver.admin.vo.user.*;
 import com.cershy.linyuserver.config.MinioConfig;
 import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.constant.UserStatus;
@@ -241,5 +240,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         return true;
+    }
+
+    @Override
+    public boolean allUserOffline() {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getIsOnline, false);
+        return update(updateWrapper);
+    }
+
+    @Override
+    public boolean disableUser(String userId, DisableUserVo disableUserVo) {
+        if (userId.equals(disableUserVo.getUserId())) {
+            throw new LinyuException("不能禁用自己~");
+        }
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getStatus, UserStatus.Disable)
+                .eq(User::getId, disableUserVo.getUserId());
+        return update(updateWrapper);
+    }
+
+    @Override
+    public boolean deleteUser(String userId, DeleteUserVo deleteUserVo) {
+        if (userId.equals(deleteUserVo.getUserId())) {
+            throw new LinyuException("不能删除自己~");
+        }
+        return removeById(deleteUserVo.getUserId());
+    }
+
+    @Override
+    public boolean undisableUser(UndisableUserVo undisableUserVo) {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getStatus, UserStatus.Normal)
+                .eq(User::getId, undisableUserVo.getUserId());
+        return update(updateWrapper);
     }
 }

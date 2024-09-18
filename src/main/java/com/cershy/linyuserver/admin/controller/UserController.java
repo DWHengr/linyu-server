@@ -2,9 +2,9 @@ package com.cershy.linyuserver.admin.controller;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cershy.linyuserver.admin.vo.user.CreateUserVo;
-import com.cershy.linyuserver.admin.vo.user.UserListVo;
+import com.cershy.linyuserver.admin.vo.user.*;
 import com.cershy.linyuserver.annotation.UrlResource;
+import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.service.UserService;
 import com.cershy.linyuserver.utils.ResultUtil;
@@ -35,6 +35,27 @@ public class UserController {
     @UrlResource("admin")
     public JSONObject createUser(@RequestBody CreateUserVo createUserVo) {
         boolean result = userService.createUser(createUserVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    @PostMapping("/disable")
+    @UrlResource("admin")
+    public JSONObject disableUser(@Userid String userid, @RequestBody DisableUserVo disableUserVo) {
+        boolean result = userService.disableUser(userid, disableUserVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    @PostMapping("/undisable")
+    @UrlResource("admin")
+    public JSONObject undisableUser(@RequestBody UndisableUserVo undisableUserVo) {
+        boolean result = userService.undisableUser(undisableUserVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    @PostMapping("/delete")
+    @UrlResource("admin")
+    public JSONObject deleteUser(@Userid String userid, @RequestBody DeleteUserVo deleteUserVo) {
+        boolean result = userService.deleteUser(userid, deleteUserVo);
         return ResultUtil.ResultByFlag(result);
     }
 }

@@ -2,8 +2,7 @@ package com.cershy.linyuserver.service;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cershy.linyuserver.admin.vo.user.CreateUserVo;
-import com.cershy.linyuserver.admin.vo.user.UserListVo;
+import com.cershy.linyuserver.admin.vo.user.*;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -45,4 +44,12 @@ public interface UserService extends IService<User> {
     void online(String userId);
 
     boolean createUser(CreateUserVo createUserVo);
+
+    boolean allUserOffline();
+
+    boolean disableUser(String userId, DisableUserVo disableUserVo);
+
+    boolean deleteUser(String userid, DeleteUserVo deleteUserVo);
+
+    boolean undisableUser(UndisableUserVo undisableUserVo);
 }
