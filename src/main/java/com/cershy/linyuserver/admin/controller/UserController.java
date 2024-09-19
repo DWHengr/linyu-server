@@ -38,6 +38,13 @@ public class UserController {
         return ResultUtil.ResultByFlag(result);
     }
 
+    @PostMapping("/update")
+    @UrlResource("admin")
+    public JSONObject updateUser(@RequestBody UpdateUserVo updateUserVo) {
+        boolean result = userService.updateUser(updateUserVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
     @PostMapping("/disable")
     @UrlResource("admin")
     public JSONObject disableUser(@Userid String userid, @RequestBody DisableUserVo disableUserVo) {

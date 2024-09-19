@@ -1,6 +1,5 @@
 package com.cershy.linyuserver.service.impl;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
@@ -143,6 +142,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Page<User> userList(UserListVo userListVo) {
         Page<User> page = new Page<>(userListVo.getCurrentPage(), userListVo.getPageSize());
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(User::getId, User::getAccount, User::getName, User::getPortrait,
+                User::getSex, User::getBirthday, User::getSignature, User::getPhone,
+                User::getEmail, User::getLastOptTime, User::getStatus, User::getIsOnline,
+                User::getRole, User::getCreateTime, User::getUpdateTime);
         if (StringUtils.isNotBlank(userListVo.getKeyword())) {
             queryWrapper.and(query -> {
                 query.like(User::getName, userListVo.getKeyword())
@@ -165,7 +168,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.orderByDesc(User::getCreateTime);
         return this.page(page, queryWrapper);
     }
-
 
     @Override
     public boolean register(RegisterVo registerVo) {
@@ -219,7 +221,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         User user = new User();
         user.setId(IdUtil.randomUUID());
-        user.setName(createUserVo.getUsername());
+        user.setName(createUserVo.getName());
         user.setAccount(createUserVo.getAccount());
         String password = RandomUtil.randomString(8);
         String passwordHash = SecurityUtil.hashPassword(password);
@@ -233,7 +235,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //密码发送邮件
         if (save(user)) {
             Context context = new Context();
-            context.setVariable("username", createUserVo.getUsername());
+            context.setVariable("username", createUserVo.getName());
             context.setVariable("account", createUserVo.getAccount());
             context.setVariable("password", password);
             emailService.sendHtmlMessage(createUserVo.getEmail(), "Linyu用户密码", "email_password_template.html", context);
@@ -273,6 +275,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(User::getStatus, UserStatus.Normal)
                 .eq(User::getId, undisableUserVo.getUserId());
+        return update(updateWrapper);
+    }
+
+    @Override
+    public boolean updateUser(UpdateUserVo updateUserVo) {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getName, updateUserVo.getName())
+                .set(User::getEmail, updateUserVo.getEmail())
+                .set(User::getPhone, updateUserVo.getPhone())
+                .eq(User::getId, updateUserVo.getId());
         return update(updateWrapper);
     }
 }

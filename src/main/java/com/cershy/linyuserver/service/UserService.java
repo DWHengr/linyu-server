@@ -52,4 +52,6 @@ public interface UserService extends IService<User> {
     boolean deleteUser(String userid, DeleteUserVo deleteUserVo);
 
     boolean undisableUser(UndisableUserVo undisableUserVo);
+
+    boolean updateUser(UpdateUserVo updateUserVo);
 }
