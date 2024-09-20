@@ -65,4 +65,11 @@ public class UserController {
         boolean result = userService.deleteUser(userid, deleteUserVo);
         return ResultUtil.ResultByFlag(result);
     }
+
+    @PostMapping("/reset/password")
+    @UrlResource("admin")
+    public JSONObject restPassword(@RequestBody ResetPasswordVo resetPasswordVo) {
+        boolean result = userService.restPassword(resetPasswordVo);
+        return ResultUtil.ResultByFlag(result);
+    }
 }
