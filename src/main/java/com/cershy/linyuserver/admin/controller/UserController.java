@@ -72,4 +72,18 @@ public class UserController {
         boolean result = userService.restPassword(resetPasswordVo);
         return ResultUtil.ResultByFlag(result);
     }
+
+    @PostMapping("/set/admin")
+    @UrlResource("admin")
+    public JSONObject setAdmin(@Userid String userid, @RequestBody SetAdminVo setAdminVo) {
+        boolean result = userService.setAdmin(userid, setAdminVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    @PostMapping("/cancel/admin")
+    @UrlResource("admin")
+    public JSONObject cancelAdmin(@Userid String userid, @RequestBody CancelAdminVo cancelAdminVo) {
+        boolean result = userService.cancelAdmin(userid, cancelAdminVo);
+        return ResultUtil.ResultByFlag(result);
+    }
 }
