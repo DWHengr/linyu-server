@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cershy.linyuserver.mapper.NotifyMapper">
 
+    <resultMap id="SystemNotifyDtoResultMap" type="com.cershy.linyuserver.dto.SystemNotifyDto">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="type" column="type"/>
+        <result property="content" column="content"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+    </resultMap>
+
 </mapper>

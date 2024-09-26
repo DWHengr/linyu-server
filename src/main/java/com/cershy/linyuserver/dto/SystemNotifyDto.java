@@ -8,6 +8,13 @@ import java.util.Date;
 public class SystemNotifyDto {
     private String id;
     private String type;
-    private String content;
+    private SystemNotifyContent content;
     private Date createTime;
+
+    @Data
+    public static class SystemNotifyContent {
+        private String title;
+        private String img;
+        private String text;
+    }
 }
