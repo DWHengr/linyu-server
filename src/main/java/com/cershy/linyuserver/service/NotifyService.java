@@ -1,5 +1,6 @@
 package com.cershy.linyuserver.service;
 
+import com.cershy.linyuserver.admin.vo.notify.DeleteNotifyVo;
 import com.cershy.linyuserver.dto.FriendNotifyDto;
 import com.cershy.linyuserver.dto.SystemNotifyDto;
 import com.cershy.linyuserver.entity.Notify;
@@ -28,4 +29,6 @@ public interface NotifyService extends IService<Notify> {
     boolean readNotify(String userId, ReadNotifyVo readNotifyVo);
 
     List<SystemNotifyDto> SystemListNotify(String userId);
+
+    boolean deleteNotify(DeleteNotifyVo deleteNotifyVo);
 }

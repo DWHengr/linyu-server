@@ -3,6 +3,7 @@ package com.cershy.linyuserver.service.impl;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.cershy.linyuserver.admin.vo.notify.DeleteNotifyVo;
 import com.cershy.linyuserver.constant.FriendApplyStatus;
 import com.cershy.linyuserver.constant.NotifyType;
 import com.cershy.linyuserver.dto.FriendNotifyDto;
@@ -93,5 +94,10 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
     public List<SystemNotifyDto> SystemListNotify(String userId) {
         List<SystemNotifyDto> result = notifyMapper.SystemListNotify();
         return result;
+    }
+
+    @Override
+    public boolean deleteNotify(DeleteNotifyVo deleteNotifyVo) {
+        return removeById(deleteNotifyVo.getNotifyId());
     }
 }
