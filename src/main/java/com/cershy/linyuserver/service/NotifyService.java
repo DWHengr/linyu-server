@@ -31,4 +31,6 @@ public interface NotifyService extends IService<Notify> {
     List<SystemNotifyDto> SystemListNotify(String userId);
 
     boolean deleteNotify(DeleteNotifyVo deleteNotifyVo);
+
+    boolean createNotify(String url, String title, String text);
 }
