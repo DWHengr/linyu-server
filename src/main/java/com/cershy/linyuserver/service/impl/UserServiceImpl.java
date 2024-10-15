@@ -14,10 +14,7 @@ import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.UserMapper;
-import com.cershy.linyuserver.service.ChatListService;
-import com.cershy.linyuserver.service.EmailService;
-import com.cershy.linyuserver.service.NotifyService;
-import com.cershy.linyuserver.service.UserService;
+import com.cershy.linyuserver.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.utils.JwtUtil;
 import com.cershy.linyuserver.utils.RedisUtils;
@@ -29,9 +26,12 @@ import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +65,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     EmailService emailService;
 
+    @Resource
+    UserOperatedService userOperatedService;
+
+    public String getClientIp() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                .getRequest();
+        String clientIp = request.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.length() == 0 || "unknown".equalsIgnoreCase(clientIp)) {
+            clientIp = request.getHeader("Proxy-Client-IP");
+        }
+        if (clientIp == null || clientIp.length() == 0 || "unknown".equalsIgnoreCase(clientIp)) {
+            clientIp = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (clientIp == null || clientIp.length() == 0 || "unknown".equalsIgnoreCase(clientIp)) {
+            clientIp = request.getRemoteAddr();
+        }
+        return clientIp;
+    }
+
+
     @Override
     public JSONObject validateLogin(LoginVo loginVo, boolean isAdmin) {
         // 获取用户
@@ -90,6 +110,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userinfo.put("email", user.getEmail());
         //生成用户token
         userinfo.put("token", JwtUtil.createToken(userinfo));
+        //记录登录操作
+        userOperatedService.recordLogin(user.getId(), getClientIp());
         return ResultUtil.Succeed(userinfo);
     }
 
