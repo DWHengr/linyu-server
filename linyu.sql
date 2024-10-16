@@ -226,6 +226,19 @@ CREATE TABLE `user_operated`
 
 
 
+DROP TABLE if EXISTS `statistic`;
+CREATE TABLE `statistic`
+(
+    `id`          varchar(64)  NOT NULL,
+    `date`        date         NOT NULL COMMENT '日期',
+    `login_num`   int default 0 COMMENT '登录数量',
+    `online_num`  int default 0 COMMENT '在线数量',
+    `create_time` timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='统计表' row_format=dynamic;
+
+
 insert into `notify` (`id`, `from_id`, `to_id`, `type`, `status`, `content`, `unread_id`, `create_time`, `update_time`)
 values ('1', '0', '0', 'system', NULL,
         '{\"img\":\"http://139.196.241.208:9000/linyu/notify/welcome.png\",\"text\":\"欢迎使用林语~\"}', NULL,
