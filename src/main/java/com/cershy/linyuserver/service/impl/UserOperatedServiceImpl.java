@@ -11,6 +11,7 @@ import com.cershy.linyuserver.service.UserOperatedService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -34,4 +35,11 @@ public class UserOperatedServiceImpl extends ServiceImpl<UserOperatedMapper, Use
         List<UserOperatedDto> result = userOperatedMapper.loginDetails(loginDetailsVo.getIndex(), loginDetailsVo.getNum(), loginDetailsVo.getKeyword());
         return result;
     }
+
+    @Override
+    public Integer uniqueLoginNum(Date date) {
+        Integer result = userOperatedMapper.uniqueLoginNum(date);
+        return result;
+    }
+
 }

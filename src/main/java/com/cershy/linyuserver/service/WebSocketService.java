@@ -119,4 +119,8 @@ public class WebSocketService {
         });
     }
 
+    public Integer getOnlineNum() {
+        return Online_User.size();
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.cershy.linyuserver.service.impl;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
@@ -25,6 +27,7 @@ import com.cershy.linyuserver.vo.user.RegisterVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ThreadUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -32,6 +35,7 @@ import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +72,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     UserOperatedService userOperatedService;
 
+    @Resource
+    WebSocketService webSocketService;
+
     public String getClientIp() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                 .getRequest();
@@ -82,6 +89,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             clientIp = request.getRemoteAddr();
         }
         return clientIp;
+    }
+
+    public void updateRedisOnlineNum() {
+        Integer onlineNum = webSocketService.getOnlineNum();
+        String key = "onlineNum#" + DateUtil.today();
+        Integer redisOnlineNum = (Integer) redisUtils.get(key);
+        if (null == redisOnlineNum) {
+            redisUtils.set(key, onlineNum, 25 * 60 * 1000);
+        }
+        if (onlineNum > redisOnlineNum) {
+            redisUtils.set(key, onlineNum, 25 * 60 * 1000);
+        }
     }
 
 
@@ -110,8 +129,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userinfo.put("email", user.getEmail());
         //生成用户token
         userinfo.put("token", JwtUtil.createToken(userinfo));
-        //记录登录操作
-        userOperatedService.recordLogin(user.getId(), getClientIp());
+        ThreadUtil.execAsync(() -> {
+            //记录登录操作
+            userOperatedService.recordLogin(user.getId(), getClientIp());
+            //更新同时在线人数
+            updateRedisOnlineNum();
+        });
         return ResultUtil.Succeed(userinfo);
     }
 

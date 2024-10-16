@@ -1,5 +1,6 @@
 package com.cershy.linyuserver.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
@@ -317,5 +318,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             log.error("voiceToText:" + e.getMessage());
             throw new LinyuException("语音转换错误~");
         }
+    }
+
+    @Override
+    public Integer messageNum(DateTime date) {
+        Integer num = messageMapper.messageNum(date);
+        return num;
     }
 }

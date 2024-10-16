@@ -1,5 +1,6 @@
 package com.cershy.linyuserver.service;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.entity.Message;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -43,4 +44,6 @@ public interface MessageService extends IService<Message> {
     String sendFileOrImg(String userId, String msgId, HttpServletRequest request) throws IOException;
 
     Message voiceToText(String userId, String msgId);
+
+    Integer messageNum(DateTime date);
 }

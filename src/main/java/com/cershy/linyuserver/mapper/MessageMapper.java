@@ -1,5 +1,6 @@
 package com.cershy.linyuserver.mapper;
 
+import cn.hutool.core.date.DateTime;
 import com.cershy.linyuserver.entity.Message;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -46,4 +47,8 @@ public interface MessageMapper extends BaseMapper<Message> {
             "ORDER BY `create_time` DESC LIMIT 1")
     @ResultMap("mybatis-plus_Message")
     Message getPreviousShowTimeMsg(@Param("userId") String userId, @Param("targetId") String toUserId);
+
+    @Select("select count(*) from `message` where create_time >= #{date} " +
+            "    AND create_time < DATE_ADD(#{date}, INTERVAL 1 DAY) ")
+    Integer messageNum(DateTime date);
 }
