@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.dto.NumInfoDto;
+import com.cershy.linyuserver.dto.Top10MsgDto;
 import com.cershy.linyuserver.entity.Statistic;
 import com.cershy.linyuserver.mapper.StatisticMapper;
 import com.cershy.linyuserver.service.MessageService;
@@ -64,5 +65,11 @@ public class StatisticServiceImpl extends ServiceImpl<StatisticMapper, Statistic
         numInfoDto.setMsgNum(messageService.messageNum(date));
         numInfoDto.setOnlineNum(webSocketService.getOnlineNum());
         return numInfoDto;
+    }
+
+    @Override
+    public List<Top10MsgDto> top10Msg() {
+        List<Top10MsgDto> result = messageService.getTop10Msg(new Date());
+        return result;
     }
 }

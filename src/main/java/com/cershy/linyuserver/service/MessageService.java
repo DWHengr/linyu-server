@@ -2,6 +2,7 @@ package com.cershy.linyuserver.service;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONObject;
+import com.cershy.linyuserver.dto.Top10MsgDto;
 import com.cershy.linyuserver.entity.Message;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.entity.MessageRetraction;
@@ -13,6 +14,7 @@ import com.cershy.linyuserver.vo.message.SendMsgVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,4 +48,6 @@ public interface MessageService extends IService<Message> {
     Message voiceToText(String userId, String msgId);
 
     Integer messageNum(DateTime date);
+
+    List<Top10MsgDto> getTop10Msg(Date date);
 }

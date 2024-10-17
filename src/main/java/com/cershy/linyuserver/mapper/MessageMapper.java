@@ -1,12 +1,14 @@
 package com.cershy.linyuserver.mapper;
 
 import cn.hutool.core.date.DateTime;
+import com.cershy.linyuserver.dto.Top10MsgDto;
 import com.cershy.linyuserver.entity.Message;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,4 +53,14 @@ public interface MessageMapper extends BaseMapper<Message> {
     @Select("select count(*) from `message` where create_time >= #{date} " +
             "    AND create_time < DATE_ADD(#{date}, INTERVAL 1 DAY) ")
     Integer messageNum(DateTime date);
+
+    @Select("SELECT u.id, u.account, u.name, u.portrait, COUNT(m.id) AS num " +
+            "FROM message m " +
+            "JOIN user u ON m.from_id = u.id " +
+            "WHERE m.create_time >= DATE(#{date}) " +
+            "  AND m.create_time < DATE_ADD(DATE (#{date}), INTERVAL 1 DAY) " +
+            "GROUP BY u.id " +
+            "ORDER BY num DESC " +
+            "LIMIT 10 ")
+    List<Top10MsgDto> getTop10Msg(Date date);
 }

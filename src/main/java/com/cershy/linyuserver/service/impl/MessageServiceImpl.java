@@ -12,6 +12,7 @@ import com.cershy.linyuserver.config.VoiceConfig;
 import com.cershy.linyuserver.constant.MessageContentType;
 import com.cershy.linyuserver.constant.MsgSource;
 import com.cershy.linyuserver.constant.MsgType;
+import com.cershy.linyuserver.dto.Top10MsgDto;
 import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.entity.Message;
 import com.cershy.linyuserver.entity.MessageRetraction;
@@ -324,5 +325,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     public Integer messageNum(DateTime date) {
         Integer num = messageMapper.messageNum(date);
         return num;
+    }
+
+    @Override
+    public List<Top10MsgDto> getTop10Msg(Date date) {
+        List<Top10MsgDto> result = messageMapper.getTop10Msg(date);
+        return result;
     }
 }

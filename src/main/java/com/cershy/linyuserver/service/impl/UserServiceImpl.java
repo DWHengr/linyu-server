@@ -26,8 +26,8 @@ import com.cershy.linyuserver.vo.login.LoginVo;
 import com.cershy.linyuserver.vo.user.RegisterVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.ThreadUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -35,7 +35,6 @@ import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +48,7 @@ import java.util.List;
  * @since 2024-05-17
  */
 @Service
+@Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Resource
@@ -129,9 +129,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userinfo.put("email", user.getEmail());
         //生成用户token
         userinfo.put("token", JwtUtil.createToken(userinfo));
+        String ip = getClientIp();
         ThreadUtil.execAsync(() -> {
             //记录登录操作
-            userOperatedService.recordLogin(user.getId(), getClientIp());
+            userOperatedService.recordLogin(user.getId(), ip);
             //更新同时在线人数
             updateRedisOnlineNum();
         });

@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.admin.vo.statistic.LoginDetailsVo;
 import com.cershy.linyuserver.annotation.UrlResource;
 import com.cershy.linyuserver.dto.NumInfoDto;
+import com.cershy.linyuserver.dto.Top10MsgDto;
 import com.cershy.linyuserver.dto.UserOperatedDto;
 import com.cershy.linyuserver.service.StatisticService;
 import com.cershy.linyuserver.service.UserOperatedService;
@@ -47,6 +48,18 @@ public class StatisticController {
     @UrlResource("admin")
     public JSONObject numInfo() {
         NumInfoDto result = statisticService.numInfo();
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 消息发送数量top10
+     *
+     * @return
+     */
+    @GetMapping("/top10/msg")
+    @UrlResource("admin")
+    public JSONObject top10Msg() {
+        List<Top10MsgDto> result = statisticService.top10Msg();
         return ResultUtil.Succeed(result);
     }
 }
