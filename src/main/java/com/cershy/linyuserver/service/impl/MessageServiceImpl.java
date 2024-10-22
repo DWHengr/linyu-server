@@ -12,6 +12,7 @@ import com.cershy.linyuserver.config.VoiceConfig;
 import com.cershy.linyuserver.constant.MessageContentType;
 import com.cershy.linyuserver.constant.MsgSource;
 import com.cershy.linyuserver.constant.MsgType;
+import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.dto.Top10MsgDto;
 import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.entity.Message;
@@ -130,10 +131,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         return null;
     }
 
-    public Message sendMessageToUser(String userId, SendMsgVo sendMsgVo, String type) {
+    public Message sendMessageToUser(String userId, String role, SendMsgVo sendMsgVo, String type) {
         //验证是否是好友
         boolean isFriend = friendService.isFriend(userId, sendMsgVo.getToUserId());
-        if (!isFriend) {
+        if (!isFriend && UserRole.User.equals(role)) {
             throw new LinyuException("双方非好友");
         }
         Message message = sendMessage(userId, sendMsgVo.getToUserId(), sendMsgVo.getMsgContent(), MsgSource.User, type);
@@ -172,11 +173,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     }
 
     @Override
-    public Message sendMessage(String userId, SendMsgVo sendMsgVo, String type) {
+    public Message sendMessage(String userId, String role, SendMsgVo sendMsgVo, String type) {
         if (MsgSource.Group.equals(sendMsgVo.getSource())) {
             return sendMessageToGroup(userId, sendMsgVo, type);
         } else {
-            return sendMessageToUser(userId, sendMsgVo, type);
+            return sendMessageToUser(userId, role, sendMsgVo, type);
         }
     }
 

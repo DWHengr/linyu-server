@@ -20,8 +20,8 @@ public interface ChatListMapper extends BaseMapper<ChatList> {
 
     @Select("SELECT c.*, u.`name` AS `name`, f.`remark`, u.`portrait` AS portrait " +
             "FROM `chat_list` AS c " +
-            "JOIN `user` AS u ON c.`from_id` = u.`id` " +
-            "JOIN `friend` AS f ON c.`from_id` = f.`friend_id` AND c.`user_id` = f.`user_id` " +
+            "LEFT JOIN `user` AS u ON c.`from_id` = u.`id` " +
+            "LEFT JOIN `friend` AS f ON c.`from_id` = f.`friend_id` AND c.`user_id` = f.`user_id` " +
             "WHERE c.`user_id` = #{userId} AND c.`is_top` = #{isTop} AND c.`type` = 'user' " +
             "ORDER BY c.`update_time` DESC")
     @ResultMap("mybatis-plus_ChatList")
@@ -29,8 +29,8 @@ public interface ChatListMapper extends BaseMapper<ChatList> {
 
     @Select("SELECT c.*, cg.`name` AS `name`, cgm.`group_remark` AS `remark`, cg.`portrait` AS portrait  " +
             "FROM `chat_list` AS c " +
-            "JOIN `chat_group` AS cg ON c.`from_id` = cg.`id` " +
-            "JOIN `chat_group_member` AS cgm ON c.`from_id` = cgm.`chat_group_id` AND c.`user_id` = cgm.`user_id`  " +
+            "LEFT JOIN `chat_group` AS cg ON c.`from_id` = cg.`id` " +
+            "LEFT JOIN `chat_group_member` AS cgm ON c.`from_id` = cgm.`chat_group_id` AND c.`user_id` = cgm.`user_id`  " +
             "WHERE c.`user_id` = #{userId} AND c.`is_top` = #{isTop} AND c.`type` = 'group' " +
             "ORDER BY c.`update_time` DESC")
     @ResultMap("mybatis-plus_ChatList")

@@ -5,6 +5,7 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.cershy.linyuserver.constant.MsgSource;
+import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.dto.ChatListDto;
 import com.cershy.linyuserver.entity.ChatGroupMember;
 import com.cershy.linyuserver.entity.ChatList;
@@ -137,11 +138,11 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
     }
 
     @Override
-    public ChatList createChatList(String userId, CreateChatListVo createChatListVo) {
+    public ChatList createChatList(String userId, String role, CreateChatListVo createChatListVo) {
         boolean isFriend = friendService.isFriend(userId, createChatListVo.getUserId());
         ChatList chatList = null;
         if (MsgSource.User.equals(createChatListVo.getType())) {
-            if (!isFriend) {
+            if (!isFriend && UserRole.User.equals(role)) {
                 throw new LinyuException("双方非好友");
             }
             chatList = chatListMapper.detailChatList(userId, createChatListVo.getUserId());

@@ -23,7 +23,7 @@ public interface ChatListService extends IService<ChatList> {
 
     void updateChatList(String toUserId, String fromUserId, MsgContent msgContent, String type);
 
-    ChatList createChatList(String userId, CreateChatListVo createChatListVo);
+    ChatList createChatList(String userId, String role, CreateChatListVo createChatListVo);
 
     boolean messageRead(String userId, String targetId);
 

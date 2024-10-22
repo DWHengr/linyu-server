@@ -2,6 +2,7 @@ package com.cershy.linyuserver.controller;
 
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.UrlFree;
+import com.cershy.linyuserver.annotation.UserRole;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.exception.LinyuException;
@@ -144,10 +145,12 @@ public class UserController {
      */
     @GetMapping("/get/file")
     public ResponseEntity<InputStreamResource> getFile(@Userid String userId,
+                                                       @UserRole String role,
                                                        @RequestHeader("targetId") String targetId,
                                                        @RequestHeader("fileName") String fileName) {
         boolean isFriend = friendService.isFriend(userId, targetId);
-        if (!isFriend && !userId.equals(targetId)) {
+        if (!isFriend && !userId.equals(targetId)
+                && com.cershy.linyuserver.constant.UserRole.User.equals(role)) {
             throw new LinyuException("双方非好友");
         }
         InputStream inputStream = minioUtil.getObject(targetId + "/img/" + fileName);
@@ -164,10 +167,12 @@ public class UserController {
      */
     @GetMapping("/get/img")
     public JSONObject getImg(@Userid String userId,
+                             @UserRole String role,
                              @RequestParam("targetId") String targetId,
                              @RequestParam("fileName") String fileName) {
         boolean isFriend = friendService.isFriend(userId, targetId);
-        if (!isFriend && !userId.equals(targetId)) {
+        if (!isFriend && !userId.equals(targetId) &&
+                com.cershy.linyuserver.constant.UserRole.User.equals(role)) {
             throw new LinyuException("双方非好友");
         }
         String name = targetId + "/img/" + fileName;

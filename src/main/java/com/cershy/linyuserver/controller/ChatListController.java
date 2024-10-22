@@ -2,6 +2,7 @@ package com.cershy.linyuserver.controller;
 
 
 import cn.hutool.json.JSONObject;
+import com.cershy.linyuserver.annotation.UserRole;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.dto.ChatListDto;
 import com.cershy.linyuserver.entity.ChatList;
@@ -42,8 +43,8 @@ public class ChatListController {
      * @return
      */
     @PostMapping("/create")
-    public JSONObject createChatList(@Userid String userId, @RequestBody CreateChatListVo createChatListVo) {
-        ChatList result = chatListService.createChatList(userId, createChatListVo);
+    public JSONObject createChatList(@Userid String userId, @UserRole String role, @RequestBody CreateChatListVo createChatListVo) {
+        ChatList result = chatListService.createChatList(userId, role, createChatListVo);
         return ResultUtil.Succeed(result);
     }
 

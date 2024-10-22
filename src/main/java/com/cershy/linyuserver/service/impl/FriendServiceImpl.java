@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.cershy.linyuserver.constant.FriendApplyStatus;
 import com.cershy.linyuserver.constant.NotifyType;
+import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.dto.TalkContentDto;
 import com.cershy.linyuserver.entity.Friend;
 import com.cershy.linyuserver.entity.Group;
 import com.cershy.linyuserver.entity.Notify;
+import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.FriendMapper;
 import com.cershy.linyuserver.service.*;
@@ -52,6 +54,9 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     @Resource
     ChatListService chatListService;
 
+    @Resource
+    UserService userService;
+
     @Override
     public List<FriendListDto> getFriendList(String userId) {
         List<FriendListDto> friendListDtos = new ArrayList<>();
@@ -90,6 +95,11 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
 
     @Override
     public boolean isFriend(String userId, String friendId) {
+        User friend = userService.getById(friendId);
+        User user = userService.getById(userId);
+        if (null != user && (UserRole.Admin.equals(user.getRole()) || UserRole.Admin.equals(friend.getRole()))) {
+            return true;
+        }
         LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Friend::getUserId, userId).eq(Friend::getFriendId, friendId);
         return count(queryWrapper) > 0;

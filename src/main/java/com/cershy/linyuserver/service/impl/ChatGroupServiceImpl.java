@@ -9,6 +9,7 @@ import com.cershy.linyuserver.config.MinioConfig;
 import com.cershy.linyuserver.constant.MessageContentType;
 import com.cershy.linyuserver.constant.MsgSource;
 import com.cershy.linyuserver.constant.MsgType;
+import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.dto.ChatGroupDetailsDto;
 import com.cershy.linyuserver.dto.SystemMsgDto;
 import com.cershy.linyuserver.entity.*;
@@ -165,7 +166,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
             msgContent.setFormUserId(userId);
             msgContent.setExt(userId);
             sendMsgVo.setMsgContent(msgContent);
-            messageService.sendMessage(userId, sendMsgVo, MsgType.System);
+            messageService.sendMessage(userId, UserRole.User, sendMsgVo, MsgType.System);
 
         }
         if (members.size() > 0) {
@@ -205,7 +206,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         msgContent.setFormUserId(userId);
         msgContent.setExt(userId);
         sendMsgVo.setMsgContent(msgContent);
-        messageService.sendMessage(userId, sendMsgVo, MsgType.System);
+        messageService.sendMessage(userId, UserRole.User, sendMsgVo, MsgType.System);
 
         ChatGroup chatGroup = getById(quitChatGroupVo.getGroupId());
         chatGroup.setMemberNum(chatGroup.getMemberNum() - 1);
@@ -237,7 +238,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         msgContent.setFormUserId(userId);
         msgContent.setExt(kickChatGroupVo.getUserId());
         sendMsgVo.setMsgContent(msgContent);
-        messageService.sendMessage(userId, sendMsgVo, MsgType.System);
+        messageService.sendMessage(userId, UserRole.User, sendMsgVo, MsgType.System);
 
         ChatGroup chatGroup = getById(kickChatGroupVo.getGroupId());
         chatGroup.setMemberNum(chatGroup.getMemberNum() - 1);
@@ -263,7 +264,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         msgContent.setFormUserId(userId);
         msgContent.setExt("all");
         sendMsgVo.setMsgContent(msgContent);
-        messageService.sendMessage(userId, sendMsgVo, MsgType.System);
+        messageService.sendMessage(userId, UserRole.User, sendMsgVo, MsgType.System);
 
         return removeById(dissolveChatGroupVo.getGroupId());
     }

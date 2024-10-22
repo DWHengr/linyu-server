@@ -2,6 +2,7 @@ package com.cershy.linyuserver.controller;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.cershy.linyuserver.annotation.UserRole;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.constant.MsgType;
 import com.cershy.linyuserver.entity.Message;
@@ -53,8 +54,8 @@ public class MessageController {
      * @return
      */
     @PostMapping("/send")
-    public JSONObject sendMessage(@Userid String userId, @RequestBody SendMsgVo sendMsgVo) {
-        Message result = messageService.sendMessage(userId, sendMsgVo, MsgType.User);
+    public JSONObject sendMessage(@Userid String userId, @UserRole String role, @RequestBody SendMsgVo sendMsgVo) {
+        Message result = messageService.sendMessage(userId, role, sendMsgVo, MsgType.User);
         return ResultUtil.Succeed(result);
     }
 
