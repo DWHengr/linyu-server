@@ -10,6 +10,7 @@ import com.cershy.linyuserver.vo.login.LoginVo;
 import com.cershy.linyuserver.vo.user.RegisterVo;
 import com.cershy.linyuserver.vo.user.SearchUserVo;
 import com.cershy.linyuserver.vo.user.UpdateVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,10 @@ public interface UserService extends IService<User> {
 
     boolean createUser(CreateUserVo createUserVo);
 
+    String createThirdPartyUser(MultipartFile portrait, String name);
+
+    boolean updateThirdPartyUser(MultipartFile portrait, String name, String userId);
+
     boolean allUserOffline();
 
     boolean disableUser(String userId, DisableUserVo disableUserVo);
@@ -60,4 +65,6 @@ public interface UserService extends IService<User> {
     boolean setAdmin(String userid, SetAdminVo setAdminVo);
 
     boolean cancelAdmin(String userid, CancelAdminVo cancelAdminVo);
+
+    boolean deleteThirdPartyUser(String userId);
 }
