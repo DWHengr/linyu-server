@@ -238,6 +238,19 @@ CREATE TABLE `statistic`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='统计表' row_format=dynamic;
 
+DROP TABLE if EXISTS `conversation`;
+CREATE TABLE `conversation`
+(
+    `id`          varchar(64)  NOT NULL,
+    `user_id`     varchar(64)  NOT NULL COMMENT '用户id',
+    `access_key`  varchar(128) NOT NULL COMMENT 'access key',
+    `secret_key`  varchar(128) NOT NULL COMMENT 'secret_key',
+    `status`      varchar(128) NOT NULL COMMENT '状态',
+    `create_time` timestamp(3) NOT NULL COMMENT '创建时间',
+    `update_time` timestamp(3) NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会话表' row_format=dynamic;
+
 
 insert into `notify` (`id`, `from_id`, `to_id`, `type`, `status`, `content`, `unread_id`, `create_time`, `update_time`)
 values ('1', '0', '0', 'system', NULL,
