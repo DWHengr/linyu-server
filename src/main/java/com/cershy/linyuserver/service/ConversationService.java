@@ -2,7 +2,9 @@ package com.cershy.linyuserver.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.admin.vo.conversation.DeleteConversationVo;
+import com.cershy.linyuserver.admin.vo.conversation.DisableConversationVo;
 import com.cershy.linyuserver.admin.vo.conversation.ResetSecretVo;
+import com.cershy.linyuserver.admin.vo.conversation.UndisableConversationVo;
 import com.cershy.linyuserver.dto.ConversationDto;
 import com.cershy.linyuserver.entity.Conversation;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ConversationService extends IService<Conversation> {
-    String getSecretKey(String accessKey);
+    Conversation getConversationByAccessKey(String accessKey);
 
     Conversation createConversation(MultipartFile portrait, String name);
 
@@ -21,4 +23,8 @@ public interface ConversationService extends IService<Conversation> {
     boolean deleteConversation(DeleteConversationVo deleteConversationVo);
 
     boolean resetSecret(ResetSecretVo resetSecretVo);
+
+    boolean disableConversation(DisableConversationVo disableConversationVo);
+
+    boolean undisableConversation(UndisableConversationVo undisableConversationVo);
 }

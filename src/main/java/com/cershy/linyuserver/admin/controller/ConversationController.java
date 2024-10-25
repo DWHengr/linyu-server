@@ -2,7 +2,9 @@ package com.cershy.linyuserver.admin.controller;
 
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.admin.vo.conversation.DeleteConversationVo;
+import com.cershy.linyuserver.admin.vo.conversation.DisableConversationVo;
 import com.cershy.linyuserver.admin.vo.conversation.ResetSecretVo;
+import com.cershy.linyuserver.admin.vo.conversation.UndisableConversationVo;
 import com.cershy.linyuserver.annotation.UrlResource;
 import com.cershy.linyuserver.dto.ConversationDto;
 import com.cershy.linyuserver.entity.Conversation;
@@ -87,4 +89,28 @@ public class ConversationController {
         return ResultUtil.ResultByFlag(result);
     }
 
+
+    /**
+     * 禁用会话
+     *
+     * @return
+     */
+    @PostMapping("/disable")
+    @UrlResource("admin")
+    public JSONObject disableConversation(@RequestBody DisableConversationVo disableConversationVo) {
+        boolean result = conversationService.disableConversation(disableConversationVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     * 解禁会话
+     *
+     * @return
+     */
+    @PostMapping("/undisable")
+    @UrlResource("admin")
+    public JSONObject undisableConversation(@RequestBody UndisableConversationVo undisableConversationVo) {
+        boolean result = conversationService.undisableConversation(undisableConversationVo);
+        return ResultUtil.ResultByFlag(result);
+    }
 }

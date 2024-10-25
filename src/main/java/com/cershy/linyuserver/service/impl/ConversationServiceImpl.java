@@ -4,7 +4,9 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.admin.vo.conversation.DeleteConversationVo;
+import com.cershy.linyuserver.admin.vo.conversation.DisableConversationVo;
 import com.cershy.linyuserver.admin.vo.conversation.ResetSecretVo;
+import com.cershy.linyuserver.admin.vo.conversation.UndisableConversationVo;
 import com.cershy.linyuserver.constant.ConversationStatus;
 import com.cershy.linyuserver.dto.ConversationDto;
 import com.cershy.linyuserver.entity.Conversation;
@@ -29,12 +31,14 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
     ConversationMapper conversationMapper;
 
     @Override
-    public String getSecretKey(String accessKey) {
+    public Conversation getConversationByAccessKey(String accessKey) {
         LambdaQueryWrapper<Conversation> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Conversation::getAccessKey, accessKey);
         Conversation conversation = getOne(queryWrapper);
-        if (ConversationStatus.Normal.equals(conversation.getStatus())) return conversation.getSecretKey();
-        return null;
+        if (null == conversation || !ConversationStatus.Normal.equals(conversation.getStatus())) {
+            return null;
+        }
+        return conversation;
     }
 
     @Override
@@ -84,8 +88,31 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
     @Override
     public boolean resetSecret(ResetSecretVo resetSecretVo) {
         Conversation conversation = getById(resetSecretVo.getConversationId());
+        if (null == conversation) {
+            throw new LinyuException("会话不存在~");
+        }
         conversation.setAccessKey(IdUtil.randomUUID().replace("-", ""));
         conversation.setSecretKey(IdUtil.randomUUID().replace("-", ""));
+        return updateById(conversation);
+    }
+
+    @Override
+    public boolean disableConversation(DisableConversationVo disableConversationVo) {
+        Conversation conversation = getById(disableConversationVo.getConversationId());
+        if (null == conversation) {
+            throw new LinyuException("会话不存在~");
+        }
+        conversation.setStatus(ConversationStatus.Disable);
+        return updateById(conversation);
+    }
+
+    @Override
+    public boolean undisableConversation(UndisableConversationVo undisableConversationVo) {
+        Conversation conversation = getById(undisableConversationVo.getConversationId());
+        if (null == conversation) {
+            throw new LinyuException("会话不存在~");
+        }
+        conversation.setStatus(ConversationStatus.Normal);
         return updateById(conversation);
     }
 }
