@@ -67,4 +67,6 @@ public interface UserService extends IService<User> {
     boolean cancelAdmin(String userid, CancelAdminVo cancelAdminVo);
 
     boolean deleteThirdPartyUser(String userId);
+
+    List<User> getUserByEmail(String email);
 }

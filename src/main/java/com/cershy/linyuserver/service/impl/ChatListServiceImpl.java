@@ -139,9 +139,9 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
 
     @Override
     public ChatList createChatList(String userId, String role, CreateChatListVo createChatListVo) {
-        boolean isFriend = friendService.isFriend(userId, createChatListVo.getUserId());
         ChatList chatList = null;
         if (MsgSource.User.equals(createChatListVo.getType())) {
+            boolean isFriend = friendService.isFriend(userId, createChatListVo.getUserId());
             if (!isFriend && UserRole.User.equals(role)) {
                 throw new LinyuException("双方非好友");
             }

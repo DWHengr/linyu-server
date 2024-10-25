@@ -100,6 +100,9 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         if (null != user && (UserRole.Admin.equals(user.getRole()) || UserRole.Admin.equals(friend.getRole()))) {
             return true;
         }
+        if (UserRole.Third.equals(user.getRole())) {
+            return true;
+        }
         LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Friend::getUserId, userId).eq(Friend::getFriendId, friendId);
         return count(queryWrapper) > 0;

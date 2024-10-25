@@ -2,6 +2,7 @@ package com.cershy.linyuserver.service;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONObject;
+import com.cershy.linyuserver.admin.vo.expose.ThirdSendMsgVo;
 import com.cershy.linyuserver.dto.Top10MsgDto;
 import com.cershy.linyuserver.entity.Message;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -50,4 +51,6 @@ public interface MessageService extends IService<Message> {
     Integer messageNum(DateTime date);
 
     List<Top10MsgDto> getTop10Msg(Date date);
+
+    boolean thirdPartySendMsg(String userId, ThirdSendMsgVo sendMsgVo);
 }

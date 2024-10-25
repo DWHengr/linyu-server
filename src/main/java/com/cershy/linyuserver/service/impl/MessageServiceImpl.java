@@ -8,11 +8,11 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.cershy.linyuserver.admin.vo.expose.ThirdSendMsgVo;
 import com.cershy.linyuserver.config.VoiceConfig;
 import com.cershy.linyuserver.constant.MessageContentType;
 import com.cershy.linyuserver.constant.MsgSource;
 import com.cershy.linyuserver.constant.MsgType;
-import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.dto.Top10MsgDto;
 import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.entity.Message;
@@ -131,10 +131,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         return null;
     }
 
-    public Message sendMessageToUser(String userId, String role, SendMsgVo sendMsgVo, String type) {
+    public Message sendMessageToUser(String userId, SendMsgVo sendMsgVo, String type) {
         //验证是否是好友
         boolean isFriend = friendService.isFriend(userId, sendMsgVo.getToUserId());
-        if (!isFriend && UserRole.User.equals(role)) {
+        if (!isFriend) {
             throw new LinyuException("双方非好友");
         }
         Message message = sendMessage(userId, sendMsgVo.getToUserId(), sendMsgVo.getMsgContent(), MsgSource.User, type);
@@ -177,7 +177,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         if (MsgSource.Group.equals(sendMsgVo.getSource())) {
             return sendMessageToGroup(userId, sendMsgVo, type);
         } else {
-            return sendMessageToUser(userId, role, sendMsgVo, type);
+            return sendMessageToUser(userId, sendMsgVo, type);
         }
     }
 
@@ -332,5 +332,24 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     public List<Top10MsgDto> getTop10Msg(Date date) {
         List<Top10MsgDto> result = messageMapper.getTop10Msg(date);
         return result;
+    }
+
+    @Override
+    public boolean thirdPartySendMsg(String userId, ThirdSendMsgVo thirdSendMsgVo) {
+        if (userId == null)
+            return false;
+        List<User> users = userService.getUserByEmail(thirdSendMsgVo.getEmail());
+        for (User user : users) {
+            MsgContent msgContent = new MsgContent();
+            msgContent.setType(MessageContentType.Text);
+            msgContent.setContent(thirdSendMsgVo.getContent());
+
+            SendMsgVo sendMsgVo = new SendMsgVo();
+            sendMsgVo.setMsgContent(msgContent);
+            sendMsgVo.setToUserId(user.getId());
+            sendMsgVo.setSource(MsgSource.User);
+            sendMessageToUser(userId, sendMsgVo, MsgType.User);
+        }
+        return true;
     }
 }
