@@ -37,12 +37,14 @@ public class UserInfoArgumentResolver implements HandlerMethodArgumentResolver {
 
         if (parameter.hasParameterAnnotation(UserInfo.class)) {
             return request.getAttribute("userinfo");
-        } else if (parameter.hasParameterAnnotation(Userid.class)) {
+        }
+        if (parameter.hasParameterAnnotation(Userid.class)) {
             Map<String, Object> userinfo = (Map<String, Object>) request.getAttribute("userinfo");
             if (userinfo != null) {
                 return userinfo.get("userId");
             }
-        } else if (parameter.hasParameterAnnotation(UserRole.class)) {
+        }
+        if (parameter.hasParameterAnnotation(UserRole.class)) {
             Map<String, Object> userinfo = (Map<String, Object>) request.getAttribute("userinfo");
             if (userinfo != null) {
                 return userinfo.get("role");

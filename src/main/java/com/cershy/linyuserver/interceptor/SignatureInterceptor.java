@@ -1,19 +1,24 @@
 package com.cershy.linyuserver.interceptor;
 
+import com.cershy.linyuserver.entity.Conversation;
 import com.cershy.linyuserver.service.ConversationService;
 import com.cershy.linyuserver.utils.SignatureUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class SignatureInterceptor implements HandlerInterceptor {
 
-    @Resource
     ConversationService conversationService;
+
+    public SignatureInterceptor(ConversationService conversationService) {
+        this.conversationService = conversationService;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -33,19 +38,24 @@ public class SignatureInterceptor implements HandlerInterceptor {
             return false;
         }
         // 根据accessKey获取secretKey
-        String secretKey = conversationService.getSecretKey(accessKey);
-        if (secretKey == null) {
+        Conversation conversation = conversationService.getConversationByAccessKey(accessKey);
+        if (null == conversation) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
         // 验证签名
         String method = request.getMethod();
         String path = request.getRequestURI();
-        String calculatedSignature = SignatureUtils.calculateSignature(method, path, accessKey, timestamp, secretKey);
+        String calculatedSignature = SignatureUtils.calculateSignature(method, path, accessKey, timestamp, conversation.getSecretKey());
         if (!calculatedSignature.equals(signature)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
+        Map<String, Object> map = new HashMap<>();
+        map.put("accessKey", accessKey);
+        map.put("timestamp", timestamp);
+        map.put("userId", conversation.getUserId());
+        request.setAttribute("userinfo", map);
         return true;
     }
 }

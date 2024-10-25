@@ -1,6 +1,7 @@
 package com.cershy.linyuserver.config;
 
 import com.cershy.linyuserver.interceptor.SignatureInterceptor;
+import com.cershy.linyuserver.service.ConversationService;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -18,6 +20,9 @@ import java.util.List;
  **/
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+
+    @Resource
+    ConversationService conversationService;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -40,7 +45,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new SignatureInterceptor())
+        registry.addInterceptor(new SignatureInterceptor(conversationService))
                 .addPathPatterns("/v1/api/expose/**");
     }
 }
