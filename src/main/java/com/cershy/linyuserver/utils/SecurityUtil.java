@@ -24,7 +24,13 @@ public final class SecurityUtil {
     }
 
     public static String getPublicKey() {
-        return Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
+        PublicKey publicKey = keyPair.getPublic();
+        byte[] publicKeyBytes = publicKey.getEncoded();
+        StringBuilder pemBuilder = new StringBuilder();
+        pemBuilder.append("-----BEGIN PUBLIC KEY-----\n");
+        pemBuilder.append(Base64.getEncoder().encodeToString(publicKeyBytes));
+        pemBuilder.append("\n-----END PUBLIC KEY-----");
+        return pemBuilder.toString();
     }
 
     public static String decryptPassword(String encryptedPassword) {
