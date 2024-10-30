@@ -5,6 +5,7 @@ import com.cershy.linyuserver.annotation.UrlFree;
 import com.cershy.linyuserver.annotation.UserRole;
 import com.cershy.linyuserver.annotation.Userid;
 import com.cershy.linyuserver.dto.UserDto;
+import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.service.UserService;
@@ -13,13 +14,9 @@ import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.RedisUtils;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.utils.SecurityUtil;
-import com.cershy.linyuserver.vo.user.EmailVerifyVo;
-import com.cershy.linyuserver.vo.user.RegisterVo;
-import com.cershy.linyuserver.vo.user.SearchUserVo;
-import com.cershy.linyuserver.vo.user.UpdateVo;
+import com.cershy.linyuserver.vo.user.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,7 +25,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -104,6 +102,20 @@ public class UserController {
     }
 
     /**
+     * 忘记密码
+     *
+     * @return
+     */
+    @UrlFree
+    @PostMapping("/forget")
+    public JSONObject forget(@RequestBody ForgetVo forgetVo) {
+        String decryptedPassword = SecurityUtil.decryptPassword(forgetVo.getPassword());
+        forgetVo.setPassword(decryptedPassword);
+        boolean result = userService.forget(forgetVo);
+        return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
      * 获取当前用户信息
      *
      * @return
@@ -123,6 +135,23 @@ public class UserController {
     public JSONObject update(@Userid String userId, @RequestBody UpdateVo updateVo) {
         boolean result = userService.updateUserInfo(userId, updateVo);
         return ResultUtil.ResultByFlag(result);
+    }
+
+    /**
+     *修改密码
+     *
+     * @return
+     */
+    @PostMapping("/update/password")
+    public JSONObject updateUserPassword(@Userid String userId, @RequestBody UpdatePasswordVo updateVo) {
+        String decryptedPassword = SecurityUtil.decryptPassword(updateVo.getConfirmPassword());
+        updateVo.setConfirmPassword(decryptedPassword);
+        User user = userService.getById(userId);
+        if (SecurityUtil.verifyPassword(updateVo.getOldPassword(), user.getPassword())) {
+            boolean result = userService.updateUserInfo(userId, updateVo);
+            return ResultUtil.ResultByFlag(result);
+        }
+        else return ResultUtil.ResultByFlag(false,"原密码错误~",400);
     }
 
     @PostMapping(value = "/upload/portrait")
