@@ -2,14 +2,12 @@ package com.cershy.linyuserver.service;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.admin.vo.user.*;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.cershy.linyuserver.vo.login.LoginVo;
-import com.cershy.linyuserver.vo.user.RegisterVo;
-import com.cershy.linyuserver.vo.user.SearchUserVo;
-import com.cershy.linyuserver.vo.user.UpdateVo;
+import com.cershy.linyuserver.vo.user.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -34,9 +32,13 @@ public interface UserService extends IService<User> {
 
     boolean updateUserInfo(String userId, UpdateVo updateVo);
 
+    boolean updateUserInfo(String userId, UpdatePasswordVo updateVo);
+
     boolean updateUserPortrait(String userId, String portrait);
 
     boolean register(RegisterVo registerVo);
+
+    boolean forget(ForgetVo forgetVo);
 
     Page<User> userList(UserListVo userListVo);
 

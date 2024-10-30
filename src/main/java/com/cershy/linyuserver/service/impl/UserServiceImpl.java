@@ -8,6 +8,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.admin.vo.user.*;
 import com.cershy.linyuserver.config.MinioConfig;
 import com.cershy.linyuserver.constant.UserRole;
@@ -17,12 +18,9 @@ import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.UserMapper;
 import com.cershy.linyuserver.service.*;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.utils.*;
 import com.cershy.linyuserver.vo.login.LoginVo;
-import com.cershy.linyuserver.vo.user.RegisterVo;
-import com.cershy.linyuserver.vo.user.SearchUserVo;
-import com.cershy.linyuserver.vo.user.UpdateVo;
+import com.cershy.linyuserver.vo.user.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -178,6 +176,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public boolean updateUserInfo(String userId, UpdatePasswordVo updateVo) {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        String passwordHash = SecurityUtil.hashPassword(updateVo.getConfirmPassword());
+        updateWrapper.set(User::getPassword, passwordHash)
+                .eq(User::getId, userId);
+        return update(updateWrapper);
+    }
+
+
+    @Override
     public boolean updateUserPortrait(String userId, String portrait) {
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(User::getPortrait, portrait)
@@ -242,6 +250,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setEmail(registerVo.getEmail());
         user.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-portrait.jpg");
         return save(user);
+    }
+
+    @Override
+    public boolean forget(ForgetVo forgetVo) {
+        //验证码校验
+        String code = (String) redisUtils.get(forgetVo.getEmail());
+        if (code == null || !code.equals(forgetVo.getCode())) {
+            throw new LinyuException("验证码错误或者已失效~");
+        }
+        redisUtils.del(forgetVo.getEmail());
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getAccount, forgetVo.getAccount())
+                .eq(User::getEmail, forgetVo.getEmail());
+        User user = getOne(queryWrapper);
+        if (null == user) throw new LinyuException("用户不存在~");
+//        User user = new User();
+//        user.setId(IdUtil.randomUUID());
+//        user.setAccount(forgetVo.getAccount());
+        String passwordHash = SecurityUtil.hashPassword(forgetVo.getPassword());
+//        user.setStatus(UserStatus.Normal);
+        user.setPassword(passwordHash);
+//        user.setBirthday(new Date());
+//        user.setSex("男");
+//        user.setEmail(forgetVo.getEmail());
+//        user.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-portrait.jpg");
+        return updateById(user);
     }
 
     @Override
