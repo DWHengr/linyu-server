@@ -75,37 +75,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     MinioUtil minioUtil;
 
-    public String getClientIp() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-                .getRequest();
-        String clientIp = request.getHeader("X-Forwarded-For");
-        if (clientIp == null || clientIp.length() == 0 || "unknown".equalsIgnoreCase(clientIp)) {
-            clientIp = request.getHeader("Proxy-Client-IP");
-        }
-        if (clientIp == null || clientIp.length() == 0 || "unknown".equalsIgnoreCase(clientIp)) {
-            clientIp = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (clientIp == null || clientIp.length() == 0 || "unknown".equalsIgnoreCase(clientIp)) {
-            clientIp = request.getRemoteAddr();
-        }
-        return clientIp;
-    }
-
     public void updateRedisOnlineNum() {
         Integer onlineNum = webSocketService.getOnlineNum();
         String key = "onlineNum#" + DateUtil.today();
         Integer redisOnlineNum = (Integer) redisUtils.get(key);
         if (null == redisOnlineNum) {
-            redisUtils.set(key, onlineNum, 25 * 60 * 1000);
+            redisUtils.set(key, onlineNum, 25 * 60);
         }
         if (onlineNum > redisOnlineNum) {
-            redisUtils.set(key, onlineNum, 25 * 60 * 1000);
+            redisUtils.set(key, onlineNum, 25 * 60);
         }
     }
 
 
     @Override
-    public JSONObject validateLogin(LoginVo loginVo, boolean isAdmin) {
+    public JSONObject validateLogin(LoginVo loginVo, String userIp, boolean isAdmin) {
         // 获取用户
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(User::getAccount, loginVo.getAccount());
@@ -129,10 +113,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userinfo.put("email", user.getEmail());
         //生成用户token
         userinfo.put("token", JwtUtil.createToken(userinfo));
-        String ip = getClientIp();
         ThreadUtil.execAsync(() -> {
             //记录登录操作
-            userOperatedService.recordLogin(user.getId(), ip);
+            userOperatedService.recordLogin(user.getId(), userIp);
             //更新同时在线人数
             updateRedisOnlineNum();
         });

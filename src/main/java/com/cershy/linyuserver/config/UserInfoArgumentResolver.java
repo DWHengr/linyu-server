@@ -2,8 +2,10 @@ package com.cershy.linyuserver.config;
 
 
 import com.cershy.linyuserver.annotation.UserInfo;
+import com.cershy.linyuserver.annotation.UserIp;
 import com.cershy.linyuserver.annotation.UserRole;
 import com.cershy.linyuserver.annotation.Userid;
+import com.cershy.linyuserver.utils.IpUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -23,7 +25,8 @@ public class UserInfoArgumentResolver implements HandlerMethodArgumentResolver {
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(UserInfo.class) ||
                 parameter.hasParameterAnnotation(Userid.class) ||
-                parameter.hasParameterAnnotation(UserRole.class);
+                parameter.hasParameterAnnotation(UserRole.class) ||
+                parameter.hasParameterAnnotation(UserIp.class);
     }
 
     @Override
@@ -48,6 +51,12 @@ public class UserInfoArgumentResolver implements HandlerMethodArgumentResolver {
             Map<String, Object> userinfo = (Map<String, Object>) request.getAttribute("userinfo");
             if (userinfo != null) {
                 return userinfo.get("role");
+            }
+        }
+        if (parameter.hasParameterAnnotation(UserIp.class)) {
+            String ipAddr = IpUtil.getIpAddr(request);
+            if (ipAddr != null) {
+                return ipAddr;
             }
         }
         return null;
