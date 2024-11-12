@@ -5,6 +5,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,6 +14,7 @@ import com.cershy.linyuserver.admin.vo.user.*;
 import com.cershy.linyuserver.config.MinioConfig;
 import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.constant.UserStatus;
+import com.cershy.linyuserver.dto.QrCodeResult;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.exception.LinyuException;
@@ -20,6 +22,7 @@ import com.cershy.linyuserver.mapper.UserMapper;
 import com.cershy.linyuserver.service.*;
 import com.cershy.linyuserver.utils.*;
 import com.cershy.linyuserver.vo.login.LoginVo;
+import com.cershy.linyuserver.vo.login.QrCodeLoginVo;
 import com.cershy.linyuserver.vo.user.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -103,6 +106,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (isAdmin && !UserRole.Admin.equals(user.getRole())) {
             return ResultUtil.Fail("您非管理员~");
         }
+        JSONObject userinfo = createUserToken(user, userIp);
+        return ResultUtil.Succeed(userinfo);
+    }
+
+    public JSONObject createUserToken(User user, String userIp) {
         JSONObject userinfo = new JSONObject();
         userinfo.put("userId", user.getId());
         userinfo.put("account", user.getAccount());
@@ -119,7 +127,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             //更新同时在线人数
             updateRedisOnlineNum();
         });
-        return ResultUtil.Succeed(userinfo);
+        return userinfo;
     }
 
     @Override
@@ -454,5 +462,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getEmail, email);
         return list(queryWrapper);
+    }
+
+    @Override
+    public JSONObject validateQrCodeLogin(QrCodeLoginVo qrCodeLoginVo, String userid) {
+        // 获取用户
+        User user = getById(userid);
+        if (null == user) {
+            return ResultUtil.Fail("用户不存在~");
+        }
+        String result = (String) redisUtils.get(qrCodeLoginVo.getKey());
+        if (null == result) {
+            return ResultUtil.Fail("二维码已失效~");
+        }
+        QrCodeResult qrCodeResult = JSONUtil.toBean(result, QrCodeResult.class);
+        JSONObject userinfo = createUserToken(user, qrCodeResult.getIp());
+        qrCodeResult.setStatus("success");
+        qrCodeResult.setUserInfo(userinfo);
+        redisUtils.set(qrCodeLoginVo.getKey(), JSONUtil.toJsonStr(qrCodeResult), 1);
+        return ResultUtil.Succeed();
     }
 }

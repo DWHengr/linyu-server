@@ -7,6 +7,7 @@ import com.cershy.linyuserver.admin.vo.user.*;
 import com.cershy.linyuserver.dto.UserDto;
 import com.cershy.linyuserver.entity.User;
 import com.cershy.linyuserver.vo.login.LoginVo;
+import com.cershy.linyuserver.vo.login.QrCodeLoginVo;
 import com.cershy.linyuserver.vo.user.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +23,7 @@ import java.util.List;
  * @since 2024-05-17
  */
 public interface UserService extends IService<User> {
-    JSONObject validateLogin(LoginVo loginVo,String userIp, boolean isAdmin);
+    JSONObject validateLogin(LoginVo loginVo, String userIp, boolean isAdmin);
 
     List<UserDto> searchUser(SearchUserVo searchUserVo);
 
@@ -71,4 +72,6 @@ public interface UserService extends IService<User> {
     boolean deleteThirdPartyUser(String userId);
 
     List<User> getUserByEmail(String email);
+
+    JSONObject validateQrCodeLogin(QrCodeLoginVo qrCodeLoginVo, String userid);
 }
