@@ -138,7 +138,7 @@ public class UserController {
     }
 
     /**
-     *修改密码
+     * 修改密码
      *
      * @return
      */
@@ -150,8 +150,7 @@ public class UserController {
         if (SecurityUtil.verifyPassword(updateVo.getOldPassword(), user.getPassword())) {
             boolean result = userService.updateUserInfo(userId, updateVo);
             return ResultUtil.ResultByFlag(result);
-        }
-        else return ResultUtil.ResultByFlag(false,"原密码错误~",400);
+        } else return ResultUtil.ResultByFlag(false, "原密码错误~", 400);
     }
 
     @PostMapping(value = "/upload/portrait")
@@ -208,7 +207,7 @@ public class UserController {
         String url = (String) redisUtils.get(name);
         if (StringUtils.isBlank(url)) {
             url = minioUtil.previewFile(name);
-            redisUtils.set(name, url, 7 * 24 * 60);
+            redisUtils.set(name, url, 7 * 24 * 60 * 60);
         }
         return ResultUtil.Succeed(url);
     }
