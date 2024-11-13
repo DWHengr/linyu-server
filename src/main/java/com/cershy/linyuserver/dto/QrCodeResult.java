@@ -8,5 +8,5 @@ public class QrCodeResult {
     private String action;
     private String ip;
     private String status;
-    private JSONObject userInfo;
+    private JSONObject extend;
 }

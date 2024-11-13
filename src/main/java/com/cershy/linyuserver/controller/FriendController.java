@@ -8,6 +8,7 @@ import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.entity.Friend;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.utils.ResultUtil;
+import com.cershy.linyuserver.utils.SecurityUtil;
 import com.cershy.linyuserver.vo.friend.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,6 +91,20 @@ public class FriendController {
         boolean result = friendService.agreeFriendApply(userId, agreeFriendApplyVo);
         return ResultUtil.Succeed(result);
     }
+
+
+    /**
+     * 扫码好友请求
+     *
+     * @return
+     */
+    @PostMapping("/add/qr")
+    public JSONObject addFriendByQr(@Userid String userId, @RequestBody AddFriendByQrVo AddFriendByQrVo) {
+        String targetId = SecurityUtil.aesDecrypt(AddFriendByQrVo.getQrCode());
+        boolean result = friendService.addFriendApply(userId, targetId);
+        return ResultUtil.Succeed(result);
+    }
+
 
     /**
      * 设置好友备注

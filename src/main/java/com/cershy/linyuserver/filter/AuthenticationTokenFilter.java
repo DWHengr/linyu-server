@@ -5,6 +5,7 @@ import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.utils.UrlPermitUtil;
 import io.jsonwebtoken.Claims;
 import jdk.nashorn.internal.runtime.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -41,23 +42,20 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         String url = httpServletRequest.getRequestURI();
         // 验证url是否需要验证
         if (!urlPermitUtil.isPermitUrl(url)) {
-            Claims claims = null;
             try {
-                claims = JwtUtil.parseToken(token);
+                Claims claims = JwtUtil.parseToken(token);
+                setUserInfo(claims, url, httpServletRequest, httpServletResponse);
             } catch (Exception e) {
-                tokenInvalid(httpServletResponse);
                 return;
             }
-            // 设置用户信息
-            Map<String, Object> map = new HashMap<>();
-            claims.entrySet().stream().forEach(e -> map.put(e.getKey(), e.getValue()));
-            //验证角色是否有权限
-            String role = (String) map.get("role");
-            if (!urlPermitUtil.isRoleUrl(role, url)) {
-                tokenInvalid(httpServletResponse);
-                return;
+        } else {
+            if (StringUtils.isNotBlank(token)) {
+                try {
+                    Claims claims = JwtUtil.parseToken(token);
+                    setUserInfo(claims, url, httpServletRequest, httpServletResponse);
+                } catch (Exception e) {
+                }
             }
-            httpServletRequest.setAttribute("userinfo", map);
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
@@ -73,5 +71,19 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
+    }
+
+    public void setUserInfo(Claims claims, String url,
+                            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        // 设置用户信息
+        Map<String, Object> map = new HashMap<>();
+        claims.entrySet().stream().forEach(e -> map.put(e.getKey(), e.getValue()));
+        //验证角色是否有权限
+        String role = (String) map.get("role");
+        if (!urlPermitUtil.isRoleUrl(role, url)) {
+            tokenInvalid(httpServletResponse);
+            return;
+        }
+        httpServletRequest.setAttribute("userinfo", map);
     }
 }

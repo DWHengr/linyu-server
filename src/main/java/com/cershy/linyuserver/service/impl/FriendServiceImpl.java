@@ -132,6 +132,14 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
      * @return
      */
     public boolean addFriend(String userId, String targetId) {
+        User user = userService.getById(userId);
+        if (null == user) {
+            throw new LinyuException("用户不存在");
+        }
+        user = userService.getById(targetId);
+        if (null == user) {
+            throw new LinyuException("用户不存在");
+        }
         //判断目标是否是自己好友
         LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Friend::getUserId, userId)
@@ -143,7 +151,7 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
             friend.setFriendId(targetId);
             return save(friend);
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -159,16 +167,24 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
             throw new LinyuException("没有添加好友申请");
         }
         //双方添加好友
-        addFriend(userId, notify.getFromId());
-        addFriend(notify.getFromId(), userId);
+        boolean result = addFriendApply(userId, notify.getFromId());
         //更新通知
         notify.setStatus(FriendApplyStatus.Agree);
         notify.setUnreadId(notify.getFromId());
         notifyService.updateById(notify);
         //发送通知
         webSocketService.sendNotifyToUser(notify, notify.getFromId());
-        return true;
+        return result;
     }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public boolean addFriendApply(String userId, String targetId) {
+        //双方添加好友
+        addFriend(userId, targetId);
+        return addFriend(targetId, userId);
+    }
+
 
     @Override
     public boolean updateGroupId(String userId, String oldGroupId, String newGroupId) {
@@ -210,6 +226,7 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
             q.eq(Friend::getFriendId, userId).eq(Friend::getUserId, deleteFriendVo.getFriendId());
         });
         chatListService.removeByUserId(userId, deleteFriendVo.getFriendId());
+
         return remove(queryWrapper);
     }
 
