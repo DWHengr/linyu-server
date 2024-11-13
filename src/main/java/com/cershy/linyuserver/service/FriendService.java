@@ -27,6 +27,8 @@ public interface FriendService extends IService<Friend> {
 
     boolean agreeFriendApply(String userId, AgreeFriendApplyVo agreeFriendApplyVo);
 
+    boolean addFriendApply(String userId, String targetId);
+
     boolean updateGroupId(String userId, String oldGroupId, String newGroupId);
 
     boolean setRemark(String userId, SetRemarkVo setRemarkVo);
