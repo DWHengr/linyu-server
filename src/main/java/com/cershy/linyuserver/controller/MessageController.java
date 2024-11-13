@@ -163,7 +163,7 @@ public class MessageController {
         String url = (String) redisUtils.get(fileName);
         if (StringUtils.isBlank(url)) {
             url = minioUtil.previewFile(fileName);
-            redisUtils.set(fileName, url, 7 * 24 * 60);
+            redisUtils.set(fileName, url, 7 * 24 * 60 * 60);
         }
         return ResultUtil.Succeed(url);
     }

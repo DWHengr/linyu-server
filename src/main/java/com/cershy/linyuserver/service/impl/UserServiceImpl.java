@@ -83,10 +83,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String key = "onlineNum#" + DateUtil.today();
         Integer redisOnlineNum = (Integer) redisUtils.get(key);
         if (null == redisOnlineNum) {
-            redisUtils.set(key, onlineNum, 25 * 60);
+            redisUtils.set(key, onlineNum, 25 * 60 * 60);
         }
         if (onlineNum > redisOnlineNum) {
-            redisUtils.set(key, onlineNum, 25 * 60);
+            redisUtils.set(key, onlineNum, 25 * 60 * 60);
         }
     }
 
@@ -478,8 +478,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         QrCodeResult qrCodeResult = JSONUtil.toBean(result, QrCodeResult.class);
         JSONObject userinfo = createUserToken(user, qrCodeResult.getIp());
         qrCodeResult.setStatus("success");
-        qrCodeResult.setUserInfo(userinfo);
-        redisUtils.set(qrCodeLoginVo.getKey(), JSONUtil.toJsonStr(qrCodeResult), 1);
+        qrCodeResult.setExtend(userinfo);
+        redisUtils.set(qrCodeLoginVo.getKey(), JSONUtil.toJsonStr(qrCodeResult), 60);
         return ResultUtil.Succeed();
     }
 }
