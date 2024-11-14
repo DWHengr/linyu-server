@@ -116,6 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userinfo.put("account", user.getAccount());
         userinfo.put("username", user.getName());
         userinfo.put("role", user.getRole());
+        userinfo.put("sex", user.getSex());
         userinfo.put("portrait", user.getPortrait());
         userinfo.put("phone", user.getPhone());
         userinfo.put("email", user.getEmail());
