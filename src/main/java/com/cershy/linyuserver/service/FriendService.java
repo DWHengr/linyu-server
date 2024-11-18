@@ -19,6 +19,8 @@ import java.util.List;
 public interface FriendService extends IService<Friend> {
     List<FriendListDto> getFriendList(String userId);
 
+    boolean isFriendIgnoreSpecial(String userId, String friendId);
+
     boolean isFriend(String userId, String friendId);
 
     FriendDetailsDto getFriendDetails(String userId, String friendId);

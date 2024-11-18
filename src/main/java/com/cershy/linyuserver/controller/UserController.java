@@ -190,7 +190,7 @@ public class UserController {
                                                        @UserRole String role,
                                                        @RequestHeader("targetId") String targetId,
                                                        @RequestHeader("fileName") String fileName) {
-        boolean isFriend = friendService.isFriend(userId, targetId);
+        boolean isFriend = friendService.isFriendIgnoreSpecial(userId, targetId);
         if (!isFriend && !userId.equals(targetId)
                 && com.cershy.linyuserver.constant.UserRole.User.equals(role)) {
             throw new LinyuException("双方非好友");
@@ -212,7 +212,7 @@ public class UserController {
                              @UserRole String role,
                              @RequestParam("targetId") String targetId,
                              @RequestParam("fileName") String fileName) {
-        boolean isFriend = friendService.isFriend(userId, targetId);
+        boolean isFriend = friendService.isFriendIgnoreSpecial(userId, targetId);
         if (!isFriend && !userId.equals(targetId) &&
                 com.cershy.linyuserver.constant.UserRole.User.equals(role)) {
             throw new LinyuException("双方非好友");

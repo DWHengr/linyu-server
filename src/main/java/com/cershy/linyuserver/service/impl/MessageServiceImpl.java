@@ -133,7 +133,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
     public Message sendMessageToUser(String userId, SendMsgVo sendMsgVo, String type) {
         //验证是否是好友
-        boolean isFriend = friendService.isFriend(userId, sendMsgVo.getToUserId());
+        boolean isFriend = friendService.isFriendIgnoreSpecial(userId, sendMsgVo.getToUserId());
         if (!isFriend) {
             throw new LinyuException("双方非好友");
         }

@@ -49,6 +49,15 @@ public class FriendController {
     }
 
     /**
+     * 判断是否是好友
+     */
+    @GetMapping("/is/friend")
+    public JSONObject isFriend(@Userid String userId, @RequestParam String targetId) {
+        boolean result = friendService.isFriend(userId, targetId);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
      * 获取好友列表(未读消息数)
      *
      * @return

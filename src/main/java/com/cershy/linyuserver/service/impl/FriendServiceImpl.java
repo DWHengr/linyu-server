@@ -93,8 +93,11 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         return friendListDtos;
     }
 
+    /**
+     * 判断是否是好友（忽略管理员，三方用户)
+     */
     @Override
-    public boolean isFriend(String userId, String friendId) {
+    public boolean isFriendIgnoreSpecial(String userId, String friendId) {
         User friend = userService.getById(friendId);
         User user = userService.getById(userId);
         if (null != user && (UserRole.Admin.equals(user.getRole()) || UserRole.Admin.equals(friend.getRole()))) {
@@ -109,8 +112,15 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     }
 
     @Override
+    public boolean isFriend(String userId, String friendId) {
+        LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Friend::getUserId, userId).eq(Friend::getFriendId, friendId);
+        return count(queryWrapper) > 0;
+    }
+
+    @Override
     public FriendDetailsDto getFriendDetails(String userId, String friendId) {
-        boolean isFriend = isFriend(userId, friendId);
+        boolean isFriend = isFriendIgnoreSpecial(userId, friendId);
         if (!isFriend) {
             throw new LinyuException("双方非好友");
         }

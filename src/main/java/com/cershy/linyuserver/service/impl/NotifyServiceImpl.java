@@ -48,9 +48,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
 
     @Override
     public boolean friendApplyNotify(String userId, FriendApplyNotifyVo friendApplyNotifyVo) {
-        LambdaQueryWrapper<Friend> queryFriendWrapper = new LambdaQueryWrapper<>();
-        queryFriendWrapper.eq(Friend::getUserId, userId).eq(Friend::getFriendId, friendApplyNotifyVo.getUserId());
-        if (friendService.count(queryFriendWrapper) > 0) {
+        if (friendService.isFriend(userId, friendApplyNotifyVo.getUserId())) {
             throw new LinyuException("ta已是您的好友");
         }
         LambdaQueryWrapper<Notify> queryWrapper = new LambdaQueryWrapper<>();
