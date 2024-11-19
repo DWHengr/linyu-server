@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.cershy.linyuserver.dto.GroupListDto;
 import com.cershy.linyuserver.entity.Group;
+import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.GroupMapper;
 import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.service.GroupService;
@@ -47,6 +48,9 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
 
     @Override
     public boolean createGroup(String userId, CreateGroupVo createGroupVo) {
+        if (isExistGroupNameByUserId(userId, createGroupVo.getGroupName())) {
+            throw new LinyuException("分组名已存在~");
+        }
         Group group = new Group();
         group.setId(IdUtil.randomUUID());
         group.setUserId(userId);
@@ -56,6 +60,9 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
 
     @Override
     public boolean updateGroup(String userId, UpdateGroupVo updateGroupVo) {
+        if (isExistGroupNameByUserId(userId, updateGroupVo.getGroupName())) {
+            throw new LinyuException("分组名已存在~");
+        }
         LambdaUpdateWrapper<Group> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(Group::getName, updateGroupVo.getGroupName())
                 .eq(Group::getUserId, userId)
@@ -95,6 +102,12 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
         }
         LambdaQueryWrapper<Group> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Group::getUserId, userId).eq(Group::getId, GroupId);
+        return count(queryWrapper) > 0;
+    }
+
+    public boolean isExistGroupNameByUserId(String userId, String groupName) {
+        LambdaQueryWrapper<Group> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Group::getUserId, userId).eq(Group::getName, groupName);
         return count(queryWrapper) > 0;
     }
 }
