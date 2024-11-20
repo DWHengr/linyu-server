@@ -13,6 +13,7 @@ import com.cershy.linyuserver.config.VoiceConfig;
 import com.cershy.linyuserver.constant.MessageContentType;
 import com.cershy.linyuserver.constant.MsgSource;
 import com.cershy.linyuserver.constant.MsgType;
+import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.Top10MsgDto;
 import com.cershy.linyuserver.entity.ChatList;
 import com.cershy.linyuserver.entity.Message;
@@ -31,6 +32,7 @@ import com.cershy.linyuserver.vo.message.RetractionMsgVo;
 import com.cershy.linyuserver.vo.message.SendMsgVo;
 import jdk.nashorn.internal.runtime.logging.Logger;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -110,7 +112,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             message.setIsShowTime(DateUtil.between(new Date(), previousMessage.getUpdateTime(), DateUnit.MINUTE) > 5);
         }
         //设置内容
+        FriendDetailsDto friendDetails = friendService.getFriendDetails(toUserId, userId);
         msgContent.setFormUserId(userId);
+        msgContent.setFormUserName(StringUtils.isNotBlank(friendDetails.getRemark())
+                ? friendDetails.getRemark() : friendDetails.getName());
+        msgContent.setFormUserPortrait(friendDetails.getPortrait());
         if (MessageContentType.Img.equals(msgContent.getType()) ||
                 MessageContentType.File.equals(msgContent.getType()) ||
                 MessageContentType.Voice.equals(msgContent.getType())) {
