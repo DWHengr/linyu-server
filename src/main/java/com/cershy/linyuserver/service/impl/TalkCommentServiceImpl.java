@@ -1,7 +1,6 @@
 package com.cershy.linyuserver.service.impl;
 
 import cn.hutool.core.util.IdUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cershy.linyuserver.dto.CommentListDto;
 import com.cershy.linyuserver.entity.Talk;
 import com.cershy.linyuserver.entity.TalkComment;
@@ -61,13 +60,11 @@ public class TalkCommentServiceImpl extends ServiceImpl<TalkCommentMapper, TalkC
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public boolean deleteTalkComment(String userId, DeleteTalkCommentVo deleteTalkLikeVo) {
         Talk talk = talkService.getById(deleteTalkLikeVo.getTalkId());
         talk.setCommentNum(talk.getCommentNum() - 1);
         talkService.updateById(talk);
-        LambdaQueryWrapper<TalkComment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(TalkComment::getTalkId, deleteTalkLikeVo.getTalkId())
-                .eq(TalkComment::getUserId, userId);
-        return remove(queryWrapper);
+        return removeById(deleteTalkLikeVo.getTalkCommentId());
     }
 }
