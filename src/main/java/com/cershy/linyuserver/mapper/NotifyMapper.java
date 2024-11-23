@@ -33,6 +33,12 @@ public interface NotifyMapper extends BaseMapper<Notify> {
             "WHERE (`to_id` = #{userId} OR `from_id` = #{userId}) AND `unread_id` = #{userId}")
     Integer unreadByUserId(String userId);
 
+    @Select("SELECT COUNT(*) FROM `notify` " +
+            "WHERE (`to_id` = #{userId} OR `from_id` = #{userId}) " +
+            "AND `unread_id` = #{userId} " +
+            "AND `type` = #{type} ")
+    Integer unreadByType(String userId, String type);
+
     @Select("SELECT * FROM `notify`" +
             "WHERE `type` = 'system' " +
             "ORDER BY `create_time` DESC")

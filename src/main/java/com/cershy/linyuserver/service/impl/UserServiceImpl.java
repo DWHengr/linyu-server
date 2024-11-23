@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.admin.vo.user.*;
 import com.cershy.linyuserver.config.MinioConfig;
+import com.cershy.linyuserver.constant.NotifyType;
 import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.constant.UserStatus;
 import com.cershy.linyuserver.dto.QrCodeResult;
@@ -146,6 +147,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         int notifyNum = notifyService.unread(userId);
         unreadInfo.put("chat", msgNum);
         unreadInfo.put("notify", notifyNum);
+        unreadInfo.put("friendNotify", notifyService.unreadByType(userId, NotifyType.Friend_Apply));
+        unreadInfo.put("systemNotify", notifyService.unreadByType(userId, NotifyType.System));
         return unreadInfo;
     }
 

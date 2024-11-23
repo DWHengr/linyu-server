@@ -26,6 +26,8 @@ public interface NotifyService extends IService<Notify> {
 
     int unread(String userId);
 
+    int unreadByType(String userId, String type);
+
     boolean readNotify(String userId, ReadNotifyVo readNotifyVo);
 
     List<SystemNotifyDto> SystemListNotify(String userId);
