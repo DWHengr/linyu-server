@@ -29,6 +29,8 @@ public interface FriendService extends IService<Friend> {
 
     boolean agreeFriendApply(String userId, AgreeFriendApplyVo agreeFriendApplyVo);
 
+    boolean agreeFriendApply(String userId,String fromId);
+
     /*
      *
      * 拒绝好友申请
@@ -38,7 +40,7 @@ public interface FriendService extends IService<Friend> {
      * @author zhanglin
      * @date 2024/11/23 10:08
      */
-    boolean rejectFriendApply(String userId, String notifyId);
+    boolean rejectFriendApply(String userId, String fromId);
 
     boolean addFriendApply(String userId, String targetId);
 
