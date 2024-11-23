@@ -188,25 +188,74 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     }
 
     @Override
-    public boolean rejectFriendApply(String userId, String notifyId) {
-        //判断申请是否是用户发起
-        Notify notify = notifyService.getById(notifyId);
-        if (null == notify
-                || !notify.getToId().equals(userId)
-                || !notify.getType().equals(NotifyType.Friend_Apply)
-                || !notify.getStatus().equals(FriendApplyStatus.Wait)
-        ) {
-            throw new LinyuException("没有添加好友申请");
-        }
-        //更新通知
-        notify.setStatus(FriendApplyStatus.Reject);
-        notify.setUnreadId(notify.getFromId());
-        boolean result = notifyService.updateById(notify);
-        //发送通知
-        webSocketService.sendNotifyToUser(notify, notify.getFromId());
+    @Transactional(rollbackFor = RuntimeException.class)
+    public boolean agreeFriendApply(String userId, String fromId) {
 
-        return result;
+        LambdaQueryWrapper<Notify> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(Notify::getFromId, fromId)
+                .eq(Notify::getStatus,FriendApplyStatus.Wait)
+                .eq(Notify::getToId, userId);
+
+        List<Notify> notifyList = notifyService.list(queryWrapper);
+
+        if (notifyList.isEmpty())
+            throw new LinyuException("没有添加好友申请");
+
+        notifyList.forEach(notify -> {
+            notify.setStatus(FriendApplyStatus.Agree);
+            notify.setUnreadId(notify.getFromId());
+            notifyService.updateById(notify);
+            webSocketService.sendNotifyToUser(notify, notify.getFromId());
+        });
+
+        //双方添加好友
+
+        return addFriendApply(userId, notifyList.get(0).getFromId());
     }
+
+    @Override
+    public boolean rejectFriendApply(String userId, String fromId) {
+
+        LambdaQueryWrapper<Notify> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(Notify::getFromId, fromId)
+                .eq(Notify::getStatus,FriendApplyStatus.Wait)
+                .eq(Notify::getToId, userId);
+
+        List<Notify> notifyList = notifyService.list(queryWrapper);
+
+        if (notifyList.isEmpty())
+            throw new LinyuException("没有添加好友申请");
+
+        notifyList.forEach(notify -> {
+            notify.setStatus(FriendApplyStatus.Reject);
+            notify.setUnreadId(notify.getFromId());
+            notifyService.updateById(notify);
+            webSocketService.sendNotifyToUser(notify, notify.getFromId());
+        });
+
+        //判断申请是否是用户发起
+//        Notify notify = notifyService.getById(notifyId);
+//        if (null == notify
+//                || !notify.getToId().equals(userId)
+//                || !notify.getType().equals(NotifyType.Friend_Apply)
+//                || !notify.getStatus().equals(FriendApplyStatus.Wait)
+//        ) {
+//            throw new LinyuException("没有添加好友申请");
+//        }
+        //更新通知
+//        notify.setStatus(FriendApplyStatus.Reject);
+//        notify.setUnreadId(notify.getFromId());
+//        boolean result = notifyService.updateById(notify);
+        //发送通知
+//        webSocketService.sendNotifyToUser(notify, notify.getFromId());
+
+//        return result;
+
+        return true;
+    }
+
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
