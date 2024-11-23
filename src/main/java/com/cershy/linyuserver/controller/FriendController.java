@@ -13,6 +13,7 @@ import com.cershy.linyuserver.vo.friend.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -98,6 +99,17 @@ public class FriendController {
     @PostMapping("/agree")
     public JSONObject agreeFriendApply(@Userid String userId, @RequestBody AgreeFriendApplyVo agreeFriendApplyVo) {
         boolean result = friendService.agreeFriendApply(userId, agreeFriendApplyVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
+     * 拒绝好友请求
+     *
+     * @return
+     */
+    @PostMapping("/reject")
+    public JSONObject refuseFriendApply(@Userid String userId, @RequestBody AgreeFriendApplyVo agreeFriendApplyVo) {
+        boolean result = friendService.rejectFriendApply(userId, agreeFriendApplyVo.getNotifyId());
         return ResultUtil.Succeed(result);
     }
 

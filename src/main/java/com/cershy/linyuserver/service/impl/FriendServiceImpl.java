@@ -188,6 +188,27 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     }
 
     @Override
+    public boolean rejectFriendApply(String userId, String notifyId) {
+        //判断申请是否是用户发起
+        Notify notify = notifyService.getById(notifyId);
+        if (null == notify
+                || !notify.getToId().equals(userId)
+                || !notify.getType().equals(NotifyType.Friend_Apply)
+                || !notify.getStatus().equals(FriendApplyStatus.Wait)
+        ) {
+            throw new LinyuException("没有添加好友申请");
+        }
+        //更新通知
+        notify.setStatus(FriendApplyStatus.Reject);
+        notify.setUnreadId(notify.getFromId());
+        boolean result = notifyService.updateById(notify);
+        //发送通知
+        webSocketService.sendNotifyToUser(notify, notify.getFromId());
+
+        return result;
+    }
+
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public boolean addFriendApply(String userId, String targetId) {
         //双方添加好友
