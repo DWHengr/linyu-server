@@ -14,6 +14,7 @@ import com.cershy.linyuserver.vo.talk.DeleteTalkVo;
 import com.cershy.linyuserver.vo.talk.DetailsTalkVo;
 import com.cershy.linyuserver.vo.talk.TalkListVo;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +68,19 @@ public class TalkController {
         String imgName = IdUtil.randomUUID() + name.substring(name.lastIndexOf("."));
         String imgPath = userId + "/img/" + imgName;
         minioUtil.uploadFile(request.getInputStream(), imgPath, size);
+        Talk talk = talkService.updateTalkImg(userId, talkId, imgName);
+        return ResultUtil.Succeed(talk);
+    }
+
+    @PostMapping("/upload/img/form")
+    public JSONObject uploadImgTalk(MultipartFile file,
+                                    @Userid String userId,
+                                    @RequestParam("talkId") String talkId,
+                                    @RequestParam("name") String name,
+                                    @RequestParam("size") long size) throws IOException {
+        String imgName = IdUtil.randomUUID() + name.substring(name.lastIndexOf("."));
+        String imgPath = userId + "/img/" + imgName;
+        minioUtil.uploadFile(file.getInputStream(), imgPath, size);
         Talk talk = talkService.updateTalkImg(userId, talkId, imgName);
         return ResultUtil.Succeed(talk);
     }

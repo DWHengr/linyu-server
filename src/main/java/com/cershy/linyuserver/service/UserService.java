@@ -73,5 +73,9 @@ public interface UserService extends IService<User> {
 
     List<User> getUserByEmail(String email);
 
+    User getUserByAccount(String account);
+
     JSONObject validateQrCodeLogin(QrCodeLoginVo qrCodeLoginVo, String userid);
+
+    void emailVerifyByAccount(String account);
 }
