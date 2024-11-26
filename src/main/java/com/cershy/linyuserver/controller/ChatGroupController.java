@@ -11,6 +11,7 @@ import com.cershy.linyuserver.utils.MinioUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.chatGroup.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -133,6 +134,26 @@ public class ChatGroupController {
             throw new LinyuException("您不是群主~");
         String fileName = groupId + "-portrait" + name.substring(name.lastIndexOf("."));
         String url = minioUtil.upload(request.getInputStream(), fileName, type, size);
+        url += "?t=" + System.currentTimeMillis();
+        chatGroupService.updateGroupPortrait(groupId, url);
+        return ResultUtil.Succeed(url);
+    }
+
+    /**
+     * 更新群头像（表单）
+     */
+    @PostMapping(value = "/upload/portrait/form")
+    public JSONObject uploadForm(MultipartFile file,
+                                 @Userid String userId,
+                                 @RequestParam("groupId") String groupId,
+                                 @RequestParam("name") String name,
+                                 @RequestParam("type") String type,
+                                 @RequestParam("size") long size) throws IOException {
+        boolean isOwner = chatGroupService.isOwner(groupId, userId);
+        if (!isOwner)
+            throw new LinyuException("您不是群主~");
+        String fileName = groupId + "-portrait" + name.substring(name.lastIndexOf("."));
+        String url = minioUtil.upload(file.getInputStream(), fileName, type, size);
         url += "?t=" + System.currentTimeMillis();
         chatGroupService.updateGroupPortrait(groupId, url);
         return ResultUtil.Succeed(url);
