@@ -46,7 +46,7 @@ public class ChatGroupNoticeServiceImpl extends ServiceImpl<ChatGroupNoticeMappe
         boolean isMemberExists = chatGroupMemberService.isMemberExists(noticeListVo.getGroupId(), userId);
         if (!isMemberExists)
             throw new LinyuException("非该群成员~");
-        List<ChatGroupNotice> result = chatGroupNoticeMapper.noticeList(userId, noticeListVo.getGroupId());
+        List<ChatGroupNotice> result = chatGroupNoticeMapper.noticeList(noticeListVo.getGroupId());
         return result;
     }
 
@@ -78,7 +78,7 @@ public class ChatGroupNoticeServiceImpl extends ServiceImpl<ChatGroupNoticeMappe
                 .eq(ChatGroupNotice::getChatGroupId, deleteNoticeVo.getGroupId());
         remove(queryWrapper);
         if (deleteNoticeVo.getNoticeId().equals(chatGroup.getNotice().getId())) {
-            List<ChatGroupNotice> result = chatGroupNoticeMapper.noticeList(userId, deleteNoticeVo.getGroupId());
+            List<ChatGroupNotice> result = chatGroupNoticeMapper.noticeList(deleteNoticeVo.getGroupId());
             if (null != result && result.size() >= 0) {
                 chatGroup.setNotice(result.get(0));
             }
