@@ -111,12 +111,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         } else {
             message.setIsShowTime(DateUtil.between(new Date(), previousMessage.getUpdateTime(), DateUnit.MINUTE) > 5);
         }
-        //设置内容
-        FriendDetailsDto friendDetails = friendService.getFriendDetails(toUserId, userId);
-        msgContent.setFormUserId(userId);
-        msgContent.setFormUserName(StringUtils.isNotBlank(friendDetails.getRemark())
-                ? friendDetails.getRemark() : friendDetails.getName());
-        msgContent.setFormUserPortrait(friendDetails.getPortrait());
         if (MessageContentType.Img.equals(msgContent.getType()) ||
                 MessageContentType.File.equals(msgContent.getType()) ||
                 MessageContentType.Voice.equals(msgContent.getType())) {
@@ -144,8 +138,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             throw new LinyuException("双方非好友");
         }
         Message message = sendMessage(userId, sendMsgVo.getToUserId(), sendMsgVo.getMsgContent(), MsgSource.User, type);
+        MsgContent msgContent = message.getMsgContent();
+        FriendDetailsDto friendDetails = friendService.getFriendDetails(sendMsgVo.getToUserId(), userId);
+        msgContent.setFormUserId(userId);
+        msgContent.setFormUserName(StringUtils.isNotBlank(friendDetails.getRemark())
+                ? friendDetails.getRemark() : friendDetails.getName());
+        msgContent.setFormUserPortrait(friendDetails.getPortrait());
         //更新聊天列表
-        chatListService.updateChatList(message.getToId(), userId, message.getMsgContent(), MsgSource.User);
+        chatListService.updateChatList(message.getToId(), userId, msgContent, MsgSource.User);
         if (null != message) {
             try {
                 mqProducerService.sendMsgToUser(message);

@@ -9,5 +9,5 @@ public class CreateChatListVo {
     //好友
     @NotNull(message = "好友id不能为空")
     private String userId;
-    private String type;
+    private String type = "user";
 }
