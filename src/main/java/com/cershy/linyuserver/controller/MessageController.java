@@ -23,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -113,7 +114,21 @@ public class MessageController {
     public JSONObject sendFile(HttpServletRequest request,
                                @Userid String userId,
                                @RequestHeader("msgId") String msgId) throws IOException {
-        String url = messageService.sendFileOrImg(userId, msgId, request);
+        String url = messageService.sendFileOrImg(userId, msgId, request.getInputStream());
+        return ResultUtil.Succeed(url);
+    }
+
+
+    /**
+     * 发送文件（表单）
+     *
+     * @return
+     */
+    @PostMapping("/send/file/form")
+    public JSONObject sendFile(MultipartFile file,
+                               @Userid String userId,
+                               @RequestParam("msgId") String msgId) throws IOException {
+        String url = messageService.sendFileOrImg(userId, msgId, file.getInputStream());
         return ResultUtil.Succeed(url);
     }
 
@@ -126,7 +141,7 @@ public class MessageController {
     public JSONObject sendImg(HttpServletRequest request,
                               @Userid String userId,
                               @RequestHeader("msgId") String msgId) throws IOException {
-        String url = messageService.sendFileOrImg(userId, msgId, request);
+        String url = messageService.sendFileOrImg(userId, msgId, request.getInputStream());
         return ResultUtil.Succeed(url);
     }
 

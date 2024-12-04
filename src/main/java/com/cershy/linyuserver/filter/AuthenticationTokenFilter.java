@@ -46,6 +46,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
                 Claims claims = JwtUtil.parseToken(token);
                 setUserInfo(claims, url, httpServletRequest, httpServletResponse);
             } catch (Exception e) {
+                tokenInvalid(httpServletResponse);
                 return;
             }
         } else {

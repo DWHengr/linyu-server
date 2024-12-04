@@ -15,6 +15,7 @@ import com.cershy.linyuserver.vo.message.SendMsgVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public interface MessageService extends IService<Message> {
 
     MessageRetraction reeditMsg(String userId, ReeditMsgVo reeditMsgVo);
 
-    String sendFileOrImg(String userId, String msgId, HttpServletRequest request) throws IOException;
+    String sendFileOrImg(String userId, String msgId, InputStream request) throws IOException;
 
     Message voiceToText(String userId, String msgId);
 
