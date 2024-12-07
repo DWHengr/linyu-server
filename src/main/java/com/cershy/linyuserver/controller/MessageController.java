@@ -72,6 +72,17 @@ public class MessageController {
     }
 
     /**
+     * 撤回消息
+     *
+     * @return
+     */
+    @PostMapping("/retraction/new")
+    public JSONObject retractionMsgNew(@Userid String userId, @RequestBody RetractionMsgVo retractionMsgVo) {
+        Message result = messageService.retractionMsg(userId, retractionMsgVo);
+        return ResultUtil.Succeed(result);
+    }
+
+    /**
      * 重新编辑
      *
      * @return
