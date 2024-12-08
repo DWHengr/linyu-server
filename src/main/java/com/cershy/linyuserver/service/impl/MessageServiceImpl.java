@@ -254,7 +254,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         ChatList userIdchatList = chatListService.getChatListByUserIdAndFromId(userId, message.getToId());
         userIdchatList.setLastMsgContent(msgContent);
         chatListService.updateById(userIdchatList);
-        ChatList toIdchatList = null;
+        ChatList toIdchatList;
         if (MsgSource.User.equals(message.getSource())) {
             toIdchatList = chatListService.getChatListByUserIdAndFromId(message.getToId(), userId);
         } else {
@@ -262,8 +262,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         }
         toIdchatList.setLastMsgContent(msgContent);
         chatListService.updateById(toIdchatList);
+        if (message.getSource().equals(MsgSource.User))
+            webSocketService.sendMsgToUser(message, message.getToId());
+        if (message.getSource().equals(MsgSource.Group))
+            webSocketService.sendMsgToGroup(message, retractionMsgVo.getTargetId());
 
-        webSocketService.sendMsgToUser(message, message.getToId());
         return message;
     }
 

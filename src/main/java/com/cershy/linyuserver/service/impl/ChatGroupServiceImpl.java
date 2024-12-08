@@ -16,10 +16,12 @@ import com.cershy.linyuserver.entity.*;
 import com.cershy.linyuserver.entity.ext.MsgContent;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.ChatGroupMapper;
+import com.cershy.linyuserver.mapper.ChatGroupNoticeMapper;
 import com.cershy.linyuserver.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.vo.chatGroup.*;
 import com.cershy.linyuserver.vo.message.SendMsgVo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,7 @@ import java.util.Optional;
  * @since 2024-08-21
  */
 @Service
+@RequiredArgsConstructor
 public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup> implements ChatGroupService {
 
     @Resource
@@ -57,6 +60,8 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     @Resource
     UserService userService;
 
+    final private ChatGroupNoticeMapper chatGroupNoticeMapper;
+
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public boolean createChatGroup(String userId, CreateChatGroupVo createChatGroupVo) {
@@ -67,6 +72,16 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         chatGroup.setUserId(userId);
         chatGroup.setOwnerUserId(userId);
         chatGroup.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-group-portrait.png");
+        if (createChatGroupVo.getNotice() != null){
+            ChatGroupNotice chatGroupNotice = new ChatGroupNotice();
+            chatGroupNotice.setId(IdUtil.randomUUID());
+            chatGroupNotice.setChatGroupId(chatGroup.getId());
+            chatGroupNotice.setNoticeContent(createChatGroupVo.getNotice());
+            chatGroupNotice.setUserId(userId);
+            chatGroupNoticeMapper.insert(chatGroupNotice);
+            chatGroup.setNotice(chatGroupNotice);
+        }
+
         boolean isSava = save(chatGroup);
         //添加自己
         ChatGroupMember chatGroupMember = new ChatGroupMember();
