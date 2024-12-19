@@ -125,7 +125,7 @@ public class MessageController {
      * @return
      */
     @PostMapping("/send/file/form")
-    public JSONObject sendFile(MultipartFile file,
+    public JSONObject sendFile(@RequestParam("file") MultipartFile file,
                                @Userid String userId,
                                @RequestParam("msgId") String msgId) throws IOException {
         String url = messageService.sendFileOrImg(userId, msgId, file.getInputStream());

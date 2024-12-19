@@ -34,6 +34,7 @@ CREATE TABLE `message`
     `source`       varchar(64)  NOT NULL COMMENT '消息源',
     `create_time`  timestamp(3) NOT NULL COMMENT '创建时间',
     `update_time`  timestamp(3) NOT NULL COMMENT '更新时间',
+    `from_forward_msgId` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '转发消息的id',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息表' row_format=dynamic;
 
