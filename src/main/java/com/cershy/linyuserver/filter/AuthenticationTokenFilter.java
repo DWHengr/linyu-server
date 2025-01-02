@@ -4,7 +4,7 @@ import com.cershy.linyuserver.utils.JwtUtil;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.utils.UrlPermitUtil;
 import io.jsonwebtoken.Claims;
-import jdk.nashorn.internal.runtime.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,7 +23,7 @@ import java.util.Map;
  * @author: dwh
  **/
 @Component
-@Logger
+@Slf4j
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final String TokenName = "x-token";
@@ -70,7 +70,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             out.flush();
             out.close();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
