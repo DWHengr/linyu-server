@@ -9,15 +9,14 @@ import com.cershy.linyuserver.constant.UserRole;
 import com.cershy.linyuserver.dto.FriendDetailsDto;
 import com.cershy.linyuserver.dto.FriendListDto;
 import com.cershy.linyuserver.dto.TalkContentDto;
-import com.cershy.linyuserver.entity.Friend;
-import com.cershy.linyuserver.entity.Group;
-import com.cershy.linyuserver.entity.Notify;
-import com.cershy.linyuserver.entity.User;
+import com.cershy.linyuserver.entity.*;
+import com.cershy.linyuserver.entity.ext.MsgContent;
 import com.cershy.linyuserver.exception.LinyuException;
 import com.cershy.linyuserver.mapper.FriendMapper;
 import com.cershy.linyuserver.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cershy.linyuserver.vo.friend.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +33,7 @@ import java.util.List;
  * @since 2024-05-18
  */
 @Service
+@RequiredArgsConstructor
 public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> implements FriendService {
 
     @Resource
@@ -57,12 +57,14 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     @Resource
     UserService userService;
 
+    final private MQProducerService mqProducerService;
+
     @Override
     public List<FriendListDto> getFriendList(String userId) {
         List<FriendListDto> friendListDtos = new ArrayList<>();
         //特别关心
         List<Friend> concernFriends = friendMapper.getConcernFriendByUser(userId);
-        if (null != concernFriends && concernFriends.size() > 0) {
+        if (null != concernFriends && !concernFriends.isEmpty()) {
             FriendListDto concernFriendListDto = new FriendListDto();
             concernFriendListDto.setName("特别关心");
             concernFriendListDto.setFriends(concernFriends);
@@ -71,7 +73,7 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         }
         //将没有分组的好像添加到未分组中
         List<Friend> ungroupFriends = friendMapper.getFriendByUserIdAndGroupId(userId, "0");
-        if (null != ungroupFriends && ungroupFriends.size() > 0) {
+        if (null != ungroupFriends && !ungroupFriends.isEmpty()) {
             FriendListDto ungroupFriendListDto = new FriendListDto();
             ungroupFriendListDto.setName("未分组");
             ungroupFriendListDto.setFriends(ungroupFriends);
@@ -103,6 +105,7 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         if (null != user && (UserRole.Admin.equals(user.getRole()) || UserRole.Admin.equals(friend.getRole()))) {
             return true;
         }
+        assert user != null;
         if (UserRole.Third.equals(user.getRole())) {
             return true;
         }
@@ -131,15 +134,13 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     }
 
     @Override
-    public List<FriendDetailsDto> searchFriends(String userId, SearchFriendsVo searchFriendsVo) {
-        List<FriendDetailsDto> friends = friendMapper.searchFriends(userId, "%" + searchFriendsVo.getFriendInfo() + "%");
-        return friends;
+    public List<FriendDetailsDto> searchFriends(String userId, SearchVo searchVo) {
+        return friendMapper.searchFriends(userId, "%" + searchVo.getSearchInfo() + "%");
     }
 
     /**
      * 添加好友
      *
-     * @return
      */
     public boolean addFriend(String userId, String targetId) {
         User user = userService.getById(userId);
@@ -194,7 +195,7 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         LambdaQueryWrapper<Notify> queryWrapper = new LambdaQueryWrapper<>();
 
         queryWrapper.eq(Notify::getFromId, fromId)
-                .eq(Notify::getStatus,FriendApplyStatus.Wait)
+                .eq(Notify::getStatus, FriendApplyStatus.Wait)
                 .eq(Notify::getToId, userId);
 
         List<Notify> notifyList = notifyService.list(queryWrapper);
@@ -220,7 +221,7 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
         LambdaQueryWrapper<Notify> queryWrapper = new LambdaQueryWrapper<>();
 
         queryWrapper.eq(Notify::getFromId, fromId)
-                .eq(Notify::getStatus,FriendApplyStatus.Wait)
+                .eq(Notify::getStatus, FriendApplyStatus.Wait)
                 .eq(Notify::getToId, userId);
 
         List<Notify> notifyList = notifyService.list(queryWrapper);
@@ -300,13 +301,17 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     @Override
     public boolean deleteFriend(String userId, DeleteFriendVo deleteFriendVo) {
         LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.or((q) -> {
-            q.eq(Friend::getUserId, userId).eq(Friend::getFriendId, deleteFriendVo.getFriendId());
-        }).or((q) -> {
-            q.eq(Friend::getFriendId, userId).eq(Friend::getUserId, deleteFriendVo.getFriendId());
-        });
+        queryWrapper.or((q) -> q.eq(Friend::getUserId, userId).eq(Friend::getFriendId,
+                deleteFriendVo.getFriendId())).or((q) -> q.eq(Friend::getFriendId, userId).eq(Friend::getUserId,
+                deleteFriendVo.getFriendId()));
         chatListService.removeByUserId(userId, deleteFriendVo.getFriendId());
-
+        Message message = new Message();
+        message.setFromId(userId);
+        message.setToId(deleteFriendVo.getFriendId());
+        MsgContent  msgContent = new MsgContent();
+        msgContent.setContent("friend_delete");
+        message.setMsgContent(msgContent);
+        mqProducerService.sendMsgToUser(message);
         return remove(queryWrapper);
     }
 
@@ -330,13 +335,11 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
 
     @Override
     public List<Friend> getFriendListFlat(String userId, String friendInfo) {
-        List<Friend> friends = friendMapper.getFriendListFlat(userId, friendInfo);
-        return friends;
+        return friendMapper.getFriendListFlat(userId, friendInfo);
     }
 
     @Override
     public List<Friend> getFriendListFlatUnread(String userId, String friendInfo) {
-        List<Friend> friends = friendMapper.getFriendListFlatUnread(userId, friendInfo);
-        return friends;
+        return friendMapper.getFriendListFlatUnread(userId, friendInfo);
     }
 }

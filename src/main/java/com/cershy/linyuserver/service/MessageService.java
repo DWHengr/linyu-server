@@ -48,6 +48,7 @@ public interface MessageService extends IService<Message> {
     String sendFileOrImg(String userId, String msgId, InputStream request) throws IOException;
 
     Message voiceToText(String userId, String msgId);
+    Message voiceToText(String userId, String msgId,Boolean isChatGroupMessage);
 
     Integer messageNum(DateTime date);
 

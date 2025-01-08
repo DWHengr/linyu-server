@@ -25,7 +25,7 @@ public interface FriendService extends IService<Friend> {
 
     FriendDetailsDto getFriendDetails(String userId, String friendId);
 
-    List<FriendDetailsDto> searchFriends(String userId, SearchFriendsVo searchFriendsVo);
+    List<FriendDetailsDto> searchFriends(String userId, SearchVo searchVo);
 
     boolean agreeFriendApply(String userId, AgreeFriendApplyVo agreeFriendApplyVo);
 
@@ -37,7 +37,7 @@ public interface FriendService extends IService<Friend> {
      * @param userId
      * @param agreeFriendApplyVo
      * @return boolean
-     * @author zhanglin
+     * @author colouredglaze
      * @date 2024/11/23 10:08
      */
     boolean rejectFriendApply(String userId, String fromId);

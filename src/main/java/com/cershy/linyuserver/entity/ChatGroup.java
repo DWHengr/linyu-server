@@ -34,6 +34,12 @@ public class ChatGroup implements Serializable {
     private String id;
 
     /**
+     * 群号
+     */
+    @TableField("chat_group_number")
+    private String chatGroupNumber;
+
+    /**
      * 创建用户id
      */
     @TableField("user_id")
