@@ -87,11 +87,11 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
     public ChatListDto getChatList(String userId) {
         ChatListDto chatListDto = new ChatListDto();
         //置顶
-        List top = mergeSortedLists(chatListMapper.getChatListByUserIdAndIsTop(userId, true),
+        List<ChatList> top = mergeSortedLists(chatListMapper.getChatListByUserIdAndIsTop(userId, true),
                 chatListMapper.getChatListChatGroupByUserIdAndIsTop(userId, true));
         chatListDto.setTops(top);
         //其他
-        List noTop = mergeSortedLists(chatListMapper.getChatListByUserIdAndIsTop(userId, false),
+        List<ChatList> noTop = mergeSortedLists(chatListMapper.getChatListByUserIdAndIsTop(userId, false),
                 chatListMapper.getChatListChatGroupByUserIdAndIsTop(userId, false));
         chatListDto.setOthers(noTop);
         return chatListDto;
@@ -139,15 +139,15 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
 
     @Override
     public ChatList createChatList(String userId, String role, CreateChatListVo createChatListVo) {
-        ChatList chatList = null;
+        ChatList chatList;
         if (MsgSource.User.equals(createChatListVo.getType())) {
-            boolean isFriend = friendService.isFriendIgnoreSpecial(userId, createChatListVo.getUserId());
+            boolean isFriend = friendService.isFriendIgnoreSpecial(userId, createChatListVo.getToId());
             if (!isFriend && UserRole.User.equals(role)) {
                 throw new LinyuException("双方非好友");
             }
-            chatList = chatListMapper.detailChatList(userId, createChatListVo.getUserId());
+            chatList = chatListMapper.detailChatList(userId, createChatListVo.getToId());
         } else {
-            chatList = chatListMapper.detailChatGroupList(userId, createChatListVo.getUserId());
+            chatList = chatListMapper.detailChatGroupList(userId, createChatListVo.getToId());
         }
         //查询是否有会话,没有则新建
         if (null != chatList)
@@ -156,13 +156,13 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
         chatList.setId(IdUtil.randomUUID());
         chatList.setUserId(userId);
         chatList.setType(createChatListVo.getType());
-        chatList.setFromId(createChatListVo.getUserId());
+        chatList.setFromId(createChatListVo.getToId());
         chatList.setUnreadNum(0);
         save(chatList);
         if (MsgSource.User.equals(createChatListVo.getType())) {
-            chatList = chatListMapper.detailChatList(userId, createChatListVo.getUserId());
+            chatList = chatListMapper.detailChatList(userId, createChatListVo.getToId());
         } else {
-            chatList = chatListMapper.detailChatGroupList(userId, createChatListVo.getUserId());
+            chatList = chatListMapper.detailChatGroupList(userId, createChatListVo.getToId());
         }
         return chatList;
     }

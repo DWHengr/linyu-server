@@ -3,7 +3,7 @@ package com.cershy.linyuserver.vo.user;
 import lombok.Data;
 
 /**
- * @author zhanglin
+ * @author colouredglaze
  * @date 2024/10/29$ 22:22$
  */
 @Data

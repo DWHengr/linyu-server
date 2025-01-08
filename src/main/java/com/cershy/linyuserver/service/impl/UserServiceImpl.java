@@ -111,7 +111,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return ResultUtil.Fail("您非管理员~");
         }
         JSONObject userinfo = createUserToken(user, userIp);
-        return ResultUtil.Succeed(userinfo);
+        user.setOnlineEquipment(loginVo.getOnlineEquipment());
+        boolean isSave = updateById(user);
+        return isSave?ResultUtil.Succeed(userinfo):ResultUtil.Fail("登录失败~");
     }
 
     public JSONObject createUserToken(User user, String userIp) {
@@ -280,6 +282,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void offline(String userId) {
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(User::getIsOnline, false)
+                .set(User::getOnlineEquipment, "")
                 .eq(User::getId, userId);
         update(updateWrapper);
     }

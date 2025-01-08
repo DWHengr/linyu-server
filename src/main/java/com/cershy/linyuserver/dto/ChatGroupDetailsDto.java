@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class ChatGroupDetailsDto {
     private String id;
+    private String chatGroupNumber;
     private String userId;
     private String ownerUserId;
     private String portrait;

@@ -9,6 +9,7 @@ import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.utils.SecurityUtil;
 import com.cershy.linyuserver.vo.login.LoginVo;
 import com.cershy.linyuserver.vo.login.QrCodeLoginVo;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/v1/api/login")
 @Slf4j
+@AllArgsConstructor
 public class LoginController {
     @Resource
     UserService userService;

@@ -2,11 +2,10 @@ package com.cershy.linyuserver.vo.user;
 
 import lombok.Data;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author zhanglin
+ * @author colouredglaze
  * @date 2024/10/30$ 3:12$
  */
 @Data

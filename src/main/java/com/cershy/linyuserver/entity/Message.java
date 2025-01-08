@@ -87,5 +87,7 @@ public class Message implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
+    @TableField(value = "from_forward_msgId")
+    private String fromForwardMsgId;
 
 }

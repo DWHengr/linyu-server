@@ -122,5 +122,10 @@ public class User implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
+    /**
+     * 在线设备
+     */
+    @TableField("online_equipment")
+    private String onlineEquipment;
 
 }

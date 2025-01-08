@@ -4,27 +4,40 @@ package com.cershy.linyuserver.controller;
 import cn.hutool.json.JSONObject;
 import com.cershy.linyuserver.annotation.UserRole;
 import com.cershy.linyuserver.annotation.Userid;
+import com.cershy.linyuserver.dto.ChatDto;
 import com.cershy.linyuserver.dto.ChatListDto;
+import com.cershy.linyuserver.dto.FriendDetailsDto;
+import com.cershy.linyuserver.entity.ChatGroup;
 import com.cershy.linyuserver.entity.ChatList;
+import com.cershy.linyuserver.mapper.ChatGroupMapper;
 import com.cershy.linyuserver.service.ChatListService;
+import com.cershy.linyuserver.service.FriendService;
 import com.cershy.linyuserver.utils.ResultUtil;
 import com.cershy.linyuserver.vo.chatlist.CreateChatListVo;
 import com.cershy.linyuserver.vo.chatlist.DeleteChatListVo;
 import com.cershy.linyuserver.vo.chatlist.DetailChatListVo;
 import com.cershy.linyuserver.vo.chatlist.TopChatListVo;
+import com.cershy.linyuserver.vo.friend.SearchVo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author heath
  * @since 2024-05-18
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/api/chat-list")
 public class ChatListController {
     @Resource
     ChatListService chatListService;
+
+    private final FriendService friendService;
+
+    private final ChatGroupMapper chatGroupMapper;
 
     /**
      * 获取聊天列表
@@ -35,6 +48,21 @@ public class ChatListController {
     public JSONObject getChatList(@Userid String userId) {
         ChatListDto chatList = chatListService.getChatList(userId);
         return ResultUtil.Succeed(chatList);
+    }
+
+    /**
+     * 搜索好友或群组
+     *
+     * @return
+     */
+    @PostMapping("/search")
+    public JSONObject searchFriends(@Userid String userId, @RequestBody SearchVo searchVo) {
+        ChatDto chatDto = new ChatDto();
+        List<FriendDetailsDto> friends = friendService.searchFriends(userId, searchVo);
+        chatDto.setFriend(friends);
+        List<ChatGroup> chatGroups = chatGroupMapper.getListFromSearch(userId, searchVo.getSearchInfo());
+        chatDto.setGroup(chatGroups);
+        return ResultUtil.Succeed(chatDto);
     }
 
     /**

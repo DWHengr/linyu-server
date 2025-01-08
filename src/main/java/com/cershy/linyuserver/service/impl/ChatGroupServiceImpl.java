@@ -29,6 +29,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * <p>
@@ -67,8 +68,18 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     public boolean createChatGroup(String userId, CreateChatGroupVo createChatGroupVo) {
         ChatGroup chatGroup = new ChatGroup();
         chatGroup.setId(IdUtil.randomUUID());
+        Random random = new Random();
+        int randomNumber = random.nextInt(1000000000);
+        String randomString = String.format("%10d", randomNumber);
+        LambdaQueryWrapper<ChatGroup> wrapper = new LambdaQueryWrapper<ChatGroup>()
+                .eq(ChatGroup::getChatGroupNumber, randomString);
+        while (count(wrapper) > 0){
+            randomString = String.format("%10d", random.nextInt(1000000000));
+            wrapper.eq(ChatGroup::getChatGroupNumber, randomString);
+        }
+        chatGroup.setChatGroupNumber(randomString);
         chatGroup.setName(createChatGroupVo.getName());
-        chatGroup.setMemberNum(Optional.ofNullable(createChatGroupVo.getUsers()).map(v -> v.size()).orElse(0) + 1);
+        chatGroup.setMemberNum(Optional.ofNullable(createChatGroupVo.getUsers()).map(ArrayList::size).orElse(0) + 1);
         chatGroup.setUserId(userId);
         chatGroup.setOwnerUserId(userId);
         chatGroup.setPortrait(minioConfig.getEndpoint() + "/" + minioConfig.getBucketName() + "/default-group-portrait.png");

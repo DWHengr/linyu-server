@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     /**
      * 自定义异常
      */
-    @ExceptionHandler(value = com.cershy.linyuserver.exception.LinyuException.class)
+    @ExceptionHandler(value = LinyuException.class)
     public Object LinyuException(LinyuException e, HttpServletRequest request) {
         log.error("自定义异常 -> {}", e.getClass());
         log.error("url -> {}", request.getRequestURL());
