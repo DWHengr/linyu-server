@@ -33,7 +33,6 @@ import com.cershy.linyuserver.vo.message.SendMsgVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -97,7 +96,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     ChatGroupMemberService chatGroupMemberService;
 
 
-    private @NotNull Message getMessage(String userId, MsgContent msgContent, String source, String type, String toUserId) {
+    private Message getMessage(String userId, MsgContent msgContent, String source, String type, String toUserId) {
         Message previousMessage = messageMapper.getPreviousShowTimeMsg(userId, toUserId);
         //存入数据库
         Message message = new Message();
@@ -379,7 +378,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         return url;
     }
 
-    private @NotNull Message getVoiceMessage(Message message) {
+    private Message getVoiceMessage(Message message) {
         JSONObject voice = JSONUtil.parseObj(message.getMsgContent().getContent());
         if (voice.containsKey("text")) {
             return message;
